@@ -78,7 +78,9 @@ From: nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu22.04
         pyyaml \
         h5py \
         lmdb \
-        pytest
+        pytest \
+        yacs \
+        performer-pytorch
     
     # Install Jupyter for development
     pip install jupyter jupyterlab ipykernel

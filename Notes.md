@@ -12,6 +12,7 @@
 **2025/07/08**
 
 - [ ]  実装
-    - [ ]  Singularity 環境構築
+    - [ ]  Singularity def作成
+    - [ ]  Singularity sif ビルド
     - [ ]  グラフ生成用の潜在拡散モデル（LGD）を動かす
     - [ ]  Wandb を使えるようにする
