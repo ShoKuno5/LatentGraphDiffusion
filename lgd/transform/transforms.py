@@ -300,8 +300,8 @@ def pretransform_pe(data, add_virtual_node=False):
         pestat_node = torch.cat(pestat_node, dim=-1)
         data.pestat_node = pestat_node
     if add_virtual_node:
-        if pestat_node:
-            data.pestat_node = torch.cat([data.pestat_node, torch.zeros([1, pestat_node.shape[1]], dtype=torch.float)], dim=0)
+        if hasattr(data, 'pestat_node') and data.pestat_node is not None:
+            data.pestat_node = torch.cat([data.pestat_node, torch.zeros([1, data.pestat_node.shape[1]], dtype=torch.float)], dim=0)
 
         for pename in ['rrwp_edge']:
             if data.get(pename, None) is not None:

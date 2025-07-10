@@ -78,4 +78,18 @@ Thumbs.db
 
 # Dataset
 datasets/
+data/
 **/*.pickle
+**/*.pkl
+**/*.csv
+**/*.h5
+**/*.hdf5
+**/*.npy
+**/*.npz
+**/*.pt
+**/*.pth
+**/*.dat
+**/*.msgpack
+**/*.feather
+**/*.parquet
+**/*.arrow
