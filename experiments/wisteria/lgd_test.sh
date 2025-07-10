@@ -8,7 +8,7 @@
 
 source /etc/profile.d/modules.sh
 module load singularity/3.7.3
-module load cuda/12.0
+module load cuda/12.6
 
 # -------- host-side paths --------
 ROOT=/work/jh210022o/q25030
