@@ -141,7 +141,7 @@ def run_loop_settings():
         # 'multi-seed' run mode
         num_iterations = args.repeat
         seeds = [cfg.seed + x for x in range(num_iterations)]
-        split_indices = [cfg.dataset.split_index] * num_iterations
+        split_indices = [getattr(cfg.dataset, 'split_index', 0)] * num_iterations
         run_ids = seeds
     else:
         # 'multi-split' run mode
