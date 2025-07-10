@@ -1,0 +1,11 @@
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Traceback (most recent call last):
+  File "/workspace/pretrain.py", line 255, in <module>
+    load_cfg(cfg, args)
+  File "/opt/conda/lib/python3.10/site-packages/torch_geometric/graphgym/config.py", line 501, in load_cfg
+    cfg.merge_from_list(args.opts)
+  File "/opt/conda/lib/python3.10/site-packages/yacs/config.py", line 243, in merge_from_list
+    _assert_with_logging(subkey in d, "Non-existent key: {}".format(full_key))
+  File "/opt/conda/lib/python3.10/site-packages/yacs/config.py", line 545, in _assert_with_logging
+    assert cond, msg
+AssertionError: Non-existent key: model.max_epochs
