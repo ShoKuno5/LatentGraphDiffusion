@@ -228,7 +228,7 @@ def run_loop_settings():
         List of rng seeds to loop over
         List of dataset split indices to loop over
     """
-    if len(cfg.run_multiple_splits) == 0:
+    if len(getattr(cfg, 'run_multiple_splits', [])) == 0:
         # 'multi-seed' run mode
         num_iterations = args.repeat
         seeds = [cfg.seed + x for x in range(num_iterations)]
@@ -239,9 +239,9 @@ def run_loop_settings():
         if args.repeat != 1:
             raise NotImplementedError("Running multiple repeats of multiple "
                                       "splits in one run is not supported.")
-        num_iterations = len(cfg.run_multiple_splits)
+        num_iterations = len(getattr(cfg, 'run_multiple_splits', []))
         seeds = [cfg.seed] * num_iterations
-        split_indices = cfg.run_multiple_splits
+        split_indices = getattr(cfg, 'run_multiple_splits', [])
         run_ids = split_indices
     return run_ids, seeds, split_indices
 
