@@ -1,0 +1,135 @@
+Directory created: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250710_120318 /work/jh210022o/q25030/LatentGraphDiffusion/data
+Testing LGD environment setup...
+PyTorch version: 2.7.1+cu126
+CUDA available: True
+CUDA device count: 8
+Checking if required packages are installed...
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/libpyg.so: undefined symbol: _ZNK5torch8autograd4Node4nameEv
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:72: UserWarning: An issue occurred while importing 'torch-scatter'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_scatter/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-scatter'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:83: UserWarning: An issue occurred while importing 'torch-cluster'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-cluster'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:99: UserWarning: An issue occurred while importing 'torch-spline-conv'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_spline_conv/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_sparse/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/__init__.py", line 13, in <module>
+    import torch_geometric.datasets
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/datasets/__init__.py", line 101, in <module>
+    from .explainer_dataset import ExplainerDataset
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/datasets/explainer_dataset.py", line 9, in <module>
+    from torch_geometric.explain import Explanation
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/__init__.py", line 3, in <module>
+    from .algorithm import *  # noqa
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/algorithm/__init__.py", line 1, in <module>
+    from .base import ExplainerAlgorithm
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/algorithm/base.py", line 14, in <module>
+    from torch_geometric.nn import MessagePassing
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/__init__.py", line 5, in <module>
+    from .to_hetero_with_bases_transformer import to_hetero_with_bases
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/to_hetero_with_bases_transformer.py", line 9, in <module>
+    from torch_geometric.nn.conv import MessagePassing
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/conv/__init__.py", line 8, in <module>
+    from .gravnet_conv import GravNetConv
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/conv/gravnet_conv.py", line 13, in <module>
+    from torch_cluster import knn
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/__init__.py", line 18, in <module>
+    torch.ops.load_library(spec.origin)
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch/_ops.py", line 1392, in load_library
+    ctypes.CDLL(path)
+  File "/opt/conda/envs/lgd/lib/python3.10/ctypes/__init__.py", line 374, in __init__
+    self._handle = _dlopen(self._name, mode)
+OSError: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+PyG not found
+wandb version: 0.18.7
+OGB version: 1.3.6
+Testing LGD modules...
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/libpyg.so: undefined symbol: _ZNK5torch8autograd4Node4nameEv
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:72: UserWarning: An issue occurred while importing 'torch-scatter'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_scatter/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-scatter'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:83: UserWarning: An issue occurred while importing 'torch-cluster'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-cluster'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:99: UserWarning: An issue occurred while importing 'torch-spline-conv'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_spline_conv/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_sparse/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/workspace/lgd/utils.py", line 6, in <module>
+    from torch_geometric.utils import degree
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/__init__.py", line 13, in <module>
+    import torch_geometric.datasets
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/datasets/__init__.py", line 101, in <module>
+    from .explainer_dataset import ExplainerDataset
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/datasets/explainer_dataset.py", line 9, in <module>
+    from torch_geometric.explain import Explanation
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/__init__.py", line 3, in <module>
+    from .algorithm import *  # noqa
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/algorithm/__init__.py", line 1, in <module>
+    from .base import ExplainerAlgorithm
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/algorithm/base.py", line 14, in <module>
+    from torch_geometric.nn import MessagePassing
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/__init__.py", line 5, in <module>
+    from .to_hetero_with_bases_transformer import to_hetero_with_bases
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/to_hetero_with_bases_transformer.py", line 9, in <module>
+    from torch_geometric.nn.conv import MessagePassing
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/conv/__init__.py", line 8, in <module>
+    from .gravnet_conv import GravNetConv
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/conv/gravnet_conv.py", line 13, in <module>
+    from torch_cluster import knn
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/__init__.py", line 18, in <module>
+    torch.ops.load_library(spec.origin)
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch/_ops.py", line 1392, in load_library
+    ctypes.CDLL(path)
+  File "/opt/conda/envs/lgd/lib/python3.10/ctypes/__init__.py", line 374, in __init__
+    self._handle = _dlopen(self._name, mode)
+OSError: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+LGD utils import failed
+Running LGD autoencoder pretraining test (short run)...
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/libpyg.so: undefined symbol: _ZNK5torch8autograd4Node4nameEv
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:72: UserWarning: An issue occurred while importing 'torch-scatter'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_scatter/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-scatter'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:83: UserWarning: An issue occurred while importing 'torch-cluster'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-cluster'. "
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:99: UserWarning: An issue occurred while importing 'torch-spline-conv'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_spline_conv/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_sparse/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+Traceback (most recent call last):
+  File "/workspace/pretrain.py", line 12, in <module>
+    from torch_geometric.graphgym.imports import LightningModule
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/__init__.py", line 13, in <module>
+    import torch_geometric.datasets
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/datasets/__init__.py", line 101, in <module>
+    from .explainer_dataset import ExplainerDataset
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/datasets/explainer_dataset.py", line 9, in <module>
+    from torch_geometric.explain import Explanation
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/__init__.py", line 3, in <module>
+    from .algorithm import *  # noqa
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/algorithm/__init__.py", line 1, in <module>
+    from .base import ExplainerAlgorithm
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/explain/algorithm/base.py", line 14, in <module>
+    from torch_geometric.nn import MessagePassing
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/__init__.py", line 5, in <module>
+    from .to_hetero_with_bases_transformer import to_hetero_with_bases
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/to_hetero_with_bases_transformer.py", line 9, in <module>
+    from torch_geometric.nn.conv import MessagePassing
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/conv/__init__.py", line 8, in <module>
+    from .gravnet_conv import GravNetConv
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/nn/conv/gravnet_conv.py", line 13, in <module>
+    from torch_cluster import knn
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/__init__.py", line 18, in <module>
+    torch.ops.load_library(spec.origin)
+  File "/opt/conda/envs/lgd/lib/python3.10/site-packages/torch/_ops.py", line 1392, in load_library
+    ctypes.CDLL(path)
+  File "/opt/conda/envs/lgd/lib/python3.10/ctypes/__init__.py", line 374, in __init__
+    self._handle = _dlopen(self._name, mode)
+OSError: /opt/conda/envs/lgd/lib/python3.10/site-packages/torch_cluster/_version_cuda.so: undefined symbol: _ZN3c1017RegisterOperatorsD1Ev
+Autoencoder pretraining failed - no checkpoint found
+LGD testing completed. Check logs in /workspace/runs/20250710_120318/
+Job completed. Results saved in: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250710_120318
