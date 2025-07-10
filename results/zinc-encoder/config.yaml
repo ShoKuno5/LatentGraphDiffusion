@@ -4,6 +4,29 @@ bn:
   eps: 1.0e-05
   mom: 0.1
 cfg_dest: config.yaml
+cond:
+  attn:
+    O_e: true
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: true
+    bn_momentum: 0.1
+    bn_no_runner: false
+    clamp: 5.0
+    deg_scaler: false
+    edge_enhance: true
+    full_attn: true
+    layer_norm: false
+    norm_e: true
+    sparse: false
+    use: true
+    use_bias: false
+  batch_norm: true
+  bn_momentum: 0.1
+  bn_no_runner: false
+  edge_encoder_name: TypeDictEdge
+  layer_norm: false
+  node_encoder_name: TypeDictNode
 custom_metrics: []
 dataset:
   add_virtual_node_edge: true
@@ -31,15 +54,19 @@ dataset:
   node_encoder_bn: false
   node_encoder_name: TypeDictNode
   node_encoder_num_types: 21
+  num_hop: 0
   remove_feature: false
   resample_disjoint: false
   resample_negative: false
   shuffle_split: true
+  slic_compactness: 10
   split:
   - 0.8
   - 0.1
   - 0.1
-  split_mode: random
+  split_dir: ./splits
+  split_index: 0
+  split_mode: standard
   subgraph: false
   task: graph
   task_type: regression
@@ -48,25 +75,60 @@ dataset:
   transform: none
   tu_simple: true
 devices: 1
+diffusion:
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  graph_factor: 0.0
+dt:
+  attn:
+    O_e: true
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: true
+    bn_momentum: 0.1
+    bn_no_runner: false
+    clamp: 5.0
+    deg_scaler: false
+    edge_enhance: true
+    full_attn: true
+    layer_norm: false
+    norm_e: true
+    sparse: false
+    use: true
+    use_bias: false
+  batch_norm: true
+  bn_momentum: 0.1
+  bn_no_runner: false
+  layer_norm: false
 encoder:
   O_e: true
   act: relu
   attn:
     O_e: true
     act: relu
+    attn_dropout: 0.0
     attn_product: mul
     attn_reweight: true
+    batch_norm: true
+    bn_momentum: 0.1
+    bn_no_runner: false
     clamp: 5.0
     deg_scaler: false
     edge_enhance: true
     edge_reweight: true
     full_attn: true
     fwl: false
+    layer_norm: false
     norm_e: true
     score_act: true
     signed_sqrt: true
+    sparse: false
+    use: true
+    use_bias: false
   attn_dropout: 0.5
   batch_norm: true
+  bn_momentum: 0.1
+  bn_no_runner: false
   dropout: 0.0
   edge_encoder: true
   edge_encoder_bn: false
@@ -92,7 +154,7 @@ encoder:
   num_layers: 10
   num_task: 1
   out_dim: 4
-  pe_raw_norm: None
+  pe_raw_norm: null
   pool: add
   pool_edge: true
   pool_vn: false
@@ -106,6 +168,9 @@ encoder:
   temb_dim: 0
   update_e: true
   use_time: false
+example_arg: example
+example_group:
+  example_arg: example
 gnn:
   act: relu
   agg: mean
@@ -125,6 +190,7 @@ gnn:
   layers_pre_mp: 0
   msg_direction: single
   normalize_adj: false
+  residual: false
   self_msg: concat
   skip_every: 1
   stage_type: stack
@@ -134,18 +200,39 @@ gt:
     O_e: true
     act: relu
     clamp: 5.0
+    deg_scaler: true
     edge_enhance: true
     full_attn: true
     fwl: false
     norm_e: true
+    sparse: false
+    use: true
+    use_bias: false
   attn_dropout: 0.2
   batch_norm: true
+  bigbird:
+    add_cross_attention: false
+    attention_type: block_sparse
+    block_size: 3
+    chunk_size_feed_forward: 0
+    hidden_act: relu
+    is_decoder: false
+    layer_norm_eps: 1.0e-06
+    max_position_embeddings: 128
+    num_random_blocks: 3
+    use_bias: false
+  bn_momentum: 0.1
+  bn_no_runner: false
   dim_hidden: 64
   dropout: 0.0
+  full_graph: true
+  gamma: 1.0e-05
   layer_norm: false
   layer_type: GritTransformer
   layers: 10
   n_heads: 8
+  pna_degrees: []
+  residual: true
   update_e: true
 mem:
   inplace: false
@@ -163,10 +250,12 @@ model:
   size_average: mean
   thresh: 0.5
   type: GraphTransformerEncoder
+name_tag: ''
 num_threads: 6
 num_workers: 0
 optim:
   base_lr: 0.001
+  batch_accumulation: 1
   clip_grad_norm: true
   lr_decay: 0.1
   max_epoch: 1
@@ -174,6 +263,8 @@ optim:
   momentum: 0.9
   num_warmup_epochs: 50
   optimizer: adamW
+  reduce_factor: 0.1
+  schedule_patience: 10
   scheduler: cosine_with_warmup
   steps:
   - 30
@@ -181,19 +272,216 @@ optim:
   - 90
   weight_decay: 1.0e-05
 out_dir: results/zinc-encoder
+posenc_ERE:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: false
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_ERN:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: false
+  er_dim: none
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_EdgeRWSE:
+  dim_pe: 16
+  enable: false
+  kernel:
+    times: []
+    times_func: ''
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_ElstaticSE:
+  dim_pe: 16
+  enable: false
+  kernel:
+    times: []
+    times_func: range(10)
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_EquivStableLapPE:
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: false
+  raw_norm_type: none
+posenc_HKdiagSE:
+  dim_pe: 16
+  enable: false
+  kernel:
+    times: []
+    times_func: ''
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_HodgeLap1PE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: false
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_InterRWSE:
+  dim_pe: 16
+  enable: false
+  kernel:
+    times: []
+    times_func: ''
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_LapPE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: false
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+posenc_RD:
+  dim_pe: 16
+  enable: false
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
 posenc_RRWP:
+  add_identity: true
+  dim_pe: 16
   enable: true
   ksteps: 20
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
+  raw_norm_type: none
+  real_emb: true
+  spd: false
 posenc_RWSE:
   dim_pe: 28
   enable: false
   kernel:
+    times: []
     times_func: range(1,21)
+  layers: 3
+  local: false
   model: Linear
+  n_heads: 4
+  pass_as_var: false
+  post_layers: 0
   raw_norm_type: BatchNorm
+posenc_SignNet:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: false
+  layers: 3
+  local: false
+  model: none
+  n_heads: 4
+  pass_as_var: false
+  phi_hidden_dim: 64
+  phi_out_dim: 4
+  post_layers: 0
+  raw_norm_type: none
+prep:
+  add_edge_index: true
+  add_reverse_edges: true
+  add_self_loops: false
+  dist_cutoff: 510
+  dist_enable: false
+  exp: false
+  exp_algorithm: Random-d
+  exp_count: 1
+  exp_deg: 5
+  exp_max_num_iters: 100
+  layer_edge_indices_dir: null
+  num_virt_node: 0
+  train_percent: 0.6
+  use_exp_edges: true
+pretrained:
+  dir: ''
+  freeze_main: false
+  reset_prediction_head: true
 print: both
-round: 4
+regression_model:
+  encoder:
+    attn:
+      O_e: true
+      act: relu
+      attn_dropout: 0.0
+      batch_norm: true
+      bn_momentum: 0.1
+      bn_no_runner: false
+      clamp: 5.0
+      deg_scaler: false
+      edge_enhance: true
+      full_attn: true
+      layer_norm: false
+      norm_e: true
+      sparse: false
+      use: true
+      use_bias: false
+    batch_norm: true
+    bn_momentum: 0.1
+    bn_no_runner: false
+    edge_encoder_name: TypeDictEdge
+    layer_norm: false
+    node_encoder_name: TypeDictNode
+round: 5
 run_dir: results
+run_multiple_splits: []
 seed: 0
 share:
   dim_in: 1
@@ -221,6 +509,7 @@ train:
   - 5
   node_per_graph: 32
   pretrain:
+    atom_bond_only: true
     edge_factor: 0.0
     graph_factor: 1.0
     input_target: true
@@ -234,6 +523,7 @@ train:
   sample_node: false
   sampler: full_batch
   skip_train_eval: false
+  start_eval_epoch: -1
   walk_length: 4
 val:
   node_per_graph: 32
@@ -242,5 +532,7 @@ val:
   sampler: full_batch
 view_emb: false
 wandb:
+  entity: gtransformers
+  name: ''
   project: ZINC
   use: false
