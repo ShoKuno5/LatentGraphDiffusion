@@ -62,7 +62,7 @@ singularity exec --nv \
     
     echo 'Running LGD autoencoder pretraining test (short run)...';
     # First test: pretrain autoencoder with minimal settings
-    python pretrain.py --cfg cfg/zinc-encoder.yaml --repeat 1 wandb.use False model.max_epochs 1 2>&1 | tee /workspace/runs/$EXP/pretrain_test.log;
+    python pretrain.py --cfg cfg/zinc-encoder.yaml --repeat 1 wandb.use False optim.max_epoch 1 2>&1 | tee /workspace/runs/$EXP/pretrain_test.log;
     
     # Check if pretraining produced a checkpoint
     if [ -f /workspace/runs/zinc-encoder/*/checkpoints/epoch=0-step*.ckpt ]; then
@@ -74,7 +74,7 @@ singularity exec --nv \
         
         echo 'Running LGD diffusion training test (short run)...';
         # Second test: train diffusion model with minimal settings
-        python train_diffusion.py --cfg cfg/zinc-diffusion_ddpm.yaml --repeat 1 wandb.use False model.max_epochs 1 diffusion.first_stage_config \"\$CHECKPOINT_PATH\" 2>&1 | tee /workspace/runs/$EXP/diffusion_test.log;
+        python train_diffusion.py --cfg cfg/zinc-diffusion_ddpm.yaml --repeat 1 wandb.use False optim.max_epoch 1 diffusion.first_stage_config \"\$CHECKPOINT_PATH\" 2>&1 | tee /workspace/runs/$EXP/diffusion_test.log;
         
         echo 'LGD diffusion training test completed';
     else
