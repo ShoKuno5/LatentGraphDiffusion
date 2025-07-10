@@ -137,7 +137,7 @@ encoder:
   ff_e: false
   hid_dim: 64
   in_dim: 36
-  label_embed_type: for first stage model only
+  label_embed_type: add_virtual
   layer_norm: false
   mpnn:
     act: relu

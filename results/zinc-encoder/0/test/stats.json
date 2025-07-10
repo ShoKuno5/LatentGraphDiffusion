@@ -1,0 +1,1 @@
+{"epoch": 0, "time_epoch": 1.09634, "loss": 300.9747605, "lr": 0, "params": 892314, "time_iter": 0.06852, "mae": 301.43079, "r2": -24602.13896, "spearmanr": -0.2472, "mse": 100092.9375, "rmse": 316.37466, "loss_recon": 0.0, "loss_recon_node": 0.0, "loss_recon_edge": 0.0, "loss_recon_tuple": 0.0, "loss_recon_nodepe": 0.0, "loss_recon_edgepe": 0.0}
