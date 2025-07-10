@@ -78,3 +78,4 @@ Thumbs.db
 
 # Dataset
 datasets/
+**/*.pickle
