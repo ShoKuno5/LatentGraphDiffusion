@@ -1,0 +1,161 @@
+Bootstrap: docker
+From: pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
+
+%labels
+    Author   Research Team
+    Purpose  "Latent Graph Diffusion experiments on HPC GPU nodes"
+    Version  1.0
+
+%post
+    ## — Update package lists and install system dependencies —
+    apt-get update && \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        git ca-certificates build-essential wget curl \
+        libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 && \
+      rm -rf /var/lib/apt/lists/*
+    
+    ## — Upgrade pip —
+    python -m pip install --no-cache-dir --upgrade pip setuptools wheel
+
+    ## — Install core scientific Python packages —
+    python -m pip install --no-cache-dir \
+        numpy==1.25.2 \
+        scipy==1.11.1 \
+        pandas==2.0.3 \
+        scikit-learn==1.3.0 \
+        matplotlib==3.8.2 \
+        seaborn==0.13.1 \
+        networkx==3.1 \
+        tqdm==4.65.0
+
+    ## — Install PyTorch Geometric and dependencies (CUDA 11.7 / PyTorch 2.0.1) —
+    ## Using specific versions that are compatible with PyTorch 2.0.1
+    PYG_WHL="https://data.pyg.org/whl/torch-2.0.1+cu117.html"
+    python -m pip install --no-cache-dir \
+        torch-scatter==2.1.1 \
+        torch-sparse==0.6.17 \
+        torch-cluster==1.6.1 \
+        torch-spline-conv==1.2.2 \
+        torch-geometric==2.3.1 \
+        -f ${PYG_WHL}
+    
+    ## — Install chemistry and molecule-related packages —
+    python -m pip install --no-cache-dir \
+        rdkit==2023.9.2 \
+        ase==3.23.0 \
+        openbabel-wheel==3.1.1.19 \
+        ogb==1.3.6
+
+    ## — Install ML/DL utilities and frameworks —
+    python -m pip install --no-cache-dir \
+        wandb==0.18.7 \
+        tensorboard==2.16.* \
+        tensorboardX==2.6.2.2 \
+        pytorch-lightning==2.1.2 \
+        lightning==2.1.2 \
+        torchmetrics==1.0.3 \
+        einops==0.7.0 \
+        hydra-core==1.3.2 \
+        omegaconf==2.3.0 \
+        yacs==0.1.8
+
+    ## — Install transformer and attention-related packages —
+    python -m pip install --no-cache-dir \
+        transformers==4.35.2 \
+        tokenizers==0.15.0 \
+        sentence-transformers==2.2.2 \
+        performer-pytorch==1.1.4 \
+        local-attention==1.9.0 \
+        axial-positional-embedding==0.2.1
+
+    ## — Install additional dependencies —
+    python -m pip install --no-cache-dir \
+        accelerate==0.24.1 \
+        datasets==2.15.0 \
+        huggingface-hub==0.19.4 \
+        nltk==3.8.1 \
+        lmdb==1.5.1 \
+        pyemd==1.0.0 \
+        pqdm==0.2.0 \
+        rich==13.9.4 \
+        click==8.1.7 \
+        pytest==7.4.3 \
+        yapf==0.43.0 \
+        pyyaml==6.0.1 \
+        typing-extensions==4.12.2 \
+        ml-collections==1.0.0
+
+    ## — Install evaluation and molecule generation metrics —
+    python -m pip install --no-cache-dir \
+        fcd-torch==1.0.7 \
+        posebusters==0.3.1
+
+    ## — Create workspace directory —
+    mkdir -p /workspace && chmod 777 /workspace
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export PYTHONUNBUFFERED=1
+    export PYTHONPATH=/workspace:$PYTHONPATH
+    
+    # CUDA settings
+    export CUDA_HOME=/usr/local/cuda
+    export PATH=$CUDA_HOME/bin:$PATH
+    export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+    
+    # PyTorch settings
+    export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6;9.0"
+    
+    # Default to workspace
+    cd /workspace
+
+%runscript
+    #!/bin/bash
+    # If no arguments provided, start bash shell
+    if [ $# -eq 0 ]; then 
+        exec bash
+    else 
+        exec "$@"
+    fi
+
+%test
+    python - << 'EOF'
+import torch, torch_geometric, sys
+import numpy as np
+
+print("="*50)
+print("System Information:")
+print("="*50)
+print(f"Python    : {sys.version.split()[0]}")
+print(f"PyTorch   : {torch.__version__}")
+print(f"PyG       : {torch_geometric.__version__}")
+print(f"NumPy     : {np.__version__}")
+print(f"CUDA      : {torch.version.cuda}")
+print(f"cuDNN     : {torch.backends.cudnn.version()}")
+print(f"GPU avail : {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"GPU count : {torch.cuda.device_count()}")
+    print(f"GPU name  : {torch.cuda.get_device_name(0)}")
+print("="*50)
+
+# Test PyG imports
+try:
+    import torch_scatter
+    import torch_sparse
+    import torch_cluster
+    import torch_spline_conv
+    print("All PyG extensions imported successfully!")
+except Exception as e:
+    print(f"Error importing PyG extensions: {e}")
+
+# Test other critical imports
+try:
+    import ogb
+    import wandb
+    import rdkit
+    import yacs
+    print("All critical packages imported successfully!")
+except Exception as e:
+    print(f"Error importing packages: {e}")
+EOF
