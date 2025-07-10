@@ -121,7 +121,7 @@ if __name__ == '__main__':
     cfg.set_new_allowed(True)
     load_cfg(cfg, args)
     # print(cfg)
-    custom_set_out_dir(cfg, args.cfg_file, cfg.name_tag)
+    custom_set_out_dir(cfg, args.cfg_file, getattr(cfg, 'name_tag', ''))
     dump_cfg(cfg)
     for run_id, seed, split_index in zip(*run_loop_settings()):
         # Set configurations for each run
