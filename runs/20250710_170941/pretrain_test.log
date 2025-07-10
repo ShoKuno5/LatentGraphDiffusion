@@ -1,0 +1,42 @@
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+./datasets/ZINC
+Downloading https://www.dropbox.com/s/feo9qle74kg48gy/molecules.zip?dl=1
+Extracting datasets/ZINC/molecules.zip
+Downloading https://raw.githubusercontent.com/graphdeeplearning/benchmarking-gnns/master/data/molecules/train.index
+Downloading https://raw.githubusercontent.com/graphdeeplearning/benchmarking-gnns/master/data/molecules/val.index
+Downloading https://raw.githubusercontent.com/graphdeeplearning/benchmarking-gnns/master/data/molecules/test.index
+Processing...
+  0%|          | 0/10000 [00:00<?, ?it/s]Processing train dataset:   0%|          | 0/10000 [00:00<?, ?it/s]Processing train dataset:   0%|          | 1/10000 [00:00<47:18,  3.52it/s]Processing train dataset:  20%|█▉        | 1997/10000 [00:00<00:01, 6682.97it/s]Processing train dataset:  40%|████      | 4007/10000 [00:00<00:00, 11021.65it/s]Processing train dataset:  60%|██████    | 6048/10000 [00:00<00:00, 13986.92it/s]Processing train dataset:  81%|████████  | 8075/10000 [00:00<00:00, 15939.26it/s]Processing train dataset: 100%|█████████▉| 9963/10000 [00:01<00:00, 7816.63it/s] Processing train dataset: 100%|██████████| 10000/10000 [00:01<00:00, 8608.08it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Processing val dataset:   0%|          | 0/1000 [00:00<?, ?it/s]Processing val dataset:  52%|█████▏    | 517/1000 [00:00<00:00, 5167.82it/s]Processing val dataset: 100%|██████████| 1000/1000 [00:00<00:00, 8110.42it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Processing test dataset:   0%|          | 0/1000 [00:00<?, ?it/s]Processing test dataset: 100%|██████████| 1000/1000 [00:00<00:00, 14909.95it/s]
+Done!
+[*] Loaded dataset 'subset' from 'PyG-ZINC':
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
+  undirected: True
+  num graphs: 12000
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  avg num_nodes/graph: 23
+  num node features: 1
+  num edge features: 1
+  num classes: (appears to be a regression task)
+Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
+  ...estimated to be undirected: True
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1566.19it/s]
+Done! Took 00:00:08.32
+Adding virtual node and edges
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1737.61it/s]
+Preprocessing PE
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3678.57it/s]
+[*] Run ID 0: seed=0, split_index=0
+    Starting now: 2025-07-10 17:11:42.329066
+Traceback (most recent call last):
+  File "/workspace/pretrain.py", line 278, in <module>
+    model = create_model_custom(cfg_name='encoder')
+  File "/workspace/pretrain.py", line 161, in create_model_custom
+    model = GraphGymModule_custom(dim_in, dim_out, cfg, enter_cfg)
+  File "/workspace/pretrain.py", line 89, in __init__
+    self.model = network_dict[cfg.model.type](dim_in=dim_in,
+KeyError: 'GraphTransformerEncoder'
