@@ -1,0 +1,8 @@
+/opt/conda/envs/lgd/lib/python3.10/site-packages/torch_geometric/graphgym/config.py:19: UserWarning: Could not define global config object. Please install 'yacs' via 'pip install yacs' in order to use GraphGym
+  warnings.warn("Could not define global config object. Please install "
+Traceback (most recent call last):
+  File "/workspace/pretrain.py", line 32, in <module>
+    from lgd.finetuning import load_pretrained_model_cfg, \
+  File "/workspace/lgd/finetuning.py", line 8, in <module>
+    from yacs.config import CfgNode
+ModuleNotFoundError: No module named 'yacs'

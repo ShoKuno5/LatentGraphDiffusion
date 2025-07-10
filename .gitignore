@@ -68,8 +68,9 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Log files
+# Log files (except in runs directory)
 *.log
+!runs/**/*.log
 
 # Temporary files
 *.tmp
