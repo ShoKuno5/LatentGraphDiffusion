@@ -267,7 +267,7 @@ if __name__ == '__main__':
         auto_select_device()
         # TODO: debug loader and dataset
         # dataset = load_dataset_master(cfg.dataset.format, cfg.dataset.name, cfg.dataset.dataset_dir)
-        if cfg.pretrained.dir:
+        if hasattr(cfg, 'pretrained') and cfg.pretrained.dir:
             cfg = load_pretrained_model_cfg(cfg)
         loaders = create_loader()
         loggers = create_logger()
@@ -276,7 +276,7 @@ if __name__ == '__main__':
         logging.info(f"    Starting now: {datetime.datetime.now()}")
         # model = create_model()
         model = create_model_custom(cfg_name='encoder')
-        if cfg.pretrained.dir:
+        if hasattr(cfg, 'pretrained') and cfg.pretrained.dir:
             model = init_model_from_pretrained(
                 model, cfg.pretrained.dir, cfg.pretrained.freeze_main,
                 cfg.pretrained.reset_prediction_head
