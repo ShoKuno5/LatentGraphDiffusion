@@ -62,14 +62,20 @@ singularity exec --nv \
     
     echo 'Running LGD autoencoder pretraining test (short run)...';
     # First test: pretrain autoencoder with minimal settings
-    python pretrain.py --cfg cfg/zinc-encoder.yaml --repeat 1 wandb.use False optim.max_epoch 1 2>&1 | tee /workspace/runs/$EXP/pretrain_test.log;
+    python pretrain.py --cfg cfg/zinc-encoder.yaml --repeat 1 wandb.use False optim.max_epoch 1 train.ckpt_period 1 2>&1 | tee /workspace/runs/$EXP/pretrain_test.log;
     
     # Check if pretraining produced a checkpoint
-    if [ -f /workspace/runs/zinc-encoder/*/checkpoints/epoch=0-step*.ckpt ]; then
+    echo 'Searching for checkpoints...';
+    echo 'Looking in /workspace/results/zinc-encoder/';
+    find /workspace/results/zinc-encoder -name \"*.ckpt\" -ls 2>/dev/null || echo 'No checkpoints found in results/zinc-encoder';
+    echo 'Looking in /workspace/runs/zinc-encoder/';
+    find /workspace/runs/zinc-encoder -name \"*.ckpt\" -ls 2>/dev/null || echo 'No checkpoints found in runs/zinc-encoder';
+    
+    # Look in multiple possible locations for checkpoints
+    CHECKPOINT_PATH=\$(find /workspace/results/zinc-encoder -name \"*.ckpt\" | head -1 2>/dev/null || find /workspace/runs/zinc-encoder -name \"*.ckpt\" | head -1 2>/dev/null || echo \"\");
+    
+    if [ -n \"\$CHECKPOINT_PATH\" ] && [ -f \"\$CHECKPOINT_PATH\" ]; then
         echo 'Autoencoder pretraining test completed successfully';
-        
-        # Update the diffusion config to use the generated checkpoint
-        CHECKPOINT_PATH=\$(find /workspace/runs/zinc-encoder -name \"epoch=0-step*.ckpt\" | head -1);
         echo \"Found checkpoint: \$CHECKPOINT_PATH\";
         
         echo 'Running LGD diffusion training test (short run)...';
