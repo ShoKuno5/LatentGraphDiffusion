@@ -108,4 +108,4 @@ runs/**
 results/**
 results/zinc-encoder/** 
 /work/jh210022o/q25030/LatentGraphDiffusion/results/zinc-encoder/0/train/stats.json
-results/** */
+results/** 
