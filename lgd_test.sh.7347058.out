@@ -1,4 +1,4 @@
-Directory created: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250710_173116 /work/jh210022o/q25030/LatentGraphDiffusion/data
+Directory created: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250713_170637 /work/jh210022o/q25030/LatentGraphDiffusion/data
 Testing LGD environment setup...
 PyTorch version: 2.0.1
 CUDA available: True
@@ -31,14 +31,14 @@ Warning: Could not import grit_layer: No module named 'opt_einsum'
   num classes: (appears to be a regression task)
 Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
   ...estimated to be undirected: True
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1508.76it/s]
-Done! Took 00:00:08.73
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1513.80it/s]
+Done! Took 00:00:08.84
 Adding virtual node and edges
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1728.87it/s]
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1696.49it/s]
 Preprocessing PE
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3573.68it/s]
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3568.37it/s]
 [*] Run ID 0: seed=0, split_index=0
-    Starting now: 2025-07-10 17:32:15.860396
+    Starting now: 2025-07-13 17:07:36.702348
 /opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
   warnings.warn("Initializing zero-element tensors is a no-op")
 GraphGymModule_custom(
@@ -709,22 +709,22 @@ tensor([[-0.1156, -0.3375, -0.5080, -0.4436],
         [-0.3055, -0.2825, -0.1974,  0.0108],
         [-0.3032, -0.2541, -0.2232, -0.0234]], device='cuda:0',
        grad_fn=<SliceBackward0>)
-train: {'epoch': 0, 'time_epoch': 27.10185, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 304.06041201, 'lr': 0.0, 'params': 892314, 'time_iter': 0.17262, 'mae': 304.06039, 'r2': -25244.27948, 'spearmanr': -0.24977, 'mse': 102076.6875, 'rmse': 319.49442}
+train: {'epoch': 0, 'time_epoch': 27.21408, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 304.06041748, 'lr': 0.0, 'params': 892314, 'time_iter': 0.17334, 'mae': 304.06039, 'r2': -25244.28035, 'spearmanr': -0.24977, 'mse': 102076.6875, 'rmse': 319.49442}
 ...computing epoch stats took: 0.01s
-val: {'epoch': 0, 'time_epoch': 0.89425, 'loss': 300.27558813, 'lr': 0, 'params': 892314, 'time_iter': 0.05589, 'mae': 300.71823, 'r2': -25342.5964, 'spearmanr': -0.23433, 'mse': 99822.22656, 'rmse': 315.94656, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+val: {'epoch': 0, 'time_epoch': 0.89105, 'loss': 300.27564526, 'lr': 0, 'params': 892314, 'time_iter': 0.05569, 'mae': 300.71829, 'r2': -25342.60478, 'spearmanr': -0.23433, 'mse': 99822.25781, 'rmse': 315.94659, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
 ...computing epoch stats took: 0.00s
-test: {'epoch': 0, 'time_epoch': 1.09634, 'loss': 300.9747605, 'lr': 0, 'params': 892314, 'time_iter': 0.06852, 'mae': 301.43079, 'r2': -24602.13896, 'spearmanr': -0.2472, 'mse': 100092.9375, 'rmse': 316.37466, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 0, 'time_epoch': 1.08589, 'loss': 300.97482031, 'lr': 0, 'params': 892314, 'time_iter': 0.06787, 'mae': 301.43085, 'r2': -24602.14798, 'spearmanr': -0.2472, 'mse': 100092.97656, 'rmse': 316.37476, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
 ...computing epoch stats took: 0.00s
-> Epoch 0: took 29.1s (avg 29.1s) | Best so far: epoch 0	train_loss: 304.0604 train_mae: 304.0604	val_loss: 300.2756 val_mae: 300.7182	test_loss: 300.9748 test_mae: 301.4308
-Avg time per epoch: 29.12s
+> Epoch 0: took 29.2s (avg 29.2s) | Best so far: epoch 0	train_loss: 304.0604 train_mae: 304.0604	val_loss: 300.2756 val_mae: 300.7183	test_loss: 300.9748 test_mae: 301.4309
+Avg time per epoch: 29.22s
 Total train loop time: 0.01h
 Task done, results saved in results/zinc-encoder/0
 0
-{'epoch': 0, 'time_epoch': 1.09634, 'loss': 300.9747605, 'lr': 0, 'params': 892314, 'time_iter': 0.06852, 'mae': 301.43079, 'r2': -24602.13896, 'spearmanr': -0.2472, 'mse': 100092.9375, 'rmse': 316.37466, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
-{'epoch': 0, 'time_epoch': 0.89425, 'loss': 300.27558813, 'lr': 0, 'params': 892314, 'time_iter': 0.05589, 'mae': 300.71823, 'r2': -25342.5964, 'spearmanr': -0.23433, 'mse': 99822.22656, 'rmse': 315.94656, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
-{'epoch': 0, 'time_epoch': 27.10185, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 304.06041201, 'lr': 0.0, 'params': 892314, 'time_iter': 0.17262, 'mae': 304.06039, 'r2': -25244.27948, 'spearmanr': -0.24977, 'mse': 102076.6875, 'rmse': 319.49442}
+{'epoch': 0, 'time_epoch': 1.08589, 'loss': 300.97482031, 'lr': 0, 'params': 892314, 'time_iter': 0.06787, 'mae': 301.43085, 'r2': -24602.14798, 'spearmanr': -0.2472, 'mse': 100092.97656, 'rmse': 316.37476, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+{'epoch': 0, 'time_epoch': 0.89105, 'loss': 300.27564526, 'lr': 0, 'params': 892314, 'time_iter': 0.05569, 'mae': 300.71829, 'r2': -25342.60478, 'spearmanr': -0.23433, 'mse': 99822.25781, 'rmse': 315.94659, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+{'epoch': 0, 'time_epoch': 27.21408, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 304.06041748, 'lr': 0.0, 'params': 892314, 'time_iter': 0.17334, 'mae': 304.06039, 'r2': -25244.28035, 'spearmanr': -0.24977, 'mse': 102076.6875, 'rmse': 319.49442}
 Results aggregated across runs saved in results/zinc-encoder/agg
-[*] All done: 2025-07-10 17:32:51.668560
+[*] All done: 2025-07-13 17:08:12.809978
 Autoencoder pretraining failed - no checkpoint found
-LGD testing completed. Check logs in /workspace/runs/20250710_173116/
-Job completed. Results saved in: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250710_173116
+LGD testing completed. Check logs in /workspace/runs/20250713_170637/
+Job completed. Results saved in: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250713_170637
