@@ -13,6 +13,7 @@ from torch_geometric.graphgym.utils.epoch import is_eval_epoch, is_ckpt_epoch
 
 from lgd.loss.subtoken_prediction_loss import subtoken_cross_entropy
 from lgd.asset.utils import cfg_to_dict, flatten_dict, make_wandb_name, mlflow_log_cfgdict
+from lgd.utils.wandb_config import setup_wandb_env
 from copy import deepcopy
 import warnings
 from utils import random_mask
@@ -214,7 +215,9 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
         else:
             true = batch.y  # TODO: check this
             loss, pred_score = compute_loss(graph_pred, true)
-            loss = loss_labeled if cfg.train.pretrain.input_target else loss
+            # BUG FIX: The following line causes data leakage in evaluation
+            # loss = loss_labeled if cfg.train.pretrain.input_target else loss
+            # We should always use the loss from predictions made WITHOUT label input
             _true = true.detach().to('cpu', non_blocking=True)
             _pred = pred_score.detach().to('cpu', non_blocking=True)
         logger.update_stats(true=_true,
@@ -260,11 +263,20 @@ def custom_pretrain_encoder(loggers, loaders, model, optimizer, scheduler):
             import wandb
         except:
             raise ImportError('WandB is not installed.')
+        
+        # Load WandB credentials from .wandbrc file
+        wandb_config = setup_wandb_env()
+        
         if cfg.wandb.name == '':
             wandb_name = make_wandb_name(cfg)
         else:
             wandb_name = cfg.wandb.name
-        run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project,
+            
+        # Use config from .wandbrc file, fallback to config file values
+        wandb_entity = wandb_config.get('entity') or cfg.wandb.entity or None
+        wandb_project = wandb_config.get('project') or cfg.wandb.project
+        
+        run = wandb.init(entity=wandb_entity, project=wandb_project,
                          name=wandb_name)
         run.config.update(cfg_to_dict(cfg))
 

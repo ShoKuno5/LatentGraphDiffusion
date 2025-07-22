@@ -1,5 +1,81 @@
 # Latent Graph Diffusion (LGD) - Development Notes
 
+## Code Changes and Bug Fixes
+
+### 1. Data Leakage Fix in Evaluation (2025-07-22)
+
+**File**: `lgd/train/pretrain_encoder.py`
+
+**Issue**: Critical data leakage in the evaluation phase when `cfg.train.pretrain.input_target` is True.
+
+**Symptoms**:
+- Validation/test loss (~0.03) was significantly lower than training loss (~0.07)
+- Test performance was unrealistically better than validation performance
+- Model selection was based on misleading metrics
+
+**Root Cause**: 
+In `eval_epoch()` function, line 217 was using `loss_labeled` (computed with true labels as input) instead of the actual prediction loss:
+```python
+loss = loss_labeled if cfg.train.pretrain.input_target else loss
+```
+
+**Fix Applied**:
+```python
+# BUG FIX: The following line causes data leakage in evaluation
+# loss = loss_labeled if cfg.train.pretrain.input_target else loss
+# We should always use the loss from predictions made WITHOUT label input
+```
+
+**Impact**: 
+- Evaluation metrics now reflect true model performance
+- Validation/test losses will be more realistic (likely higher)
+- Proper overfitting detection and model selection
+
+---
+
+### 2. Training Optimization Configuration (2025-07-22)
+
+**File**: Created `cfg/zinc-encoder-fast.yaml`
+
+**Purpose**: Optimize training time based on paper's finding that Latent Diffusion converges in 1/3 to 1/5 the epochs of standard training.
+
+**Changes**:
+1. **Reduced epochs**: `max_epoch: 400` (from 2000)
+2. **Early stopping**: Added `early_stop: True` with `early_stop_patience: 20`
+3. **Smaller model**:
+   - `encoder.hid_dim: 32` (from 64)
+   - `encoder.num_layers: 6` (from 10)
+   - `gt.layers: 6` (from 10)
+   - `gt.n_heads: 4` (from 8)
+4. **Dataset**: Already using `subset` (PyG-ZINC 12k molecules)
+
+**WandB Integration**: Enabled for experiment tracking
+
+**Usage**: 
+```bash
+# 1. Setup WandB (one-time)
+./setup_wandb.sh
+
+# 2. Set your wandb entity in the config file or via environment:
+export WANDB_ENTITY="your_username_or_team"
+
+# 3. Run training with logging
+python pretrain.py --cfg cfg/zinc-encoder-fast.yaml
+```
+
+**WandB Setup Options**:
+1. **`.wandbrc` file** (recommended, secure):
+   ```bash
+   cp .wandbrc.example .wandbrc
+   # Edit .wandbrc with your credentials (gitignored)
+   ```
+2. **Environment variable**: `export WANDB_API_KEY=your_key`
+3. **Interactive login**: `wandb login`
+
+**View results**: https://wandb.ai/your_entity/LatentGraphDiffusion-ZINC
+
+---
+
 ## Environment Setup and Dependencies
 
 ### Key Findings from Analysis
