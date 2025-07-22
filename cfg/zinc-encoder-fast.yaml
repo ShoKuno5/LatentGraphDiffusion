@@ -60,7 +60,7 @@ model:
   graph_pooling: add
 encoder:
   in_dim: 36
-  prefix_dim: 32  # Reduced from 64
+  prefix_dim: 64  # Must equal hid_dim
   posenc_in_dim: 20
   posenc_in_dim_edge: 20
   posenc_dim: 28  # Keep original to satisfy in_dim + posenc_dim == hid_dim
