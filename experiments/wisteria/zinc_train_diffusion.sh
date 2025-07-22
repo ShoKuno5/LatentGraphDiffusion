@@ -25,7 +25,7 @@ RUNS=$CODE/runs
 ENCODER_CHECKPOINT="${1:-auto}"  # Pass checkpoint path as first argument, or use 'auto'
 CONFIG="cfg/zinc-diffusion_ddpm.yaml"
 REPEAT=5
-MAX_EPOCH=2000
+MAX_EPOCH=50
 
 # -------- experiment tag ---------
 EXP="zinc_diffusion_$(date +%Y%m%d_%H%M%S)"

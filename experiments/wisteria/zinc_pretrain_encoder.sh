@@ -41,7 +41,7 @@ export WANDB_NAME="zinc_encoder_${EXP}"
 # -------- job parameters --------
 CONFIG="cfg/zinc-encoder.yaml"
 REPEAT=5
-MAX_EPOCH=2000
+MAX_EPOCH=50
 
 echo "Starting ZINC Encoder Pretraining Job"
 echo "Config: $CONFIG"

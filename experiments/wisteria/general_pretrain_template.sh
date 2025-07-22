@@ -43,9 +43,9 @@ RUNS=$CODE/runs
 # -------- experiment parameters --------
 REPEAT=3
 if [ "$DATASET" = "ogbn-arxiv" ] || [ "$DATASET" = "cora" ] || [ "$DATASET" = "pubmed" ]; then
-    MAX_EPOCH=1000  # Node classification tasks
+    MAX_EPOCH=50  # Node classification tasks
 else
-    MAX_EPOCH=1000  # Graph classification tasks
+    MAX_EPOCH=50  # Graph classification tasks
 fi
 
 # -------- experiment tag ---------

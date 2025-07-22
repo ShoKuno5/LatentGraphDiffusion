@@ -25,7 +25,7 @@ RUNS=$CODE/runs
 TARGET_PROPERTY="${1:-mu}"  # Default to mu (dipole moment)
 CONFIG="cfg/QM9_regression_encoder_${TARGET_PROPERTY}.yaml"
 REPEAT=3
-MAX_EPOCH=1000
+MAX_EPOCH=50
 
 # -------- experiment tag ---------
 EXP="qm9_${TARGET_PROPERTY}_encoder_$(date +%Y%m%d_%H%M%S)"

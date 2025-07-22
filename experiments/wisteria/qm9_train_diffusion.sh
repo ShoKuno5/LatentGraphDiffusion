@@ -26,7 +26,7 @@ TARGET_PROPERTY="${1:-mu}"  # Default to mu (dipole moment)
 ENCODER_CHECKPOINT="${2:-auto}"  # Pass checkpoint path as second argument, or use 'auto'
 CONFIG="cfg/QM9-diffusion_ddpm_regression_${TARGET_PROPERTY}.yaml"
 REPEAT=3
-MAX_EPOCH=1000
+MAX_EPOCH=50
 
 # -------- experiment tag ---------
 EXP="qm9_${TARGET_PROPERTY}_diffusion_$(date +%Y%m%d_%H%M%S)"
