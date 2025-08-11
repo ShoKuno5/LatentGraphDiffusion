@@ -6,6 +6,7 @@ metric_best: mae
 metric_agg: argmin
 tensorboard_each_run: False
 accelerator: "cuda:0"
+seed: 0  # Will be overridden by environment variable SEED if set
 mlflow:
   use: False
   project: Exp

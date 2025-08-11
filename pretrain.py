@@ -253,6 +253,17 @@ if __name__ == '__main__':
     set_cfg(cfg)
     cfg.set_new_allowed(True)
     load_cfg(cfg, args)
+    
+    # Override seed from environment variable if set
+    import os
+    if 'SEED' in os.environ:
+        try:
+            env_seed = int(os.environ['SEED'])
+            cfg.seed = env_seed
+            print(f"Using seed from environment variable: {env_seed}")
+        except ValueError:
+            print(f"Warning: Invalid SEED environment variable '{os.environ['SEED']}', using config default: {cfg.seed}")
+    
     # print(cfg)
     custom_set_out_dir(cfg, args.cfg_file, getattr(cfg, 'name_tag', ''))
     dump_cfg(cfg)

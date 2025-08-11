@@ -49,24 +49,36 @@ singularity exec --nv \
     # Create experiment directory
     mkdir -p /workspace/runs/$EXP;
     
+    # 実行時にユニークなrun_idを生成
+    RUN_ID=\$(date +%s);  # Unix timestamp
+    TIMESTAMP=\$(date +%Y%m%d_%H%M%S);
+    
+    # 環境変数としてseedを設定
+    export SEED=\$RUN_ID;
+    
     echo 'Starting optimized LGD encoder pretraining...';
     echo 'Configuration: zinc-encoder-fast.yaml';
     echo '- Max epochs: 10 (down from 2000)';
     echo '- Hidden dimensions: 32 (down from 64)';  
     echo '- Early stopping enabled';
     echo '- WandB logging enabled';
+    echo \"- Run ID: \$RUN_ID\";
+    echo \"- Timestamp: \$TIMESTAMP\";
+    echo \"- Seed (env): \$SEED\";
+    echo \"- Results will be saved in: results/zinc-encoder-fast/\$RUN_ID/\";
     echo '';
     
-    # Run the optimized training
+    # Run the optimized training with unique run_id via environment variable
     python pretrain.py --cfg cfg/zinc-encoder-fast.yaml 2>&1 | tee /workspace/runs/$EXP/pretrain_fast.log;
     
     # Check if training completed successfully
     if [ \$? -eq 0 ]; then
         echo 'Fast encoder pretraining completed successfully!';
         echo \"Results saved in: /workspace/runs/$EXP/\";
+        echo \"Model checkpoints saved in: results/zinc-encoder-fast/\$RUN_ID/\";
         
-        # Find the best checkpoint
-        BEST_CKPT=\$(find /workspace/runs -name \"*best*\" -type f | head -1);
+        # Find the best checkpoint in the run-specific directory
+        BEST_CKPT=\$(find /workspace/results/zinc-encoder-fast/\$RUN_ID -name \"*best*\" -type f | head -1);
         if [ ! -z \"\$BEST_CKPT\" ]; then
             echo \"Best checkpoint found: \$BEST_CKPT\";
         fi;
