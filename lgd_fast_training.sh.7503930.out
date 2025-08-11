@@ -1,21 +1,15 @@
-Directory created: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250713_170637 /work/jh210022o/q25030/LatentGraphDiffusion/data
-Testing LGD environment setup...
-PyTorch version: 2.0.1
-CUDA available: True
-CUDA device count: 8
-Checking if required packages are installed...
-PyG version: 2.3.1
-wandb version: 0.18.7
-OGB version: 1.3.6
-/opt/conda/lib/python3.10/site-packages/outdated/__init__.py:36: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-  from pkg_resources import parse_version
-Testing LGD modules...
+Directory created: /work/gp15/q25030/LatentGraphDiffusion/runs/20250811_115002_fast_training /work/gp15/q25030/LatentGraphDiffusion/data
+Starting optimized LGD encoder pretraining...
+Configuration: zinc-encoder-fast.yaml
+- Max epochs: 10 (down from 2000)
+- Hidden dimensions: 32 (down from 64)
+- Early stopping enabled
+- WandB logging enabled
+
 /opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
 Warning: Could not import grit_layer: No module named 'opt_einsum'
-LGD utils imported successfully
-Running LGD autoencoder pretraining test (short run)...
-/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
 ./datasets/ZINC
 [*] Loaded dataset 'subset' from 'PyG-ZINC':
 /opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
@@ -31,14 +25,14 @@ Warning: Could not import grit_layer: No module named 'opt_einsum'
   num classes: (appears to be a regression task)
 Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
   ...estimated to be undirected: True
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1513.80it/s]
-Done! Took 00:00:08.84
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1546.29it/s]
+Done! Took 00:00:08.63
 Adding virtual node and edges
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1696.49it/s]
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1697.27it/s]
 Preprocessing PE
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3568.37it/s]
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3602.83it/s]
 [*] Run ID 0: seed=0, split_index=0
-    Starting now: 2025-07-13 17:07:36.702348
+    Starting now: 2025-08-11 11:50:40.226137
 /opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
   warnings.warn("Initializing zero-element tensors is a no-op")
 GraphGymModule_custom(
@@ -80,7 +74,7 @@ GraphGymModule_custom(
     (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
     (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
     (GTE_layers): ModuleList(
-      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      (0-5): 6 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
       [GraphTransformerEncoderLayer(
         (act): ReLU()
         (attention): GTE_Attention(
@@ -282,7 +276,7 @@ encoder:
   node_encoder_num_types: 21
   norm_e: True
   num_heads: 4
-  num_layers: 10
+  num_layers: 6
   num_task: 1
   out_dim: 4
   pe_raw_norm: None
@@ -360,8 +354,8 @@ gt:
   gamma: 1e-05
   layer_norm: False
   layer_type: GritTransformer
-  layers: 10
-  n_heads: 8
+  layers: 6
+  n_heads: 4
   pna_degrees: []
   residual: True
   update_e: True
@@ -389,17 +383,17 @@ optim:
   batch_accumulation: 1
   clip_grad_norm: True
   lr_decay: 0.1
-  max_epoch: 1
+  max_epoch: 10
   min_lr: 1e-06
   momentum: 0.9
-  num_warmup_epochs: 50
+  num_warmup_epochs: 10
   optimizer: adamW
   reduce_factor: 0.1
   schedule_patience: 10
   scheduler: cosine_with_warmup
   steps: [30, 60, 90]
   weight_decay: 1e-05
-out_dir: results/zinc-encoder
+out_dir: results/zinc-encoder-fast
 posenc_ERE:
   accuracy: 0.1
   dim_pe: 16
@@ -608,7 +602,7 @@ regression_model:
     layer_norm: False
     node_encoder_name: TypeDictNode
 round: 5
-run_dir: results/zinc-encoder/0
+run_dir: results/zinc-encoder-fast/0
 run_id: 0
 run_multiple_splits: []
 seed: 0
@@ -622,8 +616,10 @@ train:
   auto_resume: False
   batch_size: 64
   ckpt_best: True
-  ckpt_clean: False
-  ckpt_period: 25
+  ckpt_clean: True
+  ckpt_period: 10
+  early_stop: True
+  early_stop_patience: 20
   enable_ckpt: True
   ensemble_mode: none
   ensemble_repeat: 1
@@ -637,7 +633,7 @@ train:
     atom_bond_only: True
     edge_factor: 0.0
     graph_factor: 1.0
-    input_target: True
+    input_target: False
     mask_edge_prob: 0.0
     mask_label_prob: 0.5
     mask_node_prob: 0.0
@@ -657,74 +653,35 @@ val:
   sampler: full_batch
 view_emb: False
 wandb:
-  entity: gtransformers
+  entity: 
   name: 
-  project: ZINC
-  use: False
-Num parameters: 892314
+  project: LatentGraphDiffusion-ZINC
+  use: True
+Num parameters: 553882
 Start from epoch 0
-tensor([1, 1, 2, 3, 1, 1, 1, 1, 3, 1, 2, 1, 3, 3, 1, 1, 1, 1, 1, 1],
-       device='cuda:0')
-tensor([[-0.3723, -0.1422, -0.1432,  0.2750],
-        [-0.4896,  0.0831, -0.4839,  0.5013],
-        [-0.4808,  0.0591, -0.6094,  0.1500],
-        [-0.3402, -0.0136, -0.3076, -0.0825],
-        [-0.3881, -0.0092, -0.3358,  0.4422],
-        [-0.2617, -0.0767, -0.2541,  0.2834],
-        [-0.3254, -0.0295, -0.3157,  0.2807],
-        [-0.4881,  0.0963, -0.5761,  0.3093],
-        [-0.2531, -0.0116, -0.3636,  0.1796],
-        [-0.4960,  0.1659, -0.6560,  0.3961],
-        [-0.4426,  0.1037, -0.6864,  0.1725],
-        [-0.4477,  0.0887, -0.4955,  0.4296],
-        [-0.4713,  0.0085, -0.2882,  0.4874],
-        [-0.3259,  0.0289, -0.4603,  0.4834],
-        [-0.6280,  0.0849, -0.3872,  0.4267],
-        [-0.4724,  0.0283, -0.3133,  0.3232],
-        [-0.5024, -0.0235, -0.2470,  0.3611],
-        [-0.4845, -0.0935, -0.1628,  0.3124],
-        [-0.5465, -0.0530, -0.1850,  0.3298],
-        [-0.4660, -0.0071, -0.2612,  0.3218]], device='cuda:0',
-       grad_fn=<SliceBackward0>)
-tensor([8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-       device='cuda:0')
-tensor([[-0.1156, -0.3375, -0.5080, -0.4436],
-        [ 0.8042, -0.0736, -1.0805, -1.1400],
-        [-0.3029, -0.1117, -0.4055, -0.1493],
-        [-0.1651, -0.2473, -0.4677, -0.0982],
-        [-0.3364, -0.3413, -0.1750, -0.0418],
-        [-0.2396, -0.1788, -0.3290, -0.0306],
-        [-0.2949, -0.1895, -0.2374, -0.0427],
-        [-0.2655, -0.2285, -0.2364,  0.0172],
-        [-0.2953, -0.2115, -0.2894, -0.0819],
-        [-0.2623, -0.2334, -0.2601,  0.0072],
-        [-0.3742, -0.3118, -0.1928, -0.1218],
-        [-0.3252, -0.2279, -0.2930, -0.0599],
-        [-0.3976, -0.1702, -0.3124, -0.1604],
-        [-0.3853, -0.1529, -0.3163, -0.1501],
-        [-0.3414, -0.2242, -0.2441, -0.0337],
-        [-0.3413, -0.2794, -0.2071, -0.0562],
-        [-0.2520, -0.2061, -0.2522,  0.0159],
-        [-0.3091, -0.2665, -0.2313, -0.0357],
-        [-0.3055, -0.2825, -0.1974,  0.0108],
-        [-0.3032, -0.2541, -0.2232, -0.0234]], device='cuda:0',
-       grad_fn=<SliceBackward0>)
-train: {'epoch': 0, 'time_epoch': 27.21408, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 304.06041748, 'lr': 0.0, 'params': 892314, 'time_iter': 0.17334, 'mae': 304.06039, 'r2': -25244.28035, 'spearmanr': -0.24977, 'mse': 102076.6875, 'rmse': 319.49442}
-...computing epoch stats took: 0.01s
-val: {'epoch': 0, 'time_epoch': 0.89105, 'loss': 300.27564526, 'lr': 0, 'params': 892314, 'time_iter': 0.05569, 'mae': 300.71829, 'r2': -25342.60478, 'spearmanr': -0.23433, 'mse': 99822.25781, 'rmse': 315.94659, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
-...computing epoch stats took: 0.00s
-test: {'epoch': 0, 'time_epoch': 1.08589, 'loss': 300.97482031, 'lr': 0, 'params': 892314, 'time_iter': 0.06787, 'mae': 301.43085, 'r2': -24602.14798, 'spearmanr': -0.2472, 'mse': 100092.97656, 'rmse': 316.37476, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
-...computing epoch stats took: 0.00s
-> Epoch 0: took 29.2s (avg 29.2s) | Best so far: epoch 0	train_loss: 304.0604 train_mae: 304.0604	val_loss: 300.2756 val_mae: 300.7183	test_loss: 300.9748 test_mae: 301.4309
-Avg time per epoch: 29.22s
-Total train loop time: 0.01h
-Task done, results saved in results/zinc-encoder/0
-0
-{'epoch': 0, 'time_epoch': 1.08589, 'loss': 300.97482031, 'lr': 0, 'params': 892314, 'time_iter': 0.06787, 'mae': 301.43085, 'r2': -24602.14798, 'spearmanr': -0.2472, 'mse': 100092.97656, 'rmse': 316.37476, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
-{'epoch': 0, 'time_epoch': 0.89105, 'loss': 300.27564526, 'lr': 0, 'params': 892314, 'time_iter': 0.05569, 'mae': 300.71829, 'r2': -25342.60478, 'spearmanr': -0.23433, 'mse': 99822.25781, 'rmse': 315.94659, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
-{'epoch': 0, 'time_epoch': 27.21408, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 304.06041748, 'lr': 0.0, 'params': 892314, 'time_iter': 0.17334, 'mae': 304.06039, 'r2': -25244.28035, 'spearmanr': -0.24977, 'mse': 102076.6875, 'rmse': 319.49442}
-Results aggregated across runs saved in results/zinc-encoder/agg
-[*] All done: 2025-07-13 17:08:12.809978
-Autoencoder pretraining failed - no checkpoint found
-LGD testing completed. Check logs in /workspace/runs/20250713_170637/
-Job completed. Results saved in: /work/jh210022o/q25030/LatentGraphDiffusion/runs/20250713_170637
+No WandB API key found. Set it in .wandbrc or WANDB_API_KEY env var
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: ERROR api_key not configured (no-tty). call wandb.login(key=[your_api_key])
+Traceback (most recent call last):
+  File "/workspace/pretrain.py", line 299, in <module>
+    train_dict[cfg.train.mode](loggers, loaders, model, optimizer,
+  File "/workspace/lgd/train/pretrain_encoder.py", line 279, in custom_pretrain_encoder
+    run = wandb.init(entity=wandb_entity, project=wandb_project,
+  File "/opt/conda/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 1270, in init
+    wandb._sentry.reraise(e)
+  File "/opt/conda/lib/python3.10/site-packages/wandb/analytics/sentry.py", line 161, in reraise
+    raise exc.with_traceback(sys.exc_info()[2])
+  File "/opt/conda/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 1255, in init
+    wi.setup(kwargs)
+  File "/opt/conda/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 304, in setup
+    wandb_login._login(
+  File "/opt/conda/lib/python3.10/site-packages/wandb/sdk/wandb_login.py", line 347, in _login
+    wlogin.prompt_api_key()
+  File "/opt/conda/lib/python3.10/site-packages/wandb/sdk/wandb_login.py", line 281, in prompt_api_key
+    raise UsageError("api_key not configured (no-tty). call " + directive)
+wandb.errors.errors.UsageError: api_key not configured (no-tty). call wandb.login(key=[your_api_key])
+Fast encoder pretraining completed successfully!
+Results saved in: /workspace/runs/20250811_115002_fast_training/
+Job completed. Check logs and WandB dashboard for results.
+Job completed. Results saved in: /work/gp15/q25030/LatentGraphDiffusion/runs/20250811_115002_fast_training
+Check WandB dashboard: https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC

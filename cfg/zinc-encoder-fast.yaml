@@ -49,7 +49,7 @@ train:
     mask_label_prob: 0.5
     recon: none
     original_task: True
-    input_target: True
+    input_target: False #True
     node_factor: 0.0
     edge_factor: 0.0
     graph_factor: 1.0
@@ -159,7 +159,7 @@ optim:
   optimizer: adamW
   weight_decay: 1e-5
   base_lr: 1e-3
-  max_epoch: 400  # Reduced from 2000 (1/5 of original based on paper)
+  max_epoch: 10 # Reduced from 2000 (1/5 of original based on paper)
   num_warmup_epochs: 10  # Reduced proportionally from 50
   scheduler: cosine_with_warmup
   min_lr: 1e-6

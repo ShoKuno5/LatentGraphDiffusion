@@ -1,0 +1,950 @@
+Directory created: /work/gp15/q25030/LatentGraphDiffusion/runs/20250811_115615_fast_training /work/gp15/q25030/LatentGraphDiffusion/data
+Starting optimized LGD encoder pretraining...
+Configuration: zinc-encoder-fast.yaml
+- Max epochs: 10 (down from 2000)
+- Hidden dimensions: 32 (down from 64)
+- Early stopping enabled
+- WandB logging enabled
+
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+./datasets/ZINC
+[*] Loaded dataset 'subset' from 'PyG-ZINC':
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
+  undirected: True
+  num graphs: 12000
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  avg num_nodes/graph: 23
+  num node features: 1
+  num edge features: 1
+  num classes: (appears to be a regression task)
+Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
+  ...estimated to be undirected: True
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1536.32it/s]
+Done! Took 00:00:08.80
+Adding virtual node and edges
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1702.45it/s]
+Preprocessing PE
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3597.18it/s]
+[*] Run ID 0: seed=0, split_index=0
+    Starting now: 2025-08-11 11:56:54.245417
+/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+GraphGymModule_custom(
+  (model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-5): 6 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Identity()
+    (graph_out_mlp_2): Identity()
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+)
+accelerator: cuda:0
+benchmark: False
+bn:
+  eps: 1e-05
+  mom: 0.1
+cfg_dest: config.yaml
+cond:
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    full_attn: True
+    layer_norm: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  edge_encoder_name: TypeDictEdge
+  layer_norm: False
+  node_encoder_name: TypeDictNode
+custom_metrics: []
+dataset:
+  add_virtual_node_edge: True
+  cache_load: False
+  cache_save: False
+  dir: ./datasets
+  edge_dim: 128
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_message_ratio: 0.8
+  edge_negative_sampling_ratio: 1.0
+  edge_train_mode: all
+  encoder: True
+  encoder_bn: True
+  encoder_dim: 128
+  encoder_name: db
+  format: PyG-ZINC
+  label_column: none
+  label_table: none
+  location: local
+  name: subset
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  num_hop: 0
+  remove_feature: False
+  resample_disjoint: False
+  resample_negative: False
+  shuffle_split: True
+  slic_compactness: 10
+  split: [0.8, 0.1, 0.1]
+  split_dir: ./splits
+  split_index: 0
+  split_mode: standard
+  subgraph: False
+  task: graph
+  task_type: regression
+  to_undirected: False
+  transductive: False
+  transform: none
+  tu_simple: True
+devices: 1
+diffusion:
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  graph_factor: 0.0
+dt:
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    full_attn: True
+    layer_norm: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  layer_norm: False
+encoder:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: True
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: True
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.5
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dropout: 0.0
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  ff_e: False
+  hid_dim: 64
+  in_dim: 36
+  label_embed_type: add_virtual
+  layer_norm: False
+  mpnn:
+    act: relu
+    dropout: 0.0
+    edge_enhance: True
+    enable: True
+    project_edge: True
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  norm_e: True
+  num_heads: 4
+  num_layers: 6
+  num_task: 1
+  out_dim: 4
+  pe_raw_norm: None
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  posenc_dim: 28
+  posenc_in_dim: 20
+  posenc_in_dim_edge: 20
+  prefix_dim: 64
+  prefix_type: add_virtual
+  residual: True
+  task_type: regression
+  temb_dim: 0
+  update_e: True
+  use_time: False
+example_arg: example
+example_group:
+  example_arg: example
+gnn:
+  act: relu
+  agg: mean
+  att_final_linear: False
+  att_final_linear_bn: False
+  att_heads: 1
+  batchnorm: True
+  clear_feature: True
+  dim_inner: 64
+  dropout: 0.0
+  head: san_graph
+  keep_edge: 0.5
+  l2norm: True
+  layer_type: generalconv
+  layers_mp: 2
+  layers_post_mp: 3
+  layers_pre_mp: 0
+  msg_direction: single
+  normalize_adj: False
+  residual: False
+  self_msg: concat
+  skip_every: 1
+  stage_type: stack
+gpu_mem: False
+gt:
+  attn:
+    O_e: True
+    act: relu
+    clamp: 5.0
+    deg_scaler: True
+    edge_enhance: True
+    full_attn: True
+    fwl: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.2
+  batch_norm: True
+  bigbird:
+    add_cross_attention: False
+    attention_type: block_sparse
+    block_size: 3
+    chunk_size_feed_forward: 0
+    hidden_act: relu
+    is_decoder: False
+    layer_norm_eps: 1e-06
+    max_position_embeddings: 128
+    num_random_blocks: 3
+    use_bias: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dim_hidden: 64
+  dropout: 0.0
+  full_graph: True
+  gamma: 1e-05
+  layer_norm: False
+  layer_type: GritTransformer
+  layers: 6
+  n_heads: 4
+  pna_degrees: []
+  residual: True
+  update_e: True
+mem:
+  inplace: False
+metric_agg: argmin
+metric_best: mae
+mlflow:
+  name: zinc-GRIT-RRWP
+  project: Exp
+  use: False
+model:
+  edge_decoding: dot
+  graph_pooling: add
+  loss_fun: l1
+  match_upper: True
+  size_average: mean
+  thresh: 0.5
+  type: GraphTransformerEncoder
+name_tag: 
+num_threads: 6
+num_workers: 0
+optim:
+  base_lr: 0.001
+  batch_accumulation: 1
+  clip_grad_norm: True
+  lr_decay: 0.1
+  max_epoch: 10
+  min_lr: 1e-06
+  momentum: 0.9
+  num_warmup_epochs: 10
+  optimizer: adamW
+  reduce_factor: 0.1
+  schedule_patience: 10
+  scheduler: cosine_with_warmup
+  steps: [30, 60, 90]
+  weight_decay: 1e-05
+out_dir: results/zinc-encoder-fast
+posenc_ERE:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ERN:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  er_dim: none
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EdgeRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ElstaticSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: range(10)
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EquivStableLapPE:
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  raw_norm_type: none
+posenc_HKdiagSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_HodgeLap1PE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_InterRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_LapPE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RD:
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RRWP:
+  add_identity: True
+  dim_pe: 16
+  enable: True
+  ksteps: 20
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+  real_emb: True
+  spd: False
+posenc_RWSE:
+  dim_pe: 28
+  enable: False
+  kernel:
+    times: []
+    times_func: range(1,21)
+  layers: 3
+  local: False
+  model: Linear
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: BatchNorm
+posenc_SignNet:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  phi_hidden_dim: 64
+  phi_out_dim: 4
+  post_layers: 0
+  raw_norm_type: none
+prep:
+  add_edge_index: True
+  add_reverse_edges: True
+  add_self_loops: False
+  dist_cutoff: 510
+  dist_enable: False
+  exp: False
+  exp_algorithm: Random-d
+  exp_count: 1
+  exp_deg: 5
+  exp_max_num_iters: 100
+  layer_edge_indices_dir: None
+  num_virt_node: 0
+  train_percent: 0.6
+  use_exp_edges: True
+pretrained:
+  dir: 
+  freeze_main: False
+  reset_prediction_head: True
+print: both
+regression_model:
+  encoder:
+    attn:
+      O_e: True
+      act: relu
+      attn_dropout: 0.0
+      batch_norm: True
+      bn_momentum: 0.1
+      bn_no_runner: False
+      clamp: 5.0
+      deg_scaler: False
+      edge_enhance: True
+      full_attn: True
+      layer_norm: False
+      norm_e: True
+      sparse: False
+      use: True
+      use_bias: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    edge_encoder_name: TypeDictEdge
+    layer_norm: False
+    node_encoder_name: TypeDictNode
+round: 5
+run_dir: results/zinc-encoder-fast/0
+run_id: 0
+run_multiple_splits: []
+seed: 0
+share:
+  dim_in: 1
+  dim_out: 1
+  num_splits: 3
+tensorboard_agg: True
+tensorboard_each_run: False
+train:
+  auto_resume: False
+  batch_size: 64
+  ckpt_best: True
+  ckpt_clean: True
+  ckpt_period: 10
+  early_stop: True
+  early_stop_patience: 20
+  enable_ckpt: True
+  ensemble_mode: none
+  ensemble_repeat: 1
+  epoch_resume: -1
+  eval_period: 1
+  iter_per_epoch: 32
+  mode: pretrain_encoder
+  neighbor_sizes: [20, 15, 10, 5]
+  node_per_graph: 32
+  pretrain:
+    atom_bond_only: True
+    edge_factor: 0.0
+    graph_factor: 1.0
+    input_target: False
+    mask_edge_prob: 0.0
+    mask_label_prob: 0.5
+    mask_node_prob: 0.0
+    node_factor: 0.0
+    original_task: True
+    recon: none
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+  skip_train_eval: False
+  start_eval_epoch: -1
+  walk_length: 4
+val:
+  node_per_graph: 32
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+view_emb: False
+wandb:
+  entity: 
+  name: 
+  project: LatentGraphDiffusion-ZINC
+  use: True
+Num parameters: 553882
+Start from epoch 0
+Loaded WandB config from /workspace/.wandbrc (profile: default)
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: shokuno (shokuno-the-university-of-tokyo). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /workspace/wandb/run-20250811_115701-y45aymff
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run ZINC-subset.GraphTransformerEncoder.r0
+wandb: ⭐️ View project at https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC
+wandb: 🚀 View run at https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC/runs/y45aymff
+Key encoder.pe_raw_norm with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+Key prep.layer_edge_indices_dir with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+tensor([1, 1, 3, 1, 3, 3, 1, 5, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 1],
+       device='cuda:0')
+tensor([[ 0.0232,  0.1160,  0.2756, -0.2516],
+        [-0.2517,  0.4745,  0.2843, -0.4201],
+        [ 0.2114,  0.4338,  0.6499, -0.0930],
+        [-0.0849,  0.4185,  0.3670, -0.3419],
+        [-0.3741,  0.8236,  0.3996, -0.5928],
+        [-0.1006,  0.7512,  0.5551, -0.4212],
+        [-0.1906,  0.6997,  0.6216, -0.3084],
+        [-0.0299,  0.1418,  0.2421,  0.0464],
+        [-0.3082,  0.8455,  0.5272, -0.4618],
+        [ 0.3891,  0.3598,  0.7975,  0.1430],
+        [-0.0994,  0.4468,  0.3835, -0.4188],
+        [-0.0924,  0.4971,  0.3323, -0.3196],
+        [ 0.4010,  0.5885,  0.7922, -0.2374],
+        [-0.0598,  0.5545,  0.4073, -0.4123],
+        [-0.0591,  0.4109,  0.4316, -0.4695],
+        [ 0.3211,  0.6078,  0.7626, -0.2656],
+        [-0.1930,  0.3190,  0.2474, -0.2428],
+        [-0.0560,  0.2426,  0.3341, -0.1357],
+        [ 0.0248,  0.3043,  0.3256, -0.1569],
+        [ 0.0924,  0.2326,  0.3978, -0.0659]], device='cuda:0',
+       grad_fn=<SliceBackward0>)
+tensor([8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       device='cuda:0')
+tensor([[ 3.3030e-01, -3.6101e-01, -2.7940e-01,  5.7807e-02],
+        [ 3.3671e-01, -7.2304e-01, -5.6444e-01,  1.8808e-01],
+        [ 1.8128e-01, -2.0175e-01, -1.0854e-01, -1.7924e-02],
+        [ 1.4764e-01, -1.8194e-01, -6.5127e-02,  6.2419e-03],
+        [ 1.9364e-01, -1.0129e-01, -8.0467e-02, -9.8127e-02],
+        [ 2.7785e-01, -2.1621e-01,  1.8877e-02, -1.4421e-01],
+        [ 2.1755e-01, -5.6993e-02,  1.4769e-02, -4.1873e-02],
+        [ 1.4579e-01, -5.4667e-02, -7.3830e-03, -9.5307e-02],
+        [ 2.5188e-01, -6.1302e-04, -9.8930e-02,  2.9321e-02],
+        [ 1.7068e-01, -6.4449e-02, -1.5814e-02, -1.8599e-01],
+        [ 2.4565e-01, -1.7199e-03, -1.7916e-02, -1.0318e-03],
+        [ 2.6010e-01, -8.9209e-03, -1.8821e-02,  1.1661e-02],
+        [ 2.7984e-01, -2.0893e-01,  1.2204e-01, -2.4646e-01],
+        [ 2.6544e-01, -6.7042e-02,  7.7345e-02, -9.1712e-02],
+        [ 2.4847e-01, -2.7568e-02,  2.4522e-02, -4.4729e-02],
+        [ 2.3396e-01, -1.5551e-01,  5.2430e-02, -1.8123e-01],
+        [ 1.7110e-01,  6.1270e-02, -6.0598e-02, -3.9307e-02],
+        [ 1.7619e-01,  2.5745e-02, -3.4223e-02, -6.8795e-02],
+        [ 1.9682e-01, -6.7588e-02, -8.7686e-02, -8.7001e-02],
+        [ 2.4022e-01, -1.3610e-01, -4.9136e-02,  4.0369e-02]], device='cuda:0',
+       grad_fn=<SliceBackward0>)
+train: {'epoch': 0, 'time_epoch': 20.07693, 'eta': 180.69233, 'eta_hours': 0.05019, 'loss': 33.44853516, 'lr': 0.0, 'params': 553882, 'time_iter': 0.12788, 'mae': 33.44854, 'r2': -302.13877, 'spearmanr': -0.22998, 'mse': 1225.71033, 'rmse': 35.01015}
+...computing epoch stats took: 0.05s
+val: {'epoch': 0, 'time_epoch': 0.49552, 'loss': 33.57832574, 'lr': 0, 'params': 553882, 'time_iter': 0.03097, 'mae': 33.57832, 'r2': -313.04331, 'spearmanr': -0.2162, 'mse': 1236.9397, 'rmse': 35.17015, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+...computing epoch stats took: 0.00s
+test: {'epoch': 0, 'time_epoch': 0.49494, 'loss': 33.50811243, 'lr': 0, 'params': 553882, 'time_iter': 0.03093, 'mae': 33.50811, 'r2': -299.86178, 'spearmanr': -0.21104, 'mse': 1223.99585, 'rmse': 34.98565, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+...computing epoch stats took: 0.00s
+> Epoch 0: took 21.1s (avg 21.1s) | Best so far: epoch 0	train_loss: 33.4485 train_mae: 33.4485	val_loss: 33.5783 val_mae: 33.5783	test_loss: 33.5081 test_mae: 33.5081
+train: {'epoch': 1, 'time_epoch': 13.29606, 'eta': 133.49196, 'eta_hours': 0.03708, 'loss': 2.1206531, 'lr': 0.0001, 'params': 553882, 'time_iter': 0.08469, 'mae': 2.12065, 'r2': -4.41437, 'spearmanr': 0.57911, 'mse': 21.89243, 'rmse': 4.67894}
+...computing epoch stats took: 0.01s
+val: {'epoch': 1, 'time_epoch': 0.32188, 'loss': 1.00516779, 'lr': 0, 'params': 553882, 'time_iter': 0.02012, 'mae': 1.00517, 'r2': 0.36538, 'spearmanr': 0.82045, 'mse': 2.49962, 'rmse': 1.58102, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+...computing epoch stats took: 0.00s
+test: {'epoch': 1, 'time_epoch': 0.32281, 'loss': 1.05477501, 'lr': 0, 'params': 553882, 'time_iter': 0.02018, 'mae': 1.05477, 'r2': 0.40825, 'spearmanr': 0.8033, 'mse': 2.40742, 'rmse': 1.55159, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+...computing epoch stats took: 0.00s
+> Epoch 1: took 14.0s (avg 17.5s) | Best so far: epoch 1	train_loss: 2.1207 train_mae: 2.1206	val_loss: 1.0052 val_mae: 1.0052	test_loss: 1.0548 test_mae: 1.0548
+train: {'epoch': 2, 'time_epoch': 13.31226, 'eta': 108.93224, 'eta_hours': 0.03026, 'loss': 1.06596354, 'lr': 0.0002, 'params': 553882, 'time_iter': 0.08479, 'mae': 1.06596, 'r2': 0.39643, 'spearmanr': 0.75275, 'mse': 2.44048, 'rmse': 1.5622}
+...computing epoch stats took: 0.01s
+val: {'epoch': 2, 'time_epoch': 0.32147, 'loss': 1.19626352, 'lr': 0, 'params': 553882, 'time_iter': 0.02009, 'mae': 1.19626, 'r2': 0.28251, 'spearmanr': 0.88329, 'mse': 2.82602, 'rmse': 1.68108, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+...computing epoch stats took: 0.00s
+test: {'epoch': 2, 'time_epoch': 0.32211, 'loss': 1.25088928, 'lr': 0, 'params': 553882, 'time_iter': 0.02013, 'mae': 1.25089, 'r2': 0.27695, 'spearmanr': 0.85742, 'mse': 2.94157, 'rmse': 1.7151, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+...computing epoch stats took: 0.00s
+> Epoch 2: took 14.0s (avg 16.4s) | Best so far: epoch 1	train_loss: 2.1207 train_mae: 2.1206	val_loss: 1.0052 val_mae: 1.0052	test_loss: 1.0548 test_mae: 1.0548
+train: {'epoch': 3, 'time_epoch': 13.27277, 'eta': 89.93702, 'eta_hours': 0.02498, 'loss': 1.2322045, 'lr': 0.0003, 'params': 553882, 'time_iter': 0.08454, 'mae': 1.2322, 'r2': 0.26363, 'spearmanr': 0.69329, 'mse': 2.97745, 'rmse': 1.72553}
+val: {'epoch': 3, 'time_epoch': 0.32013, 'loss': 1.32106897, 'lr': 0, 'params': 553882, 'time_iter': 0.02001, 'mae': 1.32107, 'r2': 0.29798, 'spearmanr': 0.84257, 'mse': 2.76507, 'rmse': 1.66285, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 3, 'time_epoch': 0.32131, 'loss': 1.30874405, 'lr': 0, 'params': 553882, 'time_iter': 0.02008, 'mae': 1.30874, 'r2': 0.39628, 'spearmanr': 0.83788, 'mse': 2.45613, 'rmse': 1.5672, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 3: took 13.9s (avg 15.7s) | Best so far: epoch 1	train_loss: 2.1207 train_mae: 2.1206	val_loss: 1.0052 val_mae: 1.0052	test_loss: 1.0548 test_mae: 1.0548
+train: {'epoch': 4, 'time_epoch': 13.27169, 'eta': 73.2297, 'eta_hours': 0.02034, 'loss': 1.30973061, 'lr': 0.0004, 'params': 553882, 'time_iter': 0.08453, 'mae': 1.30973, 'r2': 0.19214, 'spearmanr': 0.65422, 'mse': 3.2665, 'rmse': 1.80735}
+val: {'epoch': 4, 'time_epoch': 0.32058, 'loss': 0.80351164, 'lr': 0, 'params': 553882, 'time_iter': 0.02004, 'mae': 0.80351, 'r2': 0.57522, 'spearmanr': 0.84771, 'mse': 1.67309, 'rmse': 1.29348, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 4, 'time_epoch': 0.32149, 'loss': 0.83970152, 'lr': 0, 'params': 553882, 'time_iter': 0.02009, 'mae': 0.8397, 'r2': 0.62367, 'spearmanr': 0.8252, 'mse': 1.53104, 'rmse': 1.23735, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 4: took 13.9s (avg 15.4s) | Best so far: epoch 4	train_loss: 1.3097 train_mae: 1.3097	val_loss: 0.8035 val_mae: 0.8035	test_loss: 0.8397 test_mae: 0.8397
+train: {'epoch': 5, 'time_epoch': 13.2665, 'eta': 57.66413, 'eta_hours': 0.01602, 'loss': 1.52186914, 'lr': 0.0005, 'params': 553882, 'time_iter': 0.0845, 'mae': 1.52187, 'r2': -0.00988, 'spearmanr': 0.59921, 'mse': 4.08334, 'rmse': 2.02073}
+val: {'epoch': 5, 'time_epoch': 0.33739, 'loss': 1.61887704, 'lr': 0, 'params': 553882, 'time_iter': 0.02109, 'mae': 1.61888, 'r2': 0.07243, 'spearmanr': 0.83651, 'mse': 3.65346, 'rmse': 1.9114, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 5, 'time_epoch': 0.33426, 'loss': 1.60371996, 'lr': 0, 'params': 553882, 'time_iter': 0.02089, 'mae': 1.60372, 'r2': 0.19272, 'spearmanr': 0.83422, 'mse': 3.28424, 'rmse': 1.81225, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 5: took 14.0s (avg 15.1s) | Best so far: epoch 4	train_loss: 1.3097 train_mae: 1.3097	val_loss: 0.8035 val_mae: 0.8035	test_loss: 0.8397 test_mae: 0.8397
+train: {'epoch': 6, 'time_epoch': 13.27295, 'eta': 42.75821, 'eta_hours': 0.01188, 'loss': 1.27899905, 'lr': 0.0006, 'params': 553882, 'time_iter': 0.08454, 'mae': 1.279, 'r2': 0.22065, 'spearmanr': 0.64981, 'mse': 3.15123, 'rmse': 1.77517}
+val: {'epoch': 6, 'time_epoch': 0.32455, 'loss': 1.06303244, 'lr': 0, 'params': 553882, 'time_iter': 0.02028, 'mae': 1.06303, 'r2': 0.48669, 'spearmanr': 0.88819, 'mse': 2.02178, 'rmse': 1.42189, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 6, 'time_epoch': 0.32435, 'loss': 1.04550703, 'lr': 0, 'params': 553882, 'time_iter': 0.02027, 'mae': 1.04551, 'r2': 0.59939, 'spearmanr': 0.88841, 'mse': 1.62982, 'rmse': 1.27664, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 6: took 13.9s (avg 15.0s) | Best so far: epoch 4	train_loss: 1.3097 train_mae: 1.3097	val_loss: 0.8035 val_mae: 0.8035	test_loss: 0.8397 test_mae: 0.8397
+train: {'epoch': 7, 'time_epoch': 13.25698, 'eta': 28.25653, 'eta_hours': 0.00785, 'loss': 0.986026, 'lr': 0.0007, 'params': 553882, 'time_iter': 0.08444, 'mae': 0.98603, 'r2': 0.46825, 'spearmanr': 0.77541, 'mse': 2.15006, 'rmse': 1.46631}
+val: {'epoch': 7, 'time_epoch': 0.3223, 'loss': 0.52469579, 'lr': 0, 'params': 553882, 'time_iter': 0.02014, 'mae': 0.5247, 'r2': 0.67228, 'spearmanr': 0.91776, 'mse': 1.29079, 'rmse': 1.13613, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 7, 'time_epoch': 0.32304, 'loss': 0.55217575, 'lr': 0, 'params': 553882, 'time_iter': 0.02019, 'mae': 0.55218, 'r2': 0.71337, 'spearmanr': 0.91278, 'mse': 1.16609, 'rmse': 1.07985, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 7: took 13.9s (avg 14.8s) | Best so far: epoch 7	train_loss: 0.9860 train_mae: 0.9860	val_loss: 0.5247 val_mae: 0.5247	test_loss: 0.5522 test_mae: 0.5522
+train: {'epoch': 8, 'time_epoch': 13.25229, 'eta': 14.03094, 'eta_hours': 0.0039, 'loss': 1.06804055, 'lr': 0.0008, 'params': 553882, 'time_iter': 0.08441, 'mae': 1.06804, 'r2': 0.39158, 'spearmanr': 0.73004, 'mse': 2.46006, 'rmse': 1.56846}
+val: {'epoch': 8, 'time_epoch': 0.32215, 'loss': 0.61965839, 'lr': 0, 'params': 553882, 'time_iter': 0.02013, 'mae': 0.61966, 'r2': 0.64121, 'spearmanr': 0.89512, 'mse': 1.41319, 'rmse': 1.18878, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 8, 'time_epoch': 0.323, 'loss': 0.64876113, 'lr': 0, 'params': 553882, 'time_iter': 0.02019, 'mae': 0.64876, 'r2': 0.68058, 'spearmanr': 0.88865, 'mse': 1.29948, 'rmse': 1.13995, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 8: took 13.9s (avg 14.7s) | Best so far: epoch 7	train_loss: 0.9860 train_mae: 0.9860	val_loss: 0.5247 val_mae: 0.5247	test_loss: 0.5522 test_mae: 0.5522
+tensor([1, 2, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3],
+       device='cuda:0')
+tensor([[-0.0754,  0.2562,  0.2124, -0.0795],
+        [-0.2528,  0.3596,  0.1590, -0.1513],
+        [-0.1659,  0.1789,  0.1856, -0.2640],
+        [ 0.1029,  0.1928,  0.2532, -0.1912],
+        [ 0.0147,  0.2249,  0.2470, -0.2224],
+        [ 0.0832,  0.0258,  0.2303, -0.1827],
+        [-0.1415,  0.2821,  0.1800, -0.1147],
+        [-0.0321,  0.1631,  0.1662, -0.1578],
+        [ 0.0505,  0.0568,  0.2453, -0.1636],
+        [ 0.0169,  0.0923,  0.2053, -0.1881],
+        [ 0.0025,  0.1828,  0.2360, -0.2058],
+        [ 0.0252,  0.1974,  0.2455, -0.1973],
+        [ 0.0056,  0.1600,  0.2113, -0.2032],
+        [-0.0168,  0.1853,  0.2291, -0.2739],
+        [-0.0128,  0.2072,  0.2529, -0.2870],
+        [-0.0008,  0.2353,  0.2831, -0.2582],
+        [ 0.0293,  0.1952,  0.2670, -0.2431],
+        [ 0.0218,  0.1338,  0.2169, -0.2132],
+        [ 0.0175,  0.2496,  0.2483, -0.1661],
+        [ 0.0760,  0.3377,  0.3209, -0.1941]], device='cuda:0',
+       grad_fn=<SliceBackward0>)
+tensor([8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       device='cuda:0')
+tensor([[ 0.2810, -1.4319, -0.3764,  0.0280],
+        [ 0.2083, -0.1728,  0.2376, -0.1597],
+        [ 0.2783, -0.1985, -0.0739,  0.0532],
+        [ 0.2966, -0.1634, -0.1091,  0.0183],
+        [ 0.2651, -0.0097, -0.0818,  0.0393],
+        [ 0.3199, -0.1002, -0.1210,  0.0309],
+        [ 0.2491, -0.0129, -0.0971,  0.0285],
+        [ 0.3296, -0.0581, -0.1029,  0.0364],
+        [ 0.3097, -0.0345, -0.1123,  0.0393],
+        [ 0.2905, -0.0268, -0.1138,  0.0360],
+        [ 0.3058, -0.0351, -0.1112,  0.0416],
+        [ 0.3100, -0.0298, -0.1100,  0.0411],
+        [ 0.3039, -0.0358, -0.1123,  0.0395],
+        [ 0.3092, -0.0422, -0.1045,  0.0453],
+        [ 0.3004, -0.0312, -0.1050,  0.0420],
+        [ 0.3067, -0.0330, -0.1089,  0.0413],
+        [ 0.3169, -0.0502, -0.1037,  0.0479],
+        [ 0.3017, -0.0289, -0.1159,  0.0368],
+        [ 0.2992, -0.0315, -0.1115,  0.0395],
+        [ 0.2958, -0.0900, -0.0961,  0.0457]], device='cuda:0',
+       grad_fn=<SliceBackward0>)
+train: {'epoch': 9, 'time_epoch': 13.26096, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 1.04658454, 'lr': 0.0009, 'params': 553882, 'time_iter': 0.08446, 'mae': 1.04658, 'r2': 0.38259, 'spearmanr': 0.73933, 'mse': 2.49644, 'rmse': 1.58001}
+val: {'epoch': 9, 'time_epoch': 0.32198, 'loss': 1.50482141, 'lr': 0, 'params': 553882, 'time_iter': 0.02012, 'mae': 1.50482, 'r2': 0.10237, 'spearmanr': 0.91194, 'mse': 3.53553, 'rmse': 1.8803, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+test: {'epoch': 9, 'time_epoch': 0.32353, 'loss': 1.53182636, 'lr': 0, 'params': 553882, 'time_iter': 0.02022, 'mae': 1.53183, 'r2': 0.14608, 'spearmanr': 0.90344, 'mse': 3.47402, 'rmse': 1.86387, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+> Epoch 9: took 13.9s (avg 14.7s) | Best so far: epoch 7	train_loss: 0.9860 train_mae: 0.9860	val_loss: 0.5247 val_mae: 0.5247	test_loss: 0.5522 test_mae: 0.5522
+Avg time per epoch: 14.66s
+Total train loop time: 0.04h
+wandb: - 0.036 MB of 0.036 MB uploadedwandb: \ 0.058 MB of 0.058 MB uploadedwandb: | 0.058 MB of 0.058 MB uploadedwandb:                                                                                
+wandb: 
+wandb: Run history:
+wandb:             best/epoch ▁▂▂▂▅▅▅███
+wandb:         best/test_loss █▁▁▁▁▁▁▁▁▁
+wandb:          best/test_mae █▁▁▁▁▁▁▁▁▁
+wandb:        best/train_loss █▁▁▁▁▁▁▁▁▁
+wandb:         best/train_mae █▁▁▁▁▁▁▁▁▁
+wandb:          best/val_loss █▁▁▁▁▁▁▁▁▁
+wandb:           best/val_mae █▁▁▁▁▁▁▁▁▁
+wandb:             test/epoch ▁▂▃▃▄▅▆▆▇█
+wandb:              test/loss █▁▁▁▁▁▁▁▁▁
+wandb:        test/loss_recon ▁▁▁▁▁▁▁▁▁▁
+wandb:   test/loss_recon_edge ▁▁▁▁▁▁▁▁▁▁
+wandb: test/loss_recon_edgepe ▁▁▁▁▁▁▁▁▁▁
+wandb:   test/loss_recon_node ▁▁▁▁▁▁▁▁▁▁
+wandb: test/loss_recon_nodepe ▁▁▁▁▁▁▁▁▁▁
+wandb:  test/loss_recon_tuple ▁▁▁▁▁▁▁▁▁▁
+wandb:                test/lr ▁▁▁▁▁▁▁▁▁▁
+wandb:               test/mae █▁▁▁▁▁▁▁▁▁
+wandb:               test/mse █▁▁▁▁▁▁▁▁▁
+wandb:            test/params ▁▁▁▁▁▁▁▁▁▁
+wandb:                test/r2 ▁█████████
+wandb:              test/rmse █▁▁▁▁▁▁▁▁▁
+wandb:         test/spearmanr ▁▇██▇█████
+wandb:        test/time_epoch █▁▁▁▁▂▁▁▁▁
+wandb:         test/time_iter █▁▁▁▁▂▁▁▁▁
+wandb:            train/epoch ▁▂▃▃▄▅▆▆▇█
+wandb:              train/eta █▆▅▄▄▃▃▂▂▁
+wandb:        train/eta_hours █▆▅▄▄▃▃▂▂▁
+wandb:             train/loss █▁▁▁▁▁▁▁▁▁
+wandb:               train/lr ▁▂▃▃▄▅▆▆▇█
+wandb:              train/mae █▁▁▁▁▁▁▁▁▁
+wandb:              train/mse █▁▁▁▁▁▁▁▁▁
+wandb:           train/params ▁▁▁▁▁▁▁▁▁▁
+wandb:               train/r2 ▁█████████
+wandb:             train/rmse █▂▁▁▁▁▁▁▁▁
+wandb:        train/spearmanr ▁▇█▇▇▇▇███
+wandb:       train/time_epoch █▁▁▁▁▁▁▁▁▁
+wandb:        train/time_iter █▁▁▁▁▁▁▁▁▁
+wandb:              val/epoch ▁▂▃▃▄▅▆▆▇█
+wandb:               val/loss █▁▁▁▁▁▁▁▁▁
+wandb:         val/loss_recon ▁▁▁▁▁▁▁▁▁▁
+wandb:    val/loss_recon_edge ▁▁▁▁▁▁▁▁▁▁
+wandb:  val/loss_recon_edgepe ▁▁▁▁▁▁▁▁▁▁
+wandb:    val/loss_recon_node ▁▁▁▁▁▁▁▁▁▁
+wandb:  val/loss_recon_nodepe ▁▁▁▁▁▁▁▁▁▁
+wandb:   val/loss_recon_tuple ▁▁▁▁▁▁▁▁▁▁
+wandb:                 val/lr ▁▁▁▁▁▁▁▁▁▁
+wandb:                val/mae █▁▁▁▁▁▁▁▁▁
+wandb:                val/mse █▁▁▁▁▁▁▁▁▁
+wandb:             val/params ▁▁▁▁▁▁▁▁▁▁
+wandb:                 val/r2 ▁█████████
+wandb:               val/rmse █▁▁▁▁▁▁▁▁▁
+wandb:          val/spearmanr ▁▇███▇████
+wandb:         val/time_epoch █▁▁▁▁▂▁▁▁▁
+wandb:          val/time_iter █▁▁▁▁▂▁▁▁▁
+wandb: 
+wandb: Run summary:
+wandb:             best/epoch 7
+wandb:         best/test_loss 0.55218
+wandb:          best/test_mae 0.55218
+wandb:        best/train_loss 0.98603
+wandb:         best/train_mae 0.98603
+wandb:          best/val_loss 0.5247
+wandb:           best/val_mae 0.5247
+wandb:         best_test_perf 0.55218
+wandb:        best_train_perf 0.98603
+wandb:          best_val_perf 0.5247
+wandb:    full_epoch_time_avg 14.65718
+wandb:    full_epoch_time_sum 146.5718
+wandb:             test/epoch 9
+wandb:              test/loss 1.53183
+wandb:        test/loss_recon 0
+wandb:   test/loss_recon_edge 0
+wandb: test/loss_recon_edgepe 0
+wandb:   test/loss_recon_node 0
+wandb: test/loss_recon_nodepe 0
+wandb:  test/loss_recon_tuple 0
+wandb:                test/lr 0
+wandb:               test/mae 1.53183
+wandb:               test/mse 3.47402
+wandb:            test/params 553882
+wandb:                test/r2 0.14608
+wandb:              test/rmse 1.86387
+wandb:         test/spearmanr 0.90344
+wandb:        test/time_epoch 0.32353
+wandb:         test/time_iter 0.02022
+wandb:            train/epoch 9
+wandb:              train/eta 0
+wandb:        train/eta_hours 0
+wandb:             train/loss 1.04658
+wandb:               train/lr 0.0009
+wandb:              train/mae 1.04658
+wandb:              train/mse 2.49644
+wandb:           train/params 553882
+wandb:               train/r2 0.38259
+wandb:             train/rmse 1.58001
+wandb:        train/spearmanr 0.73933
+wandb:       train/time_epoch 13.26096
+wandb:        train/time_iter 0.08446
+wandb:              val/epoch 9
+wandb:               val/loss 1.50482
+wandb:         val/loss_recon 0
+wandb:    val/loss_recon_edge 0
+wandb:  val/loss_recon_edgepe 0
+wandb:    val/loss_recon_node 0
+wandb:  val/loss_recon_nodepe 0
+wandb:   val/loss_recon_tuple 0
+wandb:                 val/lr 0
+wandb:                val/mae 1.50482
+wandb:                val/mse 3.53553
+wandb:             val/params 553882
+wandb:                 val/r2 0.10237
+wandb:               val/rmse 1.8803
+wandb:          val/spearmanr 0.91194
+wandb:         val/time_epoch 0.32198
+wandb:          val/time_iter 0.02012
+wandb: 
+wandb: 🚀 View run ZINC-subset.GraphTransformerEncoder.r0 at: https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC/runs/y45aymff
+wandb: ⭐️ View project at: https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC
+wandb: Synced 4 W&B file(s), 0 media file(s), 3 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20250811_115701-y45aymff/logs
+Task done, results saved in results/zinc-encoder-fast/0
+7
+{'epoch': 7, 'time_epoch': 13.25698, 'eta': 28.25653, 'eta_hours': 0.00785, 'loss': 0.986026, 'lr': 0.0007, 'params': 553882, 'time_iter': 0.08444, 'mae': 0.98603, 'r2': 0.46825, 'spearmanr': 0.77541, 'mse': 2.15006, 'rmse': 1.46631}
+{'epoch': 7, 'time_epoch': 0.3223, 'loss': 0.52469579, 'lr': 0, 'params': 553882, 'time_iter': 0.02014, 'mae': 0.5247, 'r2': 0.67228, 'spearmanr': 0.91776, 'mse': 1.29079, 'rmse': 1.13613, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+{'epoch': 7, 'time_epoch': 0.32304, 'loss': 0.55217575, 'lr': 0, 'params': 553882, 'time_iter': 0.02019, 'mae': 0.55218, 'r2': 0.71337, 'spearmanr': 0.91278, 'mse': 1.16609, 'rmse': 1.07985, 'loss_recon': 0.0, 'loss_recon_node': 0.0, 'loss_recon_edge': 0.0, 'loss_recon_tuple': 0.0, 'loss_recon_nodepe': 0.0, 'loss_recon_edgepe': 0.0}
+Results aggregated across runs saved in results/zinc-encoder-fast/agg
+[*] All done: 2025-08-11 11:59:33.740003
+Fast encoder pretraining completed successfully!
+Results saved in: /workspace/runs/20250811_115615_fast_training/
+Job completed. Check logs and WandB dashboard for results.
+Job completed. Results saved in: /work/gp15/q25030/LatentGraphDiffusion/runs/20250811_115615_fast_training
+Check WandB dashboard: https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC
