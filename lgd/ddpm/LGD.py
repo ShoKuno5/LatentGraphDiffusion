@@ -1115,7 +1115,7 @@ class LatentDiffusion(DDPM):
         # if cfg.dataset.format == 'PyG-QM9':
         #     encoder_pred = encoder_pred * batch.get('y_std', 1.) + batch.get('y_mean', 0.)
         # loss_graph_encoder, _ = compute_loss(encoder_pred, batch.y.clone().detach())
-        loss_graph_encoder = 0.
+        loss_graph_encoder = torch.tensor(0., device=self.device, requires_grad=False)
         # TODO: complete loss_graph_encoder for class GraphTransformerDecoder
         # print(loss_graph_encoder)
 
