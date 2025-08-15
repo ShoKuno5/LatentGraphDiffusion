@@ -41,7 +41,8 @@ export NCCL_SOCKET_IFNAME=ib0,eth0
 export GLOO_SOCKET_IFNAME=ib0,eth0
 export OMP_NUM_THREADS=8
 export WANDB_MODE=online  # Use online mode for monitoring
-export WANDB_API_KEY=fb39ca5f5835abaa4c40a8b61dde2a499b45fcba
+# WANDB_API_KEY should be set via environment variable or .wandbrc file
+# export WANDB_API_KEY=your_api_key_here
 export WANDB_PROJECT=LatentGraphDiffusion-ZINC
 export WANDB_NAME="zinc_diffusion_baseline_${EXP}"
 

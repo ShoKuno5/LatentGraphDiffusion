@@ -49,9 +49,13 @@ coverage.xml
 env/
 venv/
 
-# WandB credentials (DO NOT COMMIT)
+# WandB credentials and API keys (DO NOT COMMIT)
 .wandbrc
 .wandb_api_key
+*api_key*
+*secret*
+*token*
+*.key
 ENV/
 env.bak/
 venv.bak/
