@@ -1,4 +1,4 @@
-#!/bin/bash
+c#!/bin/bash
 # 全ての設定ファイルでckpt_cleanをTrueに変更し、ckpt_periodが25のものは20に変更
 
 cd /work/jh210022o/q25030/LatentGraphDiffusion/cfg
