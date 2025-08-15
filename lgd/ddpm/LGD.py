@@ -914,7 +914,46 @@ class LatentDiffusion(DDPM):
         # x_start = batch.x_start
         if self.model.conditioning_key is not None:
             assert c is not None
-        return self.p_losses(batch, c, t, batch.batch_idx, *args, **kwargs)
+        
+        # FIX: Ensure required attributes exist for inference compatibility
+        if not hasattr(batch, 'batch_idx') or batch.batch_idx is None:
+            # Create batch_idx similar to get_input() method
+            num_node = batch.get('num_node_per_graph', 
+                               torch.tensor([batch.num_nodes // batch.num_graphs] * batch.num_graphs, 
+                                          dtype=torch.long, device=batch.x.device))
+            # For latent diffusion on graphs, we need indices for both nodes and edges
+            batch_idx = torch.cat([batch.batch, num2batch(num_node ** 2)], dim=0)
+            batch.batch_idx = batch_idx
+            
+        # FIX: Ensure x_start and graph_start exist for LatentDiffusion inference
+        if not hasattr(batch, 'x_start') or batch.x_start is None:
+            # Create x_start and graph_start similar to LatentDiffusion.get_input() method
+            import copy
+            
+            # Store original features for encoder input  
+            batch.x_0 = batch.x.clone().detach()
+            batch.edge_attr_0 = batch.edge_attr.clone().detach() if hasattr(batch, 'edge_attr') else None
+            
+            # Create a copy for encoding
+            batch_z = copy.deepcopy(batch)
+            
+            # Apply encoder to get latent representations
+            input_label = batch.y.clone().detach() if hasattr(batch, 'y') and cfg.train.pretrain.input_target else None
+            batch_z = self.encode_first_stage(batch_z, label=input_label)
+            
+            # Create x_start and graph_start from encoded features
+            batch.x_start = torch.cat([batch_z.x, batch_z.edge_attr], dim=0)
+            batch.graph_start = batch_z.graph_attr.clone().detach()
+        
+        # For inference, return only pred and true (expected by eval_epoch)
+        if not self.training:
+            # Run p_losses to get all outputs
+            loss, loss_dict, loss_task, graph_decode, loss_node, loss_edge, loss_graph, loss_graph_encoder = self.p_losses(batch, c, t, batch.batch_idx, *args, **kwargs)
+            # Return only prediction and true values for evaluation
+            return graph_decode, batch.y.clone().detach()
+        else:
+            # For training, return the full p_losses output
+            return self.p_losses(batch, c, t, batch.batch_idx, *args, **kwargs)
 
     def _rescale_annotations(self, bboxes, crop_coordinates):  # TODO: move to dataset
         def rescale_bbox(bbox):
