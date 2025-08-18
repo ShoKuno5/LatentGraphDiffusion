@@ -1,1538 +1,0 @@
-Directory created: /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_diffusion_baseline_20250815_163934 /work/gp15/q25030/LatentGraphDiffusion/data
-Starting ZINC Diffusion BASELINE Training Job
-Config: cfg/zinc-diffusion_ddpm_baseline.yaml
-Max Epochs: 5 (minimal for baseline testing)
-Repeats: 1
-Encoder Checkpoint: results/zinc-encoder-fast/1754884349/ckpt/9.ckpt
-Experiment: zinc_diffusion_baseline_20250815_163934
-Time started: Fri Aug 15 16:39:34 JST 2025
-Environment check...
-PyTorch version: 2.0.1
-CUDA available: True
-CUDA device count: 8
-PyG version: 2.3.1
-Using encoder checkpoint: results/zinc-encoder-fast/1754884349/ckpt/9.ckpt
-Starting ZINC diffusion BASELINE training (5 epochs for testing)...
-Configuration: cfg/zinc-diffusion_ddpm_baseline.yaml
-- Timesteps: 100 (reduced from 1000)
-- DDIM steps: 20 (fast inference)
-- Batch size: 64
-- Max epochs: 5
-- Diffusion transformer layers: 2
-
-Command: python train_diffusion.py --cfg cfg/zinc-diffusion_ddpm_baseline.yaml --repeat 1 wandb.use True optim.max_epoch 5 diffusion.first_stage_config "results/zinc-encoder-fast/1754884349/ckpt/9.ckpt"
-/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
-Warning: Could not import grit_layer: No module named 'opt_einsum'
-Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
-./datasets/ZINC
-[*] Loaded dataset 'subset' from 'PyG-ZINC':
-/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
-  warnings.warn(msg)
-  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
-  undirected: True
-  num graphs: 12000
-/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
-  warnings.warn(msg)
-  avg num_nodes/graph: 23
-  num node features: 1
-  num edge features: 1
-  num classes: (appears to be a regression task)
-Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
-  ...estimated to be undirected: True
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:08<00:00, 1492.31it/s]
-Done! Took 00:00:08.86
-Adding virtual node and edges
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1719.95it/s]
-Preprocessing PE
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3571.34it/s]
-[*] Run ID 0: seed=0, split_index=0
-    Starting now: 2025-08-15 16:40:28.733800
-LatentDiffusion: Running in x0-prediction mode
-DiffusionWrapper has 0.50 M params.
-/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
-  warnings.warn("Initializing zero-element tensors is a no-op")
-Restored from results/zinc-encoder-fast/1754884349/ckpt/9.ckpt with 192 missing and 0 unexpected keys
-Missing Keys: ['GTE_layers.6.attention.Aw', 'GTE_layers.6.attention.VeRow', 'GTE_layers.6.attention.Q.weight', 'GTE_layers.6.attention.Q.bias', 'GTE_layers.6.attention.K.weight', 'GTE_layers.6.attention.E.weight', 'GTE_layers.6.attention.E.bias', 'GTE_layers.6.attention.V.weight', 'GTE_layers.6.mpnn.lin_edge.weight', 'GTE_layers.6.mpnn.lin_edge.bias', 'GTE_layers.6.mpnn.mlp.0.weight', 'GTE_layers.6.mpnn.mlp.0.bias', 'GTE_layers.6.mpnn.mlp.2.weight', 'GTE_layers.6.mpnn.mlp.2.bias', 'GTE_layers.6.temb_proj_h.weight', 'GTE_layers.6.temb_proj_h.bias', 'GTE_layers.6.temb_proj_e.weight', 'GTE_layers.6.temb_proj_e.bias', 'GTE_layers.6.O_h.weight', 'GTE_layers.6.O_h.bias', 'GTE_layers.6.O_e.weight', 'GTE_layers.6.O_e.bias', 'GTE_layers.6.batch_norm1_h.weight', 'GTE_layers.6.batch_norm1_h.bias', 'GTE_layers.6.batch_norm1_h.running_mean', 'GTE_layers.6.batch_norm1_h.running_var', 'GTE_layers.6.batch_norm1_e.weight', 'GTE_layers.6.batch_norm1_e.bias', 'GTE_layers.6.batch_norm1_e.running_mean', 'GTE_layers.6.batch_norm1_e.running_var', 'GTE_layers.6.FFN_h_layer1.weight', 'GTE_layers.6.FFN_h_layer1.bias', 'GTE_layers.6.FFN_h_layer2.weight', 'GTE_layers.6.FFN_h_layer2.bias', 'GTE_layers.6.FFN_e_layer1.weight', 'GTE_layers.6.FFN_e_layer1.bias', 'GTE_layers.6.FFN_e_layer2.weight', 'GTE_layers.6.FFN_e_layer2.bias', 'GTE_layers.6.batch_norm2_h.weight', 'GTE_layers.6.batch_norm2_h.bias', 'GTE_layers.6.batch_norm2_h.running_mean', 'GTE_layers.6.batch_norm2_h.running_var', 'GTE_layers.6.batch_norm2_e.weight', 'GTE_layers.6.batch_norm2_e.bias', 'GTE_layers.6.batch_norm2_e.running_mean', 'GTE_layers.6.batch_norm2_e.running_var', 'GTE_layers.7.attention.Aw', 'GTE_layers.7.attention.VeRow', 'GTE_layers.7.attention.Q.weight', 'GTE_layers.7.attention.Q.bias', 'GTE_layers.7.attention.K.weight', 'GTE_layers.7.attention.E.weight', 'GTE_layers.7.attention.E.bias', 'GTE_layers.7.attention.V.weight', 'GTE_layers.7.mpnn.lin_edge.weight', 'GTE_layers.7.mpnn.lin_edge.bias', 'GTE_layers.7.mpnn.mlp.0.weight', 'GTE_layers.7.mpnn.mlp.0.bias', 'GTE_layers.7.mpnn.mlp.2.weight', 'GTE_layers.7.mpnn.mlp.2.bias', 'GTE_layers.7.temb_proj_h.weight', 'GTE_layers.7.temb_proj_h.bias', 'GTE_layers.7.temb_proj_e.weight', 'GTE_layers.7.temb_proj_e.bias', 'GTE_layers.7.O_h.weight', 'GTE_layers.7.O_h.bias', 'GTE_layers.7.O_e.weight', 'GTE_layers.7.O_e.bias', 'GTE_layers.7.batch_norm1_h.weight', 'GTE_layers.7.batch_norm1_h.bias', 'GTE_layers.7.batch_norm1_h.running_mean', 'GTE_layers.7.batch_norm1_h.running_var', 'GTE_layers.7.batch_norm1_e.weight', 'GTE_layers.7.batch_norm1_e.bias', 'GTE_layers.7.batch_norm1_e.running_mean', 'GTE_layers.7.batch_norm1_e.running_var', 'GTE_layers.7.FFN_h_layer1.weight', 'GTE_layers.7.FFN_h_layer1.bias', 'GTE_layers.7.FFN_h_layer2.weight', 'GTE_layers.7.FFN_h_layer2.bias', 'GTE_layers.7.FFN_e_layer1.weight', 'GTE_layers.7.FFN_e_layer1.bias', 'GTE_layers.7.FFN_e_layer2.weight', 'GTE_layers.7.FFN_e_layer2.bias', 'GTE_layers.7.batch_norm2_h.weight', 'GTE_layers.7.batch_norm2_h.bias', 'GTE_layers.7.batch_norm2_h.running_mean', 'GTE_layers.7.batch_norm2_h.running_var', 'GTE_layers.7.batch_norm2_e.weight', 'GTE_layers.7.batch_norm2_e.bias', 'GTE_layers.7.batch_norm2_e.running_mean', 'GTE_layers.7.batch_norm2_e.running_var', 'GTE_layers.8.attention.Aw', 'GTE_layers.8.attention.VeRow', 'GTE_layers.8.attention.Q.weight', 'GTE_layers.8.attention.Q.bias', 'GTE_layers.8.attention.K.weight', 'GTE_layers.8.attention.E.weight', 'GTE_layers.8.attention.E.bias', 'GTE_layers.8.attention.V.weight', 'GTE_layers.8.mpnn.lin_edge.weight', 'GTE_layers.8.mpnn.lin_edge.bias', 'GTE_layers.8.mpnn.mlp.0.weight', 'GTE_layers.8.mpnn.mlp.0.bias', 'GTE_layers.8.mpnn.mlp.2.weight', 'GTE_layers.8.mpnn.mlp.2.bias', 'GTE_layers.8.temb_proj_h.weight', 'GTE_layers.8.temb_proj_h.bias', 'GTE_layers.8.temb_proj_e.weight', 'GTE_layers.8.temb_proj_e.bias', 'GTE_layers.8.O_h.weight', 'GTE_layers.8.O_h.bias', 'GTE_layers.8.O_e.weight', 'GTE_layers.8.O_e.bias', 'GTE_layers.8.batch_norm1_h.weight', 'GTE_layers.8.batch_norm1_h.bias', 'GTE_layers.8.batch_norm1_h.running_mean', 'GTE_layers.8.batch_norm1_h.running_var', 'GTE_layers.8.batch_norm1_e.weight', 'GTE_layers.8.batch_norm1_e.bias', 'GTE_layers.8.batch_norm1_e.running_mean', 'GTE_layers.8.batch_norm1_e.running_var', 'GTE_layers.8.FFN_h_layer1.weight', 'GTE_layers.8.FFN_h_layer1.bias', 'GTE_layers.8.FFN_h_layer2.weight', 'GTE_layers.8.FFN_h_layer2.bias', 'GTE_layers.8.FFN_e_layer1.weight', 'GTE_layers.8.FFN_e_layer1.bias', 'GTE_layers.8.FFN_e_layer2.weight', 'GTE_layers.8.FFN_e_layer2.bias', 'GTE_layers.8.batch_norm2_h.weight', 'GTE_layers.8.batch_norm2_h.bias', 'GTE_layers.8.batch_norm2_h.running_mean', 'GTE_layers.8.batch_norm2_h.running_var', 'GTE_layers.8.batch_norm2_e.weight', 'GTE_layers.8.batch_norm2_e.bias', 'GTE_layers.8.batch_norm2_e.running_mean', 'GTE_layers.8.batch_norm2_e.running_var', 'GTE_layers.9.attention.Aw', 'GTE_layers.9.attention.VeRow', 'GTE_layers.9.attention.Q.weight', 'GTE_layers.9.attention.Q.bias', 'GTE_layers.9.attention.K.weight', 'GTE_layers.9.attention.E.weight', 'GTE_layers.9.attention.E.bias', 'GTE_layers.9.attention.V.weight', 'GTE_layers.9.mpnn.lin_edge.weight', 'GTE_layers.9.mpnn.lin_edge.bias', 'GTE_layers.9.mpnn.mlp.0.weight', 'GTE_layers.9.mpnn.mlp.0.bias', 'GTE_layers.9.mpnn.mlp.2.weight', 'GTE_layers.9.mpnn.mlp.2.bias', 'GTE_layers.9.temb_proj_h.weight', 'GTE_layers.9.temb_proj_h.bias', 'GTE_layers.9.temb_proj_e.weight', 'GTE_layers.9.temb_proj_e.bias', 'GTE_layers.9.O_h.weight', 'GTE_layers.9.O_h.bias', 'GTE_layers.9.O_e.weight', 'GTE_layers.9.O_e.bias', 'GTE_layers.9.batch_norm1_h.weight', 'GTE_layers.9.batch_norm1_h.bias', 'GTE_layers.9.batch_norm1_h.running_mean', 'GTE_layers.9.batch_norm1_h.running_var', 'GTE_layers.9.batch_norm1_e.weight', 'GTE_layers.9.batch_norm1_e.bias', 'GTE_layers.9.batch_norm1_e.running_mean', 'GTE_layers.9.batch_norm1_e.running_var', 'GTE_layers.9.FFN_h_layer1.weight', 'GTE_layers.9.FFN_h_layer1.bias', 'GTE_layers.9.FFN_h_layer2.weight', 'GTE_layers.9.FFN_h_layer2.bias', 'GTE_layers.9.FFN_e_layer1.weight', 'GTE_layers.9.FFN_e_layer1.bias', 'GTE_layers.9.FFN_e_layer2.weight', 'GTE_layers.9.FFN_e_layer2.bias', 'GTE_layers.9.batch_norm2_h.weight', 'GTE_layers.9.batch_norm2_h.bias', 'GTE_layers.9.batch_norm2_h.running_mean', 'GTE_layers.9.batch_norm2_h.running_var', 'GTE_layers.9.batch_norm2_e.weight', 'GTE_layers.9.batch_norm2_e.bias', 'GTE_layers.9.batch_norm2_e.running_mean', 'GTE_layers.9.batch_norm2_e.running_var', 'graph_out_mlp.0.weight', 'graph_out_mlp.0.bias', 'graph_out_mlp.2.weight', 'graph_out_mlp.2.bias', 'graph_out_mlp_2.0.weight', 'graph_out_mlp_2.0.bias', 'graph_out_mlp_2.2.weight', 'graph_out_mlp_2.2.bias']
-Using first stage also as cond stage.
-LatentDiffusion(
-  (model): DiffusionWrapper(
-    (diffusion_model): DenoisingTransformer(
-      (act): ReLU()
-      (node_in_mlp): Sequential(
-        (0): Linear(in_features=4, out_features=128, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=128, out_features=64, bias=True)
-      )
-      (edge_in_mlp): Sequential(
-        (0): Linear(in_features=4, out_features=128, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=128, out_features=64, bias=True)
-      )
-      (cond_in_mlp): Sequential(
-        (0): Linear(in_features=4, out_features=128, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=128, out_features=64, bias=True)
-        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-        (4): ReLU()
-      )
-      (cond_in_mlp_2): Sequential(
-        (0): Linear(in_features=4, out_features=128, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=128, out_features=64, bias=True)
-        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-        (4): ReLU()
-      )
-      (cond_in_mlp_3): Sequential(
-        (0): Linear(in_features=4, out_features=128, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=128, out_features=64, bias=True)
-        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-        (4): ReLU()
-      )
-      (cond_res_mlp): Sequential(
-        (0): Linear(in_features=4, out_features=8, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=8, out_features=4, bias=True)
-        (3): LayerNorm((4,), eps=1e-05, elementwise_affine=True)
-        (4): ReLU()
-      )
-      (layer_norm_in_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-      (layer_norm_in_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-      (temb_layer): Sequential(
-        (0): Linear(in_features=64, out_features=128, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=128, out_features=64, bias=True)
-      )
-      (denoising_layers): ModuleList(
-        (0-1): 2 x DenoisingTransformerLayer(in_channels=64, out_channels=64, heads=4, residual=True)
-        [DenoisingTransformerLayer(
-          (act): ReLU()
-          (cross_attention): Cross_Attention(
-            (dropout): Dropout(p=0.25, inplace=False)
-            (Q): Linear(in_features=64, out_features=64, bias=True)
-            (K): Linear(in_features=64, out_features=64, bias=False)
-            (E1): Linear(in_features=64, out_features=64, bias=True)
-            (E2): Linear(in_features=64, out_features=64, bias=True)
-            (V): Linear(in_features=64, out_features=64, bias=False)
-            (H): Linear(in_features=64, out_features=64, bias=True)
-            (G1): Linear(in_features=64, out_features=64, bias=True)
-            (G2): Linear(in_features=64, out_features=64, bias=True)
-            (act): ReLU()
-          )
-          (attention): GTE_Attention(
-            (dropout): Dropout(p=0.25, inplace=False)
-            (Q): Linear(in_features=64, out_features=64, bias=True)
-            (K): Linear(in_features=64, out_features=64, bias=False)
-            (E): Linear(in_features=64, out_features=128, bias=True)
-            (V): Linear(in_features=64, out_features=64, bias=False)
-            (act): ReLU()
-          )
-          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
-          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
-          (O_h): Linear(in_features=64, out_features=64, bias=True)
-          (O_e): Linear(in_features=64, out_features=64, bias=True)
-          (O_h2): Linear(in_features=64, out_features=64, bias=True)
-          (O_e2): Linear(in_features=64, out_features=64, bias=True)
-          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
-          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
-          (FFN_h_layer3): Linear(in_features=64, out_features=128, bias=True)
-          (FFN_h_layer4): Linear(in_features=128, out_features=64, bias=True)
-          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
-          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
-          (FFN_e_layer3): Linear(in_features=64, out_features=128, bias=True)
-          (FFN_e_layer4): Linear(in_features=128, out_features=64, bias=True)
-          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm3_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm3_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm4_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm4_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-        )]
-      )
-      (self_attn_layers): ModuleList(
-        (0-1): 2 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
-        [GraphTransformerEncoderLayer(
-          (act): ReLU()
-          (attention): GTE_Attention(
-            (dropout): Dropout(p=0.25, inplace=False)
-            (Q): Linear(in_features=64, out_features=64, bias=True)
-            (K): Linear(in_features=64, out_features=64, bias=False)
-            (E): Linear(in_features=64, out_features=128, bias=True)
-            (V): Linear(in_features=64, out_features=64, bias=False)
-            (act): ReLU()
-          )
-          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
-          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
-          (O_h): Linear(in_features=64, out_features=64, bias=True)
-          (O_e): Linear(in_features=64, out_features=64, bias=True)
-          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
-          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
-          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
-          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
-          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
-        )]
-      )
-      (final_layer_node): Sequential(
-        (0): Linear(in_features=64, out_features=8, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=8, out_features=4, bias=True)
-      )
-      (final_layer_edge): Sequential(
-        (0): Linear(in_features=64, out_features=8, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=8, out_features=4, bias=True)
-      )
-      (graph_out_mlp): Sequential(
-        (0): Linear(in_features=4, out_features=8, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=8, out_features=4, bias=True)
-      )
-      (graph_out_mlp_2): Sequential(
-        (0): Linear(in_features=4, out_features=8, bias=True)
-        (1): ReLU()
-        (2): Linear(in_features=8, out_features=4, bias=True)
-      )
-    )
-  )
-  (first_stage_model): GraphTransformerEncoder(
-    (act): ReLU()
-    (node_emb): TypeDictNodeEncoder(
-      (encoder): Embedding(27, 36, padding_idx=0)
-    )
-    (edge_emb): TypeDictEdgeEncoder(
-      (encoder): Embedding(14, 36, padding_idx=0)
-    )
-    (prefix_emb): Embedding(1, 64, padding_idx=0)
-    (label_embed_regression): Sequential(
-      (0): Linear(in_features=1, out_features=128, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=128, out_features=64, bias=True)
-      (3): Identity()
-      (4): ReLU()
-    )
-    (label_embed_classification): Embedding(3, 64)
-    (posenc_emb): Sequential(
-      (0): Identity()
-      (1): Linear(in_features=20, out_features=28, bias=True)
-    )
-    (posenc_emb_edge): Sequential(
-      (0): Identity()
-      (1): Linear(in_features=20, out_features=28, bias=True)
-    )
-    (node_in_mlp): Sequential(
-      (0): Linear(in_features=64, out_features=128, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=128, out_features=64, bias=True)
-    )
-    (edge_in_mlp): Sequential(
-      (0): Linear(in_features=64, out_features=128, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=128, out_features=64, bias=True)
-    )
-    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (GTE_layers): ModuleList(
-      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
-      [GraphTransformerEncoderLayer(
-        (act): ReLU()
-        (attention): GTE_Attention(
-          (dropout): Dropout(p=0.5, inplace=False)
-          (Q): Linear(in_features=64, out_features=64, bias=True)
-          (K): Linear(in_features=64, out_features=64, bias=False)
-          (E): Linear(in_features=64, out_features=128, bias=True)
-          (V): Linear(in_features=64, out_features=64, bias=False)
-          (act): ReLU()
-        )
-        (mpnn): GINE(
-          (dropout): Dropout(p=0.0, inplace=False)
-          (act): ReLU()
-          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
-          (mlp): Sequential(
-            (0): Linear(in_features=64, out_features=128, bias=True)
-            (1): ReLU()
-            (2): Linear(in_features=128, out_features=64, bias=True)
-          )
-        )
-        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
-        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
-        (O_h): Linear(in_features=64, out_features=64, bias=True)
-        (O_e): Linear(in_features=64, out_features=64, bias=True)
-        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
-        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
-        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
-        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
-        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-      )]
-    )
-    (final_layer_node): Sequential(
-      (0): Linear(in_features=64, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (final_layer_edge): Sequential(
-      (0): Linear(in_features=64, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (graph_out_mlp): Sequential(
-      (0): Linear(in_features=4, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (graph_out_mlp_2): Sequential(
-      (0): Linear(in_features=4, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (decode_node): Linear(in_features=4, out_features=31, bias=True)
-    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
-    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
-  )
-  (cond_stage_model): GraphTransformerEncoder(
-    (act): ReLU()
-    (node_emb): TypeDictNodeEncoder(
-      (encoder): Embedding(27, 36, padding_idx=0)
-    )
-    (edge_emb): TypeDictEdgeEncoder(
-      (encoder): Embedding(14, 36, padding_idx=0)
-    )
-    (prefix_emb): Embedding(1, 64, padding_idx=0)
-    (label_embed_regression): Sequential(
-      (0): Linear(in_features=1, out_features=128, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=128, out_features=64, bias=True)
-      (3): Identity()
-      (4): ReLU()
-    )
-    (label_embed_classification): Embedding(3, 64)
-    (posenc_emb): Sequential(
-      (0): Identity()
-      (1): Linear(in_features=20, out_features=28, bias=True)
-    )
-    (posenc_emb_edge): Sequential(
-      (0): Identity()
-      (1): Linear(in_features=20, out_features=28, bias=True)
-    )
-    (node_in_mlp): Sequential(
-      (0): Linear(in_features=64, out_features=128, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=128, out_features=64, bias=True)
-    )
-    (edge_in_mlp): Sequential(
-      (0): Linear(in_features=64, out_features=128, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=128, out_features=64, bias=True)
-    )
-    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    (GTE_layers): ModuleList(
-      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
-      [GraphTransformerEncoderLayer(
-        (act): ReLU()
-        (attention): GTE_Attention(
-          (dropout): Dropout(p=0.5, inplace=False)
-          (Q): Linear(in_features=64, out_features=64, bias=True)
-          (K): Linear(in_features=64, out_features=64, bias=False)
-          (E): Linear(in_features=64, out_features=128, bias=True)
-          (V): Linear(in_features=64, out_features=64, bias=False)
-          (act): ReLU()
-        )
-        (mpnn): GINE(
-          (dropout): Dropout(p=0.0, inplace=False)
-          (act): ReLU()
-          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
-          (mlp): Sequential(
-            (0): Linear(in_features=64, out_features=128, bias=True)
-            (1): ReLU()
-            (2): Linear(in_features=128, out_features=64, bias=True)
-          )
-        )
-        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
-        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
-        (O_h): Linear(in_features=64, out_features=64, bias=True)
-        (O_e): Linear(in_features=64, out_features=64, bias=True)
-        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
-        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
-        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
-        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
-        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-      )]
-    )
-    (final_layer_node): Sequential(
-      (0): Linear(in_features=64, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (final_layer_edge): Sequential(
-      (0): Linear(in_features=64, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (graph_out_mlp): Sequential(
-      (0): Linear(in_features=4, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (graph_out_mlp_2): Sequential(
-      (0): Linear(in_features=4, out_features=8, bias=True)
-      (1): ReLU()
-      (2): Linear(in_features=8, out_features=4, bias=True)
-    )
-    (decode_node): Linear(in_features=4, out_features=31, bias=True)
-    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
-    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
-  )
-)
-accelerator: cuda:0
-benchmark: False
-bn:
-  eps: 1e-05
-  mom: 0.1
-cfg_dest: config.yaml
-cond:
-  attn:
-    O_e: True
-    act: relu
-    attn_dropout: 0.0
-    batch_norm: True
-    bn_momentum: 0.1
-    bn_no_runner: False
-    clamp: 5.0
-    deg_scaler: False
-    edge_enhance: True
-    full_attn: True
-    layer_norm: False
-    norm_e: True
-    sparse: False
-    use: True
-    use_bias: False
-  batch_norm: True
-  bn_momentum: 0.1
-  bn_no_runner: False
-  edge_encoder_name: TypeDictEdge
-  layer_norm: False
-  node_encoder_name: TypeDictNode
-custom_metrics: []
-dataset:
-  add_virtual_node_edge: True
-  cache_load: False
-  cache_save: False
-  dir: ./datasets
-  edge_dim: 128
-  edge_encoder: True
-  edge_encoder_bn: False
-  edge_encoder_name: TypeDictEdge
-  edge_encoder_num_types: 4
-  edge_message_ratio: 0.8
-  edge_negative_sampling_ratio: 1.0
-  edge_train_mode: all
-  encoder: True
-  encoder_bn: True
-  encoder_dim: 128
-  encoder_name: db
-  format: PyG-ZINC
-  label_column: none
-  label_table: none
-  location: local
-  name: subset
-  node_encoder: True
-  node_encoder_bn: False
-  node_encoder_name: TypeDictNode
-  node_encoder_num_types: 21
-  num_hop: 0
-  num_tasks: 1
-  remove_feature: False
-  resample_disjoint: False
-  resample_negative: False
-  shuffle_split: True
-  slic_compactness: 10
-  split: [0.8, 0.1, 0.1]
-  split_dir: ./splits
-  split_index: 0
-  split_mode: standard
-  subgraph: False
-  task: graph
-  task_type: regression
-  to_undirected: False
-  transductive: False
-  transform: none
-  tu_simple: True
-devices: 1
-diffusion:
-  cond_stage_config: __is_first_stage__
-  cond_stage_key: masked_graph
-  conditioning_key: crossattn
-  ddim_eta: 0.0
-  ddim_steps: 20
-  edge_factor: 1.0
-  first_stage_config: results/zinc-encoder-fast/1754884349/ckpt/9.ckpt
-  graph_factor: 1.0
-  hid_dim: 4
-  node_factor: 1.0
-  task_factor: 1.0
-  timesteps: 100
-  use_ddpm_steps: False
-dt:
-  O_e: True
-  act: relu
-  attn:
-    O_e: True
-    act: relu
-    attn_dropout: 0.0
-    attn_product: mul
-    attn_reweight: False
-    batch_norm: True
-    bn_momentum: 0.1
-    bn_no_runner: False
-    clamp: 5.0
-    deg_scaler: False
-    edge_enhance: True
-    edge_reweight: False
-    full_attn: True
-    fwl: False
-    layer_norm: False
-    norm_e: True
-    score_act: True
-    signed_sqrt: True
-    sparse: False
-    use: True
-    use_bias: False
-  attn_dropout: 0.25
-  batch_norm: False
-  bn_momentum: 0.1
-  bn_no_runner: False
-  cond_dim: 4
-  condition_list: ['masked_graph']
-  dropout: 0.05
-  ff_e: False
-  ff_e_ca: True
-  ff_e_sa: False
-  hid_dim: 64
-  in_dim: 4
-  layer_norm: True
-  norm_e: True
-  num_heads: 4
-  num_layers: 2
-  out_dim: 4
-  pool: add
-  pool_edge: True
-  pool_vn: False
-  post_pool: True
-  residual: True
-  self_attn: True
-  temb_dim: 64
-  use_time: True
-encoder:
-  O_e: True
-  act: relu
-  attn:
-    O_e: True
-    act: relu
-    attn_dropout: 0.0
-    attn_product: mul
-    attn_reweight: True
-    batch_norm: True
-    bn_momentum: 0.1
-    bn_no_runner: False
-    clamp: 5.0
-    deg_scaler: False
-    edge_enhance: True
-    edge_reweight: True
-    full_attn: True
-    fwl: False
-    layer_norm: False
-    norm_e: True
-    score_act: True
-    signed_sqrt: True
-    sparse: False
-    use: True
-    use_bias: False
-  attn_dropout: 0.5
-  batch_norm: True
-  bn_momentum: 0.1
-  bn_no_runner: False
-  dropout: 0.0
-  edge_encoder: True
-  edge_encoder_bn: False
-  edge_encoder_name: TypeDictEdge
-  edge_encoder_num_types: 4
-  ff_e: False
-  hid_dim: 64
-  in_dim: 36
-  label_embed_type: add_virtual
-  layer_norm: False
-  mpnn:
-    act: relu
-    dropout: 0.0
-    edge_enhance: True
-    enable: True
-    project_edge: True
-  node_encoder: True
-  node_encoder_bn: False
-  node_encoder_name: TypeDictNode
-  node_encoder_num_types: 21
-  norm_e: True
-  num_heads: 4
-  num_layers: 10
-  num_task: 1
-  out_dim: 4
-  pe_raw_norm: None
-  pool: add
-  pool_edge: True
-  pool_vn: False
-  posenc_dim: 28
-  posenc_in_dim: 20
-  posenc_in_dim_edge: 20
-  post_pool: True
-  prefix_dim: 64
-  prefix_type: add_virtual
-  residual: True
-  task_type: regression
-  temb_dim: 0
-  type: GraphTransformerEncoder
-  update_e: True
-  use_time: False
-example_arg: example
-example_group:
-  example_arg: example
-gnn:
-  act: relu
-  agg: mean
-  att_final_linear: False
-  att_final_linear_bn: False
-  att_heads: 1
-  batchnorm: True
-  clear_feature: True
-  dim_inner: 64
-  dropout: 0.0
-  head: san_graph
-  keep_edge: 0.5
-  l2norm: True
-  layer_type: generalconv
-  layers_mp: 2
-  layers_post_mp: 3
-  layers_pre_mp: 0
-  msg_direction: single
-  normalize_adj: False
-  residual: False
-  self_msg: concat
-  skip_every: 1
-  stage_type: stack
-gpu_mem: False
-gt:
-  attn:
-    O_e: True
-    act: relu
-    clamp: 5.0
-    deg_scaler: True
-    edge_enhance: True
-    full_attn: True
-    fwl: False
-    norm_e: True
-    sparse: False
-    use: True
-    use_bias: False
-  attn_dropout: 0.2
-  batch_norm: True
-  bigbird:
-    add_cross_attention: False
-    attention_type: block_sparse
-    block_size: 3
-    chunk_size_feed_forward: 0
-    hidden_act: relu
-    is_decoder: False
-    layer_norm_eps: 1e-06
-    max_position_embeddings: 128
-    num_random_blocks: 3
-    use_bias: False
-  bn_momentum: 0.1
-  bn_no_runner: False
-  dim_hidden: 64
-  dropout: 0.0
-  full_graph: True
-  gamma: 1e-05
-  layer_norm: False
-  layer_type: GritTransformer
-  layers: 6
-  n_heads: 4
-  pna_degrees: []
-  residual: True
-  update_e: True
-mem:
-  inplace: False
-metric_agg: argmin
-metric_best: mae
-mlflow:
-  name: zinc-GRIT-RRWP
-  project: Exp
-  use: False
-model:
-  edge_decoding: dot
-  graph_pooling: add
-  loss_fun: l1
-  match_upper: True
-  size_average: mean
-  thresh: 0.5
-  type: LatentDiffusion
-name_tag: 
-num_threads: 6
-num_workers: 0
-optim:
-  base_lr: 0.0001
-  batch_accumulation: 1
-  clip_grad_norm: True
-  lr_decay: 0.1
-  max_epoch: 5
-  min_lr: 1e-06
-  momentum: 0.9
-  num_warmup_epochs: 1
-  optimizer: adamW
-  reduce_factor: 0.1
-  schedule_patience: 10
-  scheduler: cosine_with_warmup
-  steps: [30, 60, 90]
-  weight_decay: 1e-05
-out_dir: /workspace/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline
-posenc_ERE:
-  accuracy: 0.1
-  dim_pe: 16
-  enable: False
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_ERN:
-  accuracy: 0.1
-  dim_pe: 16
-  enable: False
-  er_dim: none
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_EdgeRWSE:
-  dim_pe: 16
-  enable: False
-  kernel:
-    times: []
-    times_func: 
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_ElstaticSE:
-  dim_pe: 16
-  enable: False
-  kernel:
-    times: []
-    times_func: range(10)
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_EquivStableLapPE:
-  eigen:
-    eigvec_norm: L2
-    laplacian_norm: sym
-    max_freqs: 10
-  enable: False
-  raw_norm_type: none
-posenc_HKdiagSE:
-  dim_pe: 16
-  enable: False
-  kernel:
-    times: []
-    times_func: 
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_HodgeLap1PE:
-  dim_pe: 16
-  eigen:
-    eigvec_norm: L2
-    laplacian_norm: sym
-    max_freqs: 10
-  enable: False
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_InterRWSE:
-  dim_pe: 16
-  enable: False
-  kernel:
-    times: []
-    times_func: 
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_LapPE:
-  dim_pe: 16
-  eigen:
-    eigvec_norm: L2
-    laplacian_norm: sym
-    max_freqs: 10
-  enable: False
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_RD:
-  dim_pe: 16
-  enable: False
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_RRWP:
-  add_identity: True
-  dim_pe: 16
-  enable: True
-  ksteps: 20
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-  real_emb: True
-  spd: False
-posenc_RWSE:
-  dim_pe: 16
-  enable: False
-  kernel:
-    times: []
-    times_func: 
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  post_layers: 0
-  raw_norm_type: none
-posenc_SignNet:
-  dim_pe: 16
-  eigen:
-    eigvec_norm: L2
-    laplacian_norm: sym
-    max_freqs: 10
-  enable: False
-  layers: 3
-  local: False
-  model: none
-  n_heads: 4
-  pass_as_var: False
-  phi_hidden_dim: 64
-  phi_out_dim: 4
-  post_layers: 0
-  raw_norm_type: none
-prep:
-  add_edge_index: True
-  add_reverse_edges: True
-  add_self_loops: False
-  dist_cutoff: 510
-  dist_enable: False
-  exp: False
-  exp_algorithm: Random-d
-  exp_count: 1
-  exp_deg: 5
-  exp_max_num_iters: 100
-  layer_edge_indices_dir: None
-  num_virt_node: 0
-  train_percent: 0.6
-  use_exp_edges: True
-pretrained:
-  dir: 
-  freeze_main: False
-  reset_prediction_head: True
-print: both
-regression_model:
-  encoder:
-    attn:
-      O_e: True
-      act: relu
-      attn_dropout: 0.0
-      batch_norm: True
-      bn_momentum: 0.1
-      bn_no_runner: False
-      clamp: 5.0
-      deg_scaler: False
-      edge_enhance: True
-      full_attn: True
-      layer_norm: False
-      norm_e: True
-      sparse: False
-      use: True
-      use_bias: False
-    batch_norm: True
-    bn_momentum: 0.1
-    bn_no_runner: False
-    edge_encoder_name: TypeDictEdge
-    layer_norm: False
-    node_encoder_name: TypeDictNode
-round: 5
-run_dir: /workspace/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline/0
-run_id: 0
-run_multiple_splits: []
-seed: 0
-share:
-  dim_in: 1
-  dim_out: 1
-  num_splits: 3
-tensorboard_agg: True
-tensorboard_each_run: False
-train:
-  auto_resume: False
-  batch_size: 64
-  ckpt_best: True
-  ckpt_clean: True
-  ckpt_period: 1
-  enable_ckpt: True
-  ensemble_mode: none
-  ensemble_repeat: 1
-  epoch_resume: -1
-  eval_period: 2
-  iter_per_epoch: 32
-  mode: train_diffusion
-  neighbor_sizes: [20, 15, 10, 5]
-  node_per_graph: 32
-  pretrain:
-    atom_bond_only: True
-    edge_factor: 0.0
-    graph_factor: 1.0
-    input_target: True
-    mask_edge_prob: 0.0
-    mask_label_prob: 0.5
-    mask_node_prob: 0.0
-    node_factor: 0.0
-    original_task: True
-    recon: none
-  radius: extend
-  sample_node: False
-  sampler: full_batch
-  skip_train_eval: False
-  start_eval_epoch: -1
-  walk_length: 4
-val:
-  node_per_graph: 32
-  radius: extend
-  sample_node: False
-  sampler: full_batch
-view_emb: False
-wandb:
-  entity: shokuno-the-university-of-tokyo
-  name: 
-  project: LatentGraphDiffusion-ZINC
-  use: True
-Num parameters: 1389786
-Start from epoch 0
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: shokuno (shokuno-the-university-of-tokyo). Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /workspace/wandb/run-20250815_164037-zwtw7ytq
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run ZINC-subset.LatentDiffusion.r0
-wandb: ⭐️ View project at https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC
-wandb: 🚀 View run at https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC/runs/zwtw7ytq
-Key encoder.pe_raw_norm with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
-Key prep.layer_edge_indices_dir with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
-/opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:420: You are trying to `self.log()` but the `self.trainer` reference is not registered on the model yet. This is most likely because the model hasn't been passed to the `Trainer`
-train: {'epoch': 0, 'time_epoch': 20.9662, 'eta': 83.86481, 'eta_hours': 0.0233, 'loss': 5572.01660625, 'lr': 0.0, 'params': 1389786, 'time_iter': 0.13354, 'mae': 11.20999, 'r2': -34.67573, 'spearmanr': 0.20583, 'mse': 144.25114, 'rmse': 12.01046, 'loss_node': 0.6303562730789185, 'loss_edge': 0.3623547652721405, 'loss_graph': 5559.8139140625, 'loss_task': 11.209990823364258, 'loss_encoder': 0.0}
-...computing epoch stats took: 0.08s
-Data shape for DDIM sampling is (42054, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 77.15it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 77.58it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 77.59it/s]
-Data shape for DDIM sampling is (39946, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.50it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.45it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.36it/s]
-Data shape for DDIM sampling is (38346, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.55it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.44it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.31it/s]
-Data shape for DDIM sampling is (37192, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.62it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.63it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.54it/s]
-Data shape for DDIM sampling is (39306, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.56it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.53it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.41it/s]
-Data shape for DDIM sampling is (38484, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.61it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.51it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.31it/s]
-Data shape for DDIM sampling is (40998, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.17it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.03it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.92it/s]
-Data shape for DDIM sampling is (42534, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 77.55it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 77.67it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 77.55it/s]
-Data shape for DDIM sampling is (41952, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.23it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.30it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.27it/s]
-Data shape for DDIM sampling is (39390, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.30it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.36it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.22it/s]
-Data shape for DDIM sampling is (39190, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.78it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.66it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.52it/s]
-Data shape for DDIM sampling is (38732, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.68it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.64it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.48it/s]
-Data shape for DDIM sampling is (40328, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.01it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.85it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.79it/s]
-Data shape for DDIM sampling is (37928, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.47it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.41it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.29it/s]
-Data shape for DDIM sampling is (41930, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.77it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.66it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.56it/s]
-Data shape for DDIM sampling is (25574, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 106.09it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 105.80it/s]
-val: {'epoch': 0, 'time_epoch': 4.95672, 'loss': 11.22647683, 'lr': 0, 'params': 1389786, 'time_iter': 0.30979, 'mae': 11.22648, 'r2': -35.6885, 'spearmanr': 0.26396, 'mse': 144.50702, 'rmse': 12.02111}
-...computing epoch stats took: 0.00s
-Data shape for DDIM sampling is (39290, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.37it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.38it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.25it/s]
-Data shape for DDIM sampling is (36096, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 86.11it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 86.11it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 86.00it/s]
-Data shape for DDIM sampling is (40252, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.94it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.88it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.75it/s]
-Data shape for DDIM sampling is (41044, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.97it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.91it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.83it/s]
-Data shape for DDIM sampling is (39220, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.58it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.17it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.10it/s]
-Data shape for DDIM sampling is (39348, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.07it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.17it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.06it/s]
-Data shape for DDIM sampling is (39902, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.73it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.69it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.59it/s]
-Data shape for DDIM sampling is (41038, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.91it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.87it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.75it/s]
-Data shape for DDIM sampling is (39738, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.69it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.61it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.51it/s]
-Data shape for DDIM sampling is (39230, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.67it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.63it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.48it/s]
-Data shape for DDIM sampling is (38132, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.16it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.01it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.86it/s]
-Data shape for DDIM sampling is (41532, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.67it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 77.48it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 77.35it/s]
-Data shape for DDIM sampling is (41898, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 76.55it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 76.58it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 76.48it/s]
-Data shape for DDIM sampling is (39482, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.61it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.50it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.45it/s]
-Data shape for DDIM sampling is (43426, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 76.65it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 76.60it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 76.55it/s]
-Data shape for DDIM sampling is (25726, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 104.79it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 104.57it/s]
-test: {'epoch': 0, 'time_epoch': 4.84363, 'loss': 11.28605379, 'lr': 0, 'params': 1389786, 'time_iter': 0.30273, 'mae': 11.28605, 'r2': -34.66664, 'spearmanr': 0.29901, 'mse': 145.1026, 'rmse': 12.04585}
-...computing epoch stats took: 0.00s
-> Epoch 0: took 30.9s (avg 30.9s) | Best so far: epoch 0	train_loss: 5572.0166 train_mae: 11.2100	val_loss: 11.2265 val_mae: 11.2265	test_loss: 11.2861 test_mae: 11.2860
-/opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:420: You are trying to `self.log()` but the `self.trainer` reference is not registered on the model yet. This is most likely because the model hasn't been passed to the `Trainer`
-train: {'epoch': 1, 'time_epoch': 13.56462, 'eta': 51.79623, 'eta_hours': 0.01439, 'loss': 605.19561279, 'lr': 0.0001, 'params': 1389786, 'time_iter': 0.0864, 'mae': 11.01783, 'r2': -39.34305, 'spearmanr': -0.15371, 'mse': 163.12296, 'rmse': 12.77196, 'loss_node': 1.4485996669769288, 'loss_edge': 0.9762422721862793, 'loss_graph': 591.7529379760742, 'loss_task': 11.01783452758789, 'loss_encoder': 0.0}
-...computing epoch stats took: 0.01s
-Data shape for DDIM sampling is (42054, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.32it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.26it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.11it/s]
-Data shape for DDIM sampling is (39946, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.19it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.11it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.05it/s]
-Data shape for DDIM sampling is (38346, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.76it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.19it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.06it/s]
-Data shape for DDIM sampling is (37192, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.59it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.53it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.45it/s]
-Data shape for DDIM sampling is (39306, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.51it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.43it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.33it/s]
-Data shape for DDIM sampling is (38484, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.46it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.39it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.22it/s]
-Data shape for DDIM sampling is (40998, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.95it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.83it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.77it/s]
-Data shape for DDIM sampling is (42534, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 77.87it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 77.81it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 77.72it/s]
-Data shape for DDIM sampling is (41952, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.63it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.48it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.45it/s]
-Data shape for DDIM sampling is (39390, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.35it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.24it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.10it/s]
-Data shape for DDIM sampling is (39190, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.61it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.50it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.35it/s]
-Data shape for DDIM sampling is (38732, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.47it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.42it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.26it/s]
-Data shape for DDIM sampling is (40328, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.85it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.75it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.67it/s]
-Data shape for DDIM sampling is (37928, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.51it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.34it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.25it/s]
-Data shape for DDIM sampling is (41930, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.62it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.55it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.45it/s]
-Data shape for DDIM sampling is (25574, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 105.32it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 104.91it/s]
-val: {'epoch': 1, 'time_epoch': 4.63728, 'loss': 17.71784447, 'lr': 0, 'params': 1389786, 'time_iter': 0.28983, 'mae': 17.71785, 'r2': -86.43273, 'spearmanr': -0.31983, 'mse': 344.3761, 'rmse': 18.55737}
-...computing epoch stats took: 0.00s
-Data shape for DDIM sampling is (39290, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.29it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.27it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.03it/s]
-Data shape for DDIM sampling is (36096, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 85.86it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 85.94it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 85.82it/s]
-Data shape for DDIM sampling is (40252, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.95it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.67it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.62it/s]
-Data shape for DDIM sampling is (41044, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.81it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.68it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.58it/s]
-Data shape for DDIM sampling is (39220, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.48it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.35it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.21it/s]
-Data shape for DDIM sampling is (39348, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.03it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.19it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.03it/s]
-Data shape for DDIM sampling is (39902, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.45it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.35it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.28it/s]
-Data shape for DDIM sampling is (41038, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.71it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.71it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.60it/s]
-Data shape for DDIM sampling is (39738, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.52it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.42it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.28it/s]
-Data shape for DDIM sampling is (39230, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.50it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.30it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.20it/s]
-Data shape for DDIM sampling is (38132, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.97it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.80it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.70it/s]
-Data shape for DDIM sampling is (41532, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.11it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.00it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.95it/s]
-Data shape for DDIM sampling is (41898, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.43it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.30it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.18it/s]
-Data shape for DDIM sampling is (39482, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.49it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.37it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.21it/s]
-Data shape for DDIM sampling is (43426, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 76.29it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 76.31it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 76.26it/s]
-Data shape for DDIM sampling is (25726, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 104.39it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 103.98it/s]
-test: {'epoch': 1, 'time_epoch': 4.65798, 'loss': 17.73028374, 'lr': 0, 'params': 1389786, 'time_iter': 0.29112, 'mae': 17.73029, 'r2': -83.93158, 'spearmanr': -0.34071, 'mse': 345.52713, 'rmse': 18.58836}
-...computing epoch stats took: 0.00s
-> Epoch 1: took 22.9s (avg 26.9s) | Best so far: epoch 0	train_loss: 5572.0166 train_mae: 11.2100	val_loss: 11.2265 val_mae: 11.2265	test_loss: 11.2861 test_mae: 11.2860
-/opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:420: You are trying to `self.log()` but the `self.trainer` reference is not registered on the model yet. This is most likely because the model hasn't been passed to the `Trainer`
-train: {'epoch': 2, 'time_epoch': 13.55633, 'eta': 32.0581, 'eta_hours': 0.00891, 'loss': 50.32223483, 'lr': 8.536e-05, 'params': 1389786, 'time_iter': 0.08635, 'mae': 22.00208, 'r2': -129.73697, 'spearmanr': -0.2545, 'mse': 528.6214, 'rmse': 22.99177, 'loss_node': 3.0483230953216554, 'loss_edge': 1.2745354888916016, 'loss_graph': 23.997297895812988, 'loss_task': 22.00207817993164, 'loss_encoder': 0.0}
-...computing epoch stats took: 0.01s
-/opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:420: You are trying to `self.log()` but the `self.trainer` reference is not registered on the model yet. This is most likely because the model hasn't been passed to the `Trainer`
-train: {'epoch': 3, 'time_epoch': 13.53538, 'eta': 15.40563, 'eta_hours': 0.00428, 'loss': 34.8004214, 'lr': 5e-05, 'params': 1389786, 'time_iter': 0.08621, 'mae': 23.78252, 'r2': -150.34188, 'spearmanr': -0.25598, 'mse': 611.9353, 'rmse': 24.73733, 'loss_node': 3.010941358947754, 'loss_edge': 1.2890444568634034, 'loss_graph': 6.717916796875, 'loss_task': 23.782518963623048, 'loss_encoder': 0.0}
-Data shape for DDIM sampling is (42054, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.25it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.23it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.11it/s]
-Data shape for DDIM sampling is (39946, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.71it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.57it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.46it/s]
-Data shape for DDIM sampling is (38346, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.45it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.27it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.14it/s]
-Data shape for DDIM sampling is (37192, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.77it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.51it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.38it/s]
-Data shape for DDIM sampling is (39306, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.35it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.33it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.17it/s]
-Data shape for DDIM sampling is (38484, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.53it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.39it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.23it/s]
-Data shape for DDIM sampling is (40998, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.52it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.70it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.59it/s]
-Data shape for DDIM sampling is (42534, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 77.45it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 77.49it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 77.44it/s]
-Data shape for DDIM sampling is (41952, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.54it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.47it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.41it/s]
-Data shape for DDIM sampling is (39390, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.02it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.08it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.90it/s]
-Data shape for DDIM sampling is (39190, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.52it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.45it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.32it/s]
-Data shape for DDIM sampling is (38732, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.45it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.44it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.28it/s]
-Data shape for DDIM sampling is (40328, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.84it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.79it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.61it/s]
-Data shape for DDIM sampling is (37928, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.17it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.20it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.10it/s]
-Data shape for DDIM sampling is (41930, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.68it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.61it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.54it/s]
-Data shape for DDIM sampling is (25574, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 105.88it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 105.45it/s]
-val: {'epoch': 3, 'time_epoch': 4.63896, 'loss': 24.01537976, 'lr': 0, 'params': 1389786, 'time_iter': 0.28993, 'mae': 24.01538, 'r2': -158.19443, 'spearmanr': -0.25093, 'mse': 627.02789, 'rmse': 25.04053}
-Data shape for DDIM sampling is (39290, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.16it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.08it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.99it/s]
-Data shape for DDIM sampling is (36096, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 86.01it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 85.89it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 85.81it/s]
-Data shape for DDIM sampling is (40252, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.97it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.69it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.57it/s]
-Data shape for DDIM sampling is (41044, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.84it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.77it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.62it/s]
-Data shape for DDIM sampling is (39220, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.56it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.42it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.27it/s]
-Data shape for DDIM sampling is (39348, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.24it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.19it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.03it/s]
-Data shape for DDIM sampling is (39902, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.58it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.49it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.36it/s]
-Data shape for DDIM sampling is (41038, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.69it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.73it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.62it/s]
-Data shape for DDIM sampling is (39738, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.62it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.64it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.53it/s]
-Data shape for DDIM sampling is (39230, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.48it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.50it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.33it/s]
-Data shape for DDIM sampling is (38132, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.36it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.13it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.99it/s]
-Data shape for DDIM sampling is (41532, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.17it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.52it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.58it/s]
-Data shape for DDIM sampling is (41898, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.65it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.57it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.47it/s]
-Data shape for DDIM sampling is (39482, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.24it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.41it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.22it/s]
-Data shape for DDIM sampling is (43426, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 76.56it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 76.41it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 76.21it/s]
-Data shape for DDIM sampling is (25726, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 104.56it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 103.88it/s]
-test: {'epoch': 3, 'time_epoch': 4.65344, 'loss': 24.03569102, 'lr': 0, 'params': 1389786, 'time_iter': 0.29084, 'mae': 24.03569, 'r2': -153.4885, 'spearmanr': -0.27164, 'mse': 628.50549, 'rmse': 25.07001}
-> Epoch 3: took 22.8s (avg 22.5s) | Best so far: epoch 0	train_loss: 5572.0166 train_mae: 11.2100	val_loss: 11.2265 val_mae: 11.2265	test_loss: 11.2861 test_mae: 11.2860
-/opt/conda/lib/python3.10/site-packages/pytorch_lightning/core/module.py:420: You are trying to `self.log()` but the `self.trainer` reference is not registered on the model yet. This is most likely because the model hasn't been passed to the `Trainer`
-train: {'epoch': 4, 'time_epoch': 13.54324, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 33.11735341, 'lr': 1.464e-05, 'params': 1389786, 'time_iter': 0.08626, 'mae': 23.69877, 'r2': -149.7081, 'spearmanr': -0.25602, 'mse': 609.37262, 'rmse': 24.68547, 'loss_node': 2.556166952896118, 'loss_edge': 1.293067712211609, 'loss_graph': 5.569345193481445, 'loss_task': 23.698773477172853, 'loss_encoder': 0.0}
-Data shape for DDIM sampling is (42054, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.13it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.08it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.03it/s]
-Data shape for DDIM sampling is (39946, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.16it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.28it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.13it/s]
-Data shape for DDIM sampling is (38346, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.37it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.33it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.15it/s]
-Data shape for DDIM sampling is (37192, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.39it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.22it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.13it/s]
-Data shape for DDIM sampling is (39306, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.30it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.28it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.08it/s]
-Data shape for DDIM sampling is (38484, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.44it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.33it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.19it/s]
-Data shape for DDIM sampling is (40998, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.95it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.83it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.71it/s]
-Data shape for DDIM sampling is (42534, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 77.63it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 77.61it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 77.55it/s]
-Data shape for DDIM sampling is (41952, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.49it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.42it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.33it/s]
-Data shape for DDIM sampling is (39390, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.15it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.11it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.92it/s]
-Data shape for DDIM sampling is (39190, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.53it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.34it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.23it/s]
-Data shape for DDIM sampling is (38732, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.35it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.33it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.18it/s]
-Data shape for DDIM sampling is (40328, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.89it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.79it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.66it/s]
-Data shape for DDIM sampling is (37928, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 84.10it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 84.21it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 84.02it/s]
-Data shape for DDIM sampling is (41930, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.63it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.53it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.47it/s]
-Data shape for DDIM sampling is (25574, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 105.76it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 105.65it/s]
-val: {'epoch': 4, 'time_epoch': 4.63924, 'loss': 24.29215755, 'lr': 0, 'params': 1389786, 'time_iter': 0.28995, 'mae': 24.29216, 'r2': -162.1041, 'spearmanr': -0.24868, 'mse': 642.42712, 'rmse': 25.34615}
-Data shape for DDIM sampling is (39290, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.35it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.27it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.12it/s]
-Data shape for DDIM sampling is (36096, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 86.24it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 86.05it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 85.90it/s]
-Data shape for DDIM sampling is (40252, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.95it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.78it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.66it/s]
-Data shape for DDIM sampling is (41044, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.75it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.73it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.62it/s]
-Data shape for DDIM sampling is (39220, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.57it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.45it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.33it/s]
-Data shape for DDIM sampling is (39348, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.21it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.21it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.05it/s]
-Data shape for DDIM sampling is (39902, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.62it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.54it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.42it/s]
-Data shape for DDIM sampling is (41038, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.87it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 79.64it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 79.56it/s]
-Data shape for DDIM sampling is (39738, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 81.63it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 81.49it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 81.34it/s]
-Data shape for DDIM sampling is (39230, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 82.29it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 82.35it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 82.20it/s]
-Data shape for DDIM sampling is (38132, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 83.96it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 83.80it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 83.64it/s]
-Data shape for DDIM sampling is (41532, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 79.07it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.94it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.82it/s]
-Data shape for DDIM sampling is (41898, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 78.66it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 78.54it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 78.41it/s]
-Data shape for DDIM sampling is (39482, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  45%|████▌     | 9/20 [00:00<00:00, 80.57it/s]DDIM Sampler:  90%|█████████ | 18/20 [00:00<00:00, 80.89it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 80.73it/s]
-Data shape for DDIM sampling is (43426, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  40%|████      | 8/20 [00:00<00:00, 76.49it/s]DDIM Sampler:  80%|████████  | 16/20 [00:00<00:00, 76.43it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 76.31it/s]
-Data shape for DDIM sampling is (25726, 4), eta 0.0
-Running DDIM Sampling with 20 timesteps
-DDIM Sampler:   0%|          | 0/20 [00:00<?, ?it/s]DDIM Sampler:  55%|█████▌    | 11/20 [00:00<00:00, 104.24it/s]DDIM Sampler: 100%|██████████| 20/20 [00:00<00:00, 103.76it/s]
-test: {'epoch': 4, 'time_epoch': 4.65336, 'loss': 24.3125009, 'lr': 0, 'params': 1389786, 'time_iter': 0.29084, 'mae': 24.3125, 'r2': -157.29071, 'spearmanr': -0.26981, 'mse': 643.97406, 'rmse': 25.37664}
-> Epoch 4: took 22.9s (avg 22.6s) | Best so far: epoch 0	train_loss: 5572.0166 train_mae: 11.2100	val_loss: 11.2265 val_mae: 11.2265	test_loss: 11.2861 test_mae: 11.2860
-Avg time per epoch: 22.60s
-Total train loop time: 0.03h
-wandb: - 0.049 MB of 0.049 MB uploadedwandb: \ 0.072 MB of 0.072 MB uploadedwandb: | 0.072 MB of 0.072 MB uploadedwandb: / 0.072 MB of 0.072 MB uploadedwandb:                                                                                
-wandb: 
-wandb: Run history:
-wandb:         best/epoch ▁▁▁▁
-wandb:     best/test_loss ▁▁▁▁
-wandb:      best/test_mae ▁▁▁▁
-wandb:    best/train_loss ▁▁▁▁
-wandb:     best/train_mae ▁▁▁▁
-wandb:      best/val_loss ▁▁▁▁
-wandb:       best/val_mae ▁▁▁▁
-wandb:         test/epoch ▁▃▃▆█
-wandb:          test/loss ▁▄▄██
-wandb:            test/lr ▁▁▁▁▁
-wandb:           test/mae ▁▄▄██
-wandb:           test/mse ▁▄▄██
-wandb:        test/params ▁▁▁▁▁
-wandb:            test/r2 █▅▅▁▁
-wandb:          test/rmse ▁▄▄██
-wandb:     test/spearmanr █▁▁▂▂
-wandb:    test/time_epoch █▁▁▁▁
-wandb:     test/time_iter █▁▁▁▁
-wandb:        train/epoch ▁▃▅▆█
-wandb:          train/eta █▅▄▂▁
-wandb:    train/eta_hours █▅▄▂▁
-wandb:         train/loss █▂▁▁▁
-wandb:    train/loss_edge ▁▆███
-wandb: train/loss_encoder ▁▁▁▁▁
-wandb:   train/loss_graph █▂▁▁▁
-wandb:    train/loss_node ▁▃██▇
-wandb:    train/loss_task ▁▁▇██
-wandb:           train/lr ▁█▇▅▂
-wandb:          train/mae ▁▁▇██
-wandb:          train/mse ▁▁▇██
-wandb:       train/params ▁▁▁▁▁
-wandb:           train/r2 ██▂▁▁
-wandb:         train/rmse ▁▁▇██
-wandb:    train/spearmanr █▃▁▁▁
-wandb:   train/time_epoch █▁▁▁▁
-wandb:    train/time_iter █▁▁▁▁
-wandb:          val/epoch ▁▃▃▆█
-wandb:           val/loss ▁▄▄██
-wandb:             val/lr ▁▁▁▁▁
-wandb:            val/mae ▁▄▄██
-wandb:            val/mse ▁▄▄██
-wandb:         val/params ▁▁▁▁▁
-wandb:             val/r2 █▅▅▁▁
-wandb:           val/rmse ▁▄▄██
-wandb:      val/spearmanr █▁▁▂▂
-wandb:     val/time_epoch █▁▁▁▁
-wandb:      val/time_iter █▁▁▁▁
-wandb: 
-wandb: Run summary:
-wandb:          best/epoch 0
-wandb:      best/test_loss 11.28605
-wandb:       best/test_mae 11.28605
-wandb:     best/train_loss 5572.01661
-wandb:      best/train_mae 11.20999
-wandb:       best/val_loss 11.22648
-wandb:        best/val_mae 11.22648
-wandb:      best_test_perf 11.28605
-wandb:     best_train_perf 11.20999
-wandb:       best_val_perf 11.22648
-wandb: full_epoch_time_avg 22.59948
-wandb: full_epoch_time_sum 112.99741
-wandb:          test/epoch 4
-wandb:           test/loss 24.3125
-wandb:             test/lr 0
-wandb:            test/mae 24.3125
-wandb:            test/mse 643.97406
-wandb:         test/params 1389786
-wandb:             test/r2 -157.29071
-wandb:           test/rmse 25.37664
-wandb:      test/spearmanr -0.26981
-wandb:     test/time_epoch 4.65336
-wandb:      test/time_iter 0.29084
-wandb:         train/epoch 4
-wandb:           train/eta 0
-wandb:     train/eta_hours 0
-wandb:          train/loss 33.11735
-wandb:     train/loss_edge 1.29307
-wandb:  train/loss_encoder 0
-wandb:    train/loss_graph 5.56935
-wandb:     train/loss_node 2.55617
-wandb:     train/loss_task 23.69877
-wandb:            train/lr 1e-05
-wandb:           train/mae 23.69877
-wandb:           train/mse 609.37262
-wandb:        train/params 1389786
-wandb:            train/r2 -149.7081
-wandb:          train/rmse 24.68547
-wandb:     train/spearmanr -0.25602
-wandb:    train/time_epoch 13.54324
-wandb:     train/time_iter 0.08626
-wandb:           val/epoch 4
-wandb:            val/loss 24.29216
-wandb:              val/lr 0
-wandb:             val/mae 24.29216
-wandb:             val/mse 642.42712
-wandb:          val/params 1389786
-wandb:              val/r2 -162.1041
-wandb:            val/rmse 25.34615
-wandb:       val/spearmanr -0.24868
-wandb:      val/time_epoch 4.63924
-wandb:       val/time_iter 0.28995
-wandb: 
-wandb: 🚀 View run ZINC-subset.LatentDiffusion.r0 at: https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC/runs/zwtw7ytq
-wandb: ⭐️ View project at: https://wandb.ai/shokuno-the-university-of-tokyo/LatentGraphDiffusion-ZINC
-wandb: Synced 4 W&B file(s), 0 media file(s), 3 artifact file(s) and 0 other file(s)
-wandb: Find logs at: ./wandb/run-20250815_164037-zwtw7ytq/logs
-Task done, results saved in /workspace/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline/0
-0
-{'epoch': 0, 'time_epoch': 20.9662, 'eta': 83.86481, 'eta_hours': 0.0233, 'loss': 5572.01660625, 'lr': 0.0, 'params': 1389786, 'time_iter': 0.13354, 'mae': 11.20999, 'r2': -34.67573, 'spearmanr': 0.20583, 'mse': 144.25114, 'rmse': 12.01046, 'loss_node': 0.6303562730789185, 'loss_edge': 0.3623547652721405, 'loss_graph': 5559.8139140625, 'loss_task': 11.209990823364258, 'loss_encoder': 0.0}
-{'epoch': 0, 'time_epoch': 4.95672, 'loss': 11.22647683, 'lr': 0, 'params': 1389786, 'time_iter': 0.30979, 'mae': 11.22648, 'r2': -35.6885, 'spearmanr': 0.26396, 'mse': 144.50702, 'rmse': 12.02111}
-{'epoch': 0, 'time_epoch': 4.84363, 'loss': 11.28605379, 'lr': 0, 'params': 1389786, 'time_iter': 0.30273, 'mae': 11.28605, 'r2': -34.66664, 'spearmanr': 0.29901, 'mse': 145.1026, 'rmse': 12.04585}
-Results aggregated across runs saved in /workspace/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline/agg
-[*] All done: 2025-08-15 16:42:36.657316
-Training completed. Checking results...
--rw-r----- 1 q25030 gp15 9806239 Aug 15 16:41 /workspace/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline/0/ckpt/0.ckpt
-Testing inference...
-Testing inference with checkpoint: /workspace/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline/0/ckpt/0.ckpt
-Inference test placeholder - checkpoint created successfully
-Training completed at: Fri Aug 15 16:42:38 JST 2025
-Results saved in: /workspace/runs/zinc_diffusion_baseline_20250815_163934
-Used encoder checkpoint: results/zinc-encoder-fast/1754884349/ckpt/9.ckpt
-Job completed at: Fri Aug 15 16:42:38 JST 2025
-Results saved in: /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_diffusion_baseline_20250815_163934
-
-===== Final diffusion model checkpoints =====
-Checkpoint: /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_diffusion_baseline_20250815_163934/zinc-diffusion_ddpm_baseline/0/ckpt/0.ckpt
-
-===== Baseline Testing Summary =====
-✓ Config: zinc-diffusion_ddpm_baseline.yaml
-✓ Epochs: 5 (minimal for testing)
-✓ Timesteps: 100 (reduced from 1000)
-✓ DDIM steps: 20 (fast inference)
-✓ Batch size: 64
-✓ Encoder checkpoint: results/zinc-encoder-fast/1754884349/ckpt/9.ckpt
-✓ WandB logging: enabled
-
-Next steps after successful baseline:
-1. Check WandB dashboard for training progress
-2. Verify inference works with generated checkpoints
-3. Scale up to full training if baseline succeeds

@@ -1,42 +1,0 @@
-Directory created: /work/gp15/q25030/LatentGraphDiffusion/runs/20250811_114811_fast_training /work/gp15/q25030/LatentGraphDiffusion/data
-Starting optimized LGD encoder pretraining...
-Configuration: zinc-encoder-fast.yaml
-- Max epochs: 10 (down from 2000)
-- Hidden dimensions: 32 (down from 64)
-- Early stopping enabled
-- WandB logging enabled
-
-/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
-Warning: Could not import grit_layer: No module named 'opt_einsum'
-Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
-./datasets/ZINC
-Processing...
-  0%|          | 0/10000 [00:00<?, ?it/s]Processing train dataset:   0%|          | 0/10000 [00:00<?, ?it/s]Processing train dataset:   0%|          | 1/10000 [00:00<37:58,  4.39it/s]Processing train dataset:  21%|██        | 2116/10000 [00:00<00:00, 8151.46it/s]Processing train dataset:  43%|████▎     | 4259/10000 [00:00<00:00, 12864.15it/s]Processing train dataset:  64%|██████▍   | 6419/10000 [00:00<00:00, 15803.02it/s]Processing train dataset:  86%|████████▌ | 8587/10000 [00:00<00:00, 17708.62it/s]Processing train dataset: 100%|██████████| 10000/10000 [00:00<00:00, 14416.71it/s]
-  0%|          | 0/1000 [00:00<?, ?it/s]Processing val dataset:   0%|          | 0/1000 [00:00<?, ?it/s]Processing val dataset:  62%|██████▏   | 618/1000 [00:00<00:00, 6178.64it/s]Processing val dataset: 100%|██████████| 1000/1000 [00:00<00:00, 8459.60it/s]
-  0%|          | 0/1000 [00:00<?, ?it/s]Processing test dataset:   0%|          | 0/1000 [00:00<?, ?it/s]Processing test dataset: 100%|██████████| 1000/1000 [00:00<00:00, 15635.86it/s]
-Done!
-[*] Loaded dataset 'subset' from 'PyG-ZINC':
-/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
-  warnings.warn(msg)
-  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
-  undirected: True
-  num graphs: 12000
-/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
-  warnings.warn(msg)
-  avg num_nodes/graph: 23
-  num node features: 1
-  num edge features: 1
-  num classes: (appears to be a regression task)
-Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
-  ...estimated to be undirected: True
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1601.73it/s]
-Done! Took 00:00:08.35
-Adding virtual node and edges
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1713.56it/s]
-Preprocessing PE
-  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3442.02it/s]
-[*] Run ID 0: seed=0, split_index=0
-    Starting now: 2025-08-11 11:49:26.450951
-/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
-  warnings.warn("Initializing zero-element tensors is a no-op")

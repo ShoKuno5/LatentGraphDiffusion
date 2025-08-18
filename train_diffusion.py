@@ -29,6 +29,7 @@ from lgd.finetuning import load_pretrained_model_cfg, \
     init_model_from_pretrained
 from lgd.ddpm.LGD import DDPM, LatentDiffusion
 from lgd.ddpm.LGD_Inductive import LatentDiffusionInductive
+from lgd.flow.flow_core import LatentFlow, LatentFlowInductive
 
 
 def new_optimizer_config(cfg):
@@ -142,14 +143,68 @@ if __name__ == '__main__':
                      f"split_index={cfg.dataset.split_index}")
         logging.info(f"    Starting now: {datetime.datetime.now()}")
         # model = create_model()
-        # ddpm = DDPM(conditioning_key=cfg.diffusion.conditioning_key, hid_dim=cfg.diffusion.hid_dim)
-        model = eval(cfg.model.get('type', 'LatentDiffusion'))\
-            (timesteps=cfg.diffusion.get('timesteps', 1000), conditioning_key=cfg.diffusion.conditioning_key,
-             hid_dim=cfg.diffusion.hid_dim, parameterization=cfg.diffusion.get("parameterization", "x0"),
-             cond_stage_key=cfg.diffusion.cond_stage_key, first_stage_config=cfg.diffusion.first_stage_config,
-             cond_stage_config=cfg.diffusion.cond_stage_config, edge_factor=cfg.diffusion.get("edge_factor", 1.0),
-             graph_factor=cfg.diffusion.get("graph_factor", 1.0),
-             train_mode=cfg.diffusion.get("train_mode", 'sample')).to(torch.device(cfg.accelerator))
+        # Build model based on type: LatentDiffusion (default) or LatentFlow
+        model_type = cfg.model.get('type', 'LatentDiffusion')
+        
+        if model_type in ['LatentFlow', 'LatentFlowInductive']:
+            # Create LatentFlow model with flow-specific parameters
+            if model_type == 'LatentFlow':
+                model = LatentFlow(
+                    first_stage_config=cfg.flow.first_stage_config,
+                    objective=cfg.flow.get('objective', 'rectified'),
+                    cond_stage_config=cfg.flow.get('cond_stage_config', '__is_unconditional__'),
+                    cond_stage_key=cfg.flow.get('cond_stage_key', 'unconditional'),
+                    first_stage_trainable=cfg.flow.get('first_stage_trainable', False),
+                    cond_stage_trainable=cfg.flow.get('cond_stage_trainable', False),
+                    conditioning_key=cfg.flow.get('conditioning_key', None),
+                    hid_dim=cfg.flow.get('hid_dim', 4),
+                    node_factor=cfg.flow.get('node_factor', 1.0),
+                    edge_factor=cfg.flow.get('edge_factor', 1.0),
+                    graph_factor=cfg.flow.get('graph_factor', 1.0),
+                    use_graph_latent=cfg.flow.get('use_graph_latent', False),
+                    force_undirected=cfg.flow.get('force_undirected', False),
+                    use_ema=cfg.flow.get('ema', True),
+                    # Gaussian CFM parameters
+                    alpha_fn=cfg.flow.get('alpha_fn', 'linear'),
+                    sigma_fn=cfg.flow.get('sigma_fn', 'constant'),
+                    sigma_min=cfg.flow.get('sigma_min', 0.01),
+                    sigma_max=cfg.flow.get('sigma_max', 1.0),
+                    # Training parameters
+                    learning_rate=cfg.optim.get('base_lr', 2e-4),
+                    weight_decay=cfg.optim.get('weight_decay', 0.01),
+                    train_mode=cfg.flow.get('train_mode', 'sample')
+                ).to(torch.device(cfg.accelerator))
+            else:  # LatentFlowInductive
+                model = LatentFlowInductive(
+                    first_stage_config=cfg.flow.first_stage_config,
+                    objective=cfg.flow.get('objective', 'rectified'),
+                    cond_stage_config=cfg.flow.get('cond_stage_config', '__is_unconditional__'),
+                    cond_stage_key=cfg.flow.get('cond_stage_key', 'unconditional'),
+                    first_stage_trainable=cfg.flow.get('first_stage_trainable', False),
+                    cond_stage_trainable=cfg.flow.get('cond_stage_trainable', False),
+                    conditioning_key=cfg.flow.get('conditioning_key', None),
+                    hid_dim=cfg.flow.get('hid_dim', 4),
+                    node_factor=cfg.flow.get('node_factor', 1.0),
+                    edge_factor=cfg.flow.get('edge_factor', 1.0),
+                    graph_factor=cfg.flow.get('graph_factor', 1.0),
+                    use_graph_latent=cfg.flow.get('use_graph_latent', False),
+                    force_undirected=cfg.flow.get('force_undirected', False),
+                    use_ema=cfg.flow.get('ema', True),
+                    # Training parameters
+                    learning_rate=cfg.optim.get('base_lr', 2e-4),
+                    weight_decay=cfg.optim.get('weight_decay', 0.01),
+                    train_mode=cfg.flow.get('train_mode', 'sample')
+                ).to(torch.device(cfg.accelerator))
+        else:
+            # Original diffusion model creation (preserved for comparison)
+            # ddpm = DDPM(conditioning_key=cfg.diffusion.conditioning_key, hid_dim=cfg.diffusion.hid_dim)
+            model = eval(cfg.model.get('type', 'LatentDiffusion'))\
+                (timesteps=cfg.diffusion.get('timesteps', 1000), conditioning_key=cfg.diffusion.conditioning_key,
+                 hid_dim=cfg.diffusion.hid_dim, parameterization=cfg.diffusion.get("parameterization", "x0"),
+                 cond_stage_key=cfg.diffusion.cond_stage_key, first_stage_config=cfg.diffusion.first_stage_config,
+                 cond_stage_config=cfg.diffusion.cond_stage_config, edge_factor=cfg.diffusion.get("edge_factor", 1.0),
+                 graph_factor=cfg.diffusion.get("graph_factor", 1.0),
+                 train_mode=cfg.diffusion.get("train_mode", 'sample')).to(torch.device(cfg.accelerator))
         # model.to(torch.device(cfg.accelerator))
         if cfg.pretrained.dir:
             model = init_model_from_pretrained(
