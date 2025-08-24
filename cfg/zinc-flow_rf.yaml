@@ -193,7 +193,7 @@ flow:
   node_factor: 1.0                # Loss weighting for nodes
   edge_factor: 1.0                # Loss weighting for edges  
   graph_factor: 1.0               # Loss weighting for graph-level
-  use_graph_latent: False         # Whether to use graph-level latents
+  use_graph_latent: True         # Whether to use graph-level latents
   force_undirected: False         # Force undirected graphs
   # Gaussian CFM specific (unused for rectified flow)
   alpha_fn: linear                # Schedule for mu_t: linear | cosine
@@ -239,8 +239,8 @@ optim:
   optimizer: adamW                # AdamW optimizer
   weight_decay: 0.01              # L2 regularization
   base_lr: 2.0e-4                 # Learning rate
-  max_epoch: 10                   # Training epochs (quick test)
-  num_warmup_epochs: 2            # Warmup epochs (reduced)
+  max_epoch: 20                   # Training epochs (quick test)
+  num_warmup_epochs: 0            # Warmup epochs (reduced)
   scheduler: cosine_with_warmup   # Learning rate schedule
   min_lr: 1e-6                    # Minimum learning rate
 

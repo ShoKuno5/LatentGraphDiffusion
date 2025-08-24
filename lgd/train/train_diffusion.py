@@ -36,14 +36,19 @@ def train_epoch(logger, loader, model, optimizer, scheduler, batch_accumulation)
         loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder = model.training_step(batch, iter)
         loss = loss + loss_task * cfg.diffusion.get("task_factor", 0.0)
         # with torch.autograd.detect_anomaly():
-        loss.backward()
+        (loss / batch_accumulation).backward()
+
         # Parameters update after accumulating gradients for given num. batches.
         if ((iter + 1) % batch_accumulation == 0) or (iter + 1 == len(loader)):
             if cfg.optim.clip_grad_norm:
                 # TODO: gradient already have nan?
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            
             optimizer.step()
+            if hasattr(model, "on_train_batch_end"):
+                model.on_train_batch_end()
             optimizer.zero_grad()
+            
         _true = label.detach().to('cpu', non_blocking=True)
         _pred = pred.detach().to('cpu', non_blocking=True)
         logger.update_stats(true=_true,

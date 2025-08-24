@@ -336,8 +336,11 @@ class LatentFlow(pl.LightningModule):
         batch_num_node = getattr(batch, 'num_node_per_graph', 
                                  torch.tensor([batch.num_nodes // batch.num_graphs] * batch.num_graphs,
                                             dtype=torch.long, device=batch.x.device))
-        batch_idx = torch.cat([batch.batch, num2batch(batch_num_node ** 2)], dim=0)
-        batch.batch_idx = batch_idx
+        #batch_idx = torch.cat([batch.batch, num2batch(batch_num_node ** 2)], dim=0)
+        #batch.batch_idx = batch_idx
+        
+        edge_batch = batch.batch[batch.edge_index[0]]
+        batch.batch_idx = torch.cat([batch.batch, edge_batch], dim=0)
         
         return batch
     
@@ -388,8 +391,11 @@ class LatentFlow(pl.LightningModule):
         batch_num_node = getattr(batch, 'num_node_per_graph',
                                  torch.tensor([batch.num_nodes // batch.num_graphs] * batch.num_graphs,
                                             dtype=torch.long, device=batch.x.device))
-        batch_edge_idx = num2batch(batch_num_node ** 2)
-        t_edges = t[batch_edge_idx]
+        # training_step 内
+        # エッジが属するグラフIDを source ノード側から作る
+        edge_batch = batch.batch[batch.edge_index[0]]  # shape: [num_edges]
+        t_edges = t[edge_batch]                        # shape: [num_edges]
+
         
         # Sample zt along the path
         zt_nodes = self.sample_zt(z0_nodes, z1_nodes, t_nodes.unsqueeze(-1))
@@ -420,13 +426,13 @@ class LatentFlow(pl.LightningModule):
         if v_graph is not None and u_graph is not None:
             loss_graph_val = F.mse_loss(v_graph, u_graph)
             loss = loss + self.graph_factor * loss_graph_val
-            self.log("train/loss_graph", loss_graph_val, prog_bar=False)
+            # self.log("train/loss_graph", loss_graph_val, prog_bar=False)
         
         # Logging
-        self.log("train/loss", loss, prog_bar=True)
-        self.log("train/loss_nodes", loss_nodes, prog_bar=False)
-        self.log("train/loss_edges", loss_edges, prog_bar=False)
-        
+        # self.log("train/loss", loss, prog_bar=True)
+        # self.log("train/loss_nodes", loss_nodes, prog_bar=False)
+        # self.log("train/loss_edges", loss_edges, prog_bar=False)
+
         # Return values expected by train_diffusion mode
         # (loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder)
         # For flow matching, we don't have a separate task loss or encoder loss
@@ -448,7 +454,7 @@ class LatentFlow(pl.LightningModule):
             loss = result[0] if isinstance(result, tuple) else result
             
             # Log validation loss
-            self.log("val/loss", loss, prog_bar=True)
+            # self.log("val/loss", loss, prog_bar=True)
             
             return loss
     
@@ -567,6 +573,10 @@ class LatentFlow(pl.LightningModule):
                 # Handle case where samples is not a tuple
                 batch_samples.x = samples[:batch.num_nodes] if hasattr(samples, '__getitem__') else samples
                 batch_samples.edge_attr = samples[batch.num_nodes:] if hasattr(samples, '__getitem__') else samples
+            
+            if not hasattr(batch_samples, 'graph_attr'):
+                batch_samples.graph_attr = torch.zeros(batch_samples.num_graphs, 
+                                                    self.hid_dim, device=self.device)
             
             # Decode to graph space
             try:
