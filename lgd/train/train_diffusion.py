@@ -33,7 +33,7 @@ def train_epoch(logger, loader, model, optimizer, scheduler, batch_accumulation)
         # the embed of labels and prefix are done in fine-tuning of the encoder, not pretraining
         batch.x_masked = batch.x.clone().detach()
         batch.edge_attr_masked = batch.edge_attr.clone().detach()
-        loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder = model.training_step(batch)
+        loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder = model.training_step(batch, iter)
         loss = loss + loss_task * cfg.diffusion.get("task_factor", 0.0)
         # with torch.autograd.detect_anomaly():
         loss.backward()

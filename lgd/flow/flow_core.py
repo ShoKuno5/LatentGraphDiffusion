@@ -23,7 +23,7 @@ from lgd.model.utils import (
     num2batch, symmetrize
 )
 from lgd.model.GraphTransformerEncoder import GraphTransformerEncoder
-from lgd.model.SyntheticGraphTransformerEncoder import SyntheticGraphTransformerEncoder
+from lgd.model.SyntheticGraphTransformerEncoder import GraphTransformerSyntheticEncoder as SyntheticGraphTransformerEncoder
 from lgd.model.DenoisingTransformer import DenoisingTransformer
 from .sampler import FlowSampler, solve_flow
 

@@ -1,22 +1,22 @@
-# Latent Flow Matching configuration for ZINC dataset
+# Latent Flow Matching configuration for ZINC dataset - VM Version
 # Using Rectified Flow (RF) objective for unconditional generation
-out_dir: results/zinc-flow-rf
+out_dir: results/zinc-flow-vm
 metric_best: mae
 metric_agg: argmin
 tensorboard_each_run: False
 accelerator: "cuda:0"
-seed: 0
+seed: 42
 
 mlflow:
   use: False
   project: Exp
-  name: zinc-flow-rf
+  name: zinc-flow-vm
 
 wandb:
   use: True
-  project: LGD-FlowMatching
+  project: LatentGraphDiffusion-ZINC-Flow
   entity: ""  # Set your wandb username/team name here
-  name: ""    # Auto-generated
+  name: "flow-vm-training"
 
 dataset:
   format: PyG-ZINC
@@ -38,17 +38,17 @@ dataset:
 
 train:
   mode: train_diffusion
-  batch_size: 256
-  eval_period: 50
+  batch_size: 128  # Reduced for VM memory constraints
+  eval_period: 20
   start_eval_epoch: -1
   enable_ckpt: True
   ckpt_best: True
   ckpt_clean: True
-  ckpt_period: 20
+  ckpt_period: 10
   ensemble_repeat: 1
   ensemble_mode: none
   early_stop: True
-  early_stop_patience: 50
+  early_stop_patience: 30
   pretrain:
     mask_node_prob: 0.0
     mask_edge_prob: 0.0
@@ -80,12 +80,12 @@ encoder:
   posenc_in_dim_edge: 20
   posenc_dim: 28
   pe_raw_norm: None
-  hid_dim: 64  # Must equal in_dim + posenc_dim (36 + 28 = 64)
+  hid_dim: 64  # Using standard encoder config
   out_dim: 4
   use_time: False
   temb_dim: 0
-  num_heads: 4
-  num_layers: 6
+  num_heads: 8
+  num_layers: 10
   dropout: 0.0
   attn_dropout: 0.5
   attn:
@@ -144,7 +144,7 @@ dt:
   temb_dim: 64
   cond_dim: 4
   num_heads: 8
-  num_layers: 12     # Deeper network for better velocity learning
+  num_layers: 10     # Reduced for faster training
   self_attn: True
   dropout: 0.05
   attn_dropout: 0.25
@@ -182,7 +182,7 @@ flow:
   conditioning_key: none          # Unconditional generation
   hid_dim: 4                      # Should match dt.in_dim
   cond_stage_key: unconditional
-  first_stage_config: results/zinc-encoder-fast/0/ckpt/399.ckpt  # Pretrained encoder (best from 400 epochs)
+  first_stage_config: results/zinc-encoder/0/ckpt/0.ckpt  # Using existing encoder checkpoint
   cond_stage_config: __is_unconditional__
   first_stage_trainable: False    # Freeze pretrained encoder
   cond_stage_trainable: False
@@ -204,9 +204,9 @@ flow:
 # Graph Transformer configuration (if used)
 gt:
   layer_type: GritTransformer
-  layers: 6                       # Match encoder layers
-  n_heads: 4                      # Match encoder heads
-  dim_hidden: 32                  # Match encoder hid_dim
+  layers: 10                      # Match encoder layers
+  n_heads: 8                      # Match encoder heads
+  dim_hidden: 64                  # Match encoder hid_dim
   dropout: 0.0
   layer_norm: False
   batch_norm: True
@@ -226,7 +226,7 @@ gnn:
   head: san_graph
   layers_pre_mp: 0
   layers_post_mp: 3
-  dim_inner: 32                   # Must match gt.dim_hidden
+  dim_inner: 64                   # Must match gt.dim_hidden
   batchnorm: True
   act: relu
   dropout: 0.0
@@ -236,11 +236,11 @@ gnn:
 # Optimization configuration
 optim:
   clip_grad_norm: True
-  optimizer: adamW                # AdamW optimizer
+  optimizer: adamw                # AdamW optimizer
   weight_decay: 0.01              # L2 regularization
-  base_lr: 2.0e-4                 # Learning rate
-  max_epoch: 300                  # Training epochs
-  num_warmup_epochs: 30           # Warmup epochs
+  base_lr: 1.0e-4                 # Lower learning rate for stability
+  max_epoch: 200                  # Reduced epochs for VM training
+  num_warmup_epochs: 20           # Warmup epochs
   scheduler: cosine_with_warmup   # Learning rate schedule
   min_lr: 1e-6                    # Minimum learning rate
 
