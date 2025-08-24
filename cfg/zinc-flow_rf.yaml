@@ -62,7 +62,7 @@ train:
 
 model:
   type: LatentFlow
-  loss_fun: l2  # MSE loss for velocity matching
+  loss_fun: mse  # MSE loss for velocity matching
   edge_decoding: dot
   graph_pooling: add
 
@@ -239,8 +239,8 @@ optim:
   optimizer: adamW                # AdamW optimizer
   weight_decay: 0.01              # L2 regularization
   base_lr: 2.0e-4                 # Learning rate
-  max_epoch: 300                  # Training epochs
-  num_warmup_epochs: 30           # Warmup epochs
+  max_epoch: 10                   # Training epochs (quick test)
+  num_warmup_epochs: 2            # Warmup epochs (reduced)
   scheduler: cosine_with_warmup   # Learning rate schedule
   min_lr: 1e-6                    # Minimum learning rate
 
