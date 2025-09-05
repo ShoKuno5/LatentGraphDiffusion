@@ -1,7 +1,7 @@
 # Latent Flow Matching configuration for ZINC dataset
 # Using Rectified Flow (RF) objective for unconditional generation
 out_dir: results/zinc-flow-rf
-metric_best: mae
+metric_best: loss
 metric_agg: argmin
 tensorboard_each_run: False
 accelerator: "cuda:0"
@@ -39,7 +39,7 @@ dataset:
 train:
   mode: train_diffusion
   batch_size: 256
-  eval_period: 50
+  eval_period: 1
   start_eval_epoch: -1
   enable_ckpt: True
   ckpt_best: True

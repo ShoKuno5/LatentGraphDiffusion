@@ -51,8 +51,7 @@ class VelocityWrapper(nn.Module):
         # The denoiser expects timesteps in [0, num_timesteps]
         # For flow, t is in [0, 1], so we scale for compatibility
         # TODO: Consider feeding continuous t directly if denoiser supports it
-        t_scaled = t * 999  # Map [0,1] to [0,999] for compatibility  
-        t_scaled = t_scaled.long()
+        t_scaled = t * 999.0  # Map [0,1] to [0,999] for compatibility, keep as float
         
         # Call denoiser (it will handle conditioning internally)
         output = self.denoiser(batch, t_scaled, c)
@@ -309,6 +308,9 @@ class LatentFlow(pl.LightningModule):
     @torch.no_grad()
     def get_input(self, batch, return_first_stage_outputs=False):
         """Prepare input batch with encoding."""
+        assert hasattr(batch, 'num_node_per_graph'), \
+            "Expected `batch.num_node_per_graph` to be set by dataset transforms. " \
+            "Ensure virtual node/edge preprocessing is enabled for dense edge layout."
         batch = batch.to(self.device)
         batch.x_0 = batch.x.clone().detach()
         batch.edge_attr_0 = batch.edge_attr.clone().detach()
@@ -349,6 +351,9 @@ class LatentFlow(pl.LightningModule):
         Forward pass to predict velocity.
         Returns (v_nodes, v_edges, v_graph).
         """
+        assert hasattr(batch, 'num_node_per_graph'), \
+            "Expected `batch.num_node_per_graph` in forward pass. " \
+            "It is required by the denoiser for dense edge indexing."
         # Call the velocity network
         batch_out = self.model(batch, t, getattr(batch, 'c', None))
         
@@ -530,84 +535,67 @@ class LatentFlow(pl.LightningModule):
     @torch.no_grad()
     def inference(self, batch, ddim_steps=None, ddim_eta=0.0, use_ddpm_steps=False, **kwargs):
         """
-        Inference method for evaluation during training.
-        
-        Args:
-            batch: Input batch
-            ddim_steps: Number of sampling steps (maps to flow steps)  
-            ddim_eta: Not used in flow matching (kept for compatibility)
-            use_ddpm_steps: Not used in flow matching (kept for compatibility)
-            
-        Returns:
-            loss: Evaluation loss
-            pred: Predictions
+        Flow の検証損失（速度場の MSE）を返す。
+        生成→デコード→回帰の代わりに、学習時と同じターゲット u に対する
+        予測速度 v の MSE を計算する。
+        戻り値の第2要素はロガー互換用のダミー。
         """
-        # Prepare input batch 
+        # 入力準備（エンコード等）
         batch = self.get_input(batch)
-        
-        # Use EMA weights if available
+
+        # z1 の分割
+        z1 = batch.x_start.clone().detach()
+        num_nodes = batch.num_nodes
+        z1_nodes = z1[:num_nodes]
+        z1_edges = z1[num_nodes:]
+        z1_graph = getattr(batch, 'graph_start', None)
+
+        # ノイズ z0
+        z0_nodes = torch.randn_like(z1_nodes)
+        z0_edges = torch.randn_like(z1_edges)
+        z0_graph = torch.randn_like(z1_graph) if z1_graph is not None else None
+
+        if self.force_undirected:
+            z0_edges = symmetrize(batch.edge_index, batch.batch, z0_edges)
+            z1_edges = symmetrize(batch.edge_index, batch.batch, z1_edges)
+
+        # t のブロードキャスト（疎グラフに対して source ノード起点）
+        t = torch.rand(batch.num_graphs, device=self.device)
+        t_nodes = t[batch.batch]
+        edge_batch = batch.batch[batch.edge_index[0]]
+        t_edges = t[edge_batch]
+
+        # zt とターゲット速度 u
+        zt_nodes = self.sample_zt(z0_nodes, z1_nodes, t_nodes.unsqueeze(-1))
+        zt_edges = self.sample_zt(z0_edges, z1_edges, t_edges.unsqueeze(-1))
+        zt_graph = self.sample_zt(z0_graph, z1_graph, t.unsqueeze(-1)) if z1_graph is not None else None
+
+        u_nodes = self.get_velocity_target(z0_nodes, z1_nodes, t_nodes.unsqueeze(-1), zt_nodes)
+        u_edges = self.get_velocity_target(z0_edges, z1_edges, t_edges.unsqueeze(-1), zt_edges)
+        u_graph = self.get_velocity_target(z0_graph, z1_graph, t.unsqueeze(-1), zt_graph) if z1_graph is not None else None
+
+        # 予測速度 v
+        batch_flow = copy.deepcopy(batch)
+        batch_flow.x = zt_nodes
+        batch_flow.edge_attr = zt_edges
+        if zt_graph is not None:
+            batch_flow.graph_attr = zt_graph
+
         with self.ema_scope("Inference"):
-            # Sample from flow model
-            # Use ddim_steps as the number of ODE steps, default to 20
-            nfe_steps = ddim_steps if ddim_steps is not None else 20
-            
-            try:
-                samples = self.sample(batch, steps=nfe_steps, method="heun", verbose=False)
-            except Exception as e:
-                logging.warning(f"Flow sampling failed: {e}, using dummy samples")
-                # Fallback: create dummy samples with correct shape
-                N = batch.num_nodes
-                hid = self.hid_dim
-                dummy_nodes = torch.zeros(N, hid, device=self.device)
-                dummy_edges = torch.zeros(batch.edge_index.shape[1], hid, device=self.device)
-                samples = (dummy_nodes, dummy_edges)
-            
-            # Create batch for decoding
-            batch_samples = copy.deepcopy(batch)
-            if isinstance(samples, tuple) and len(samples) >= 2:
-                batch_samples.x = samples[0]  # node features
-                batch_samples.edge_attr = samples[1]  # edge features
-                if len(samples) > 2 and samples[2] is not None:
-                    batch_samples.graph_attr = samples[2]  # graph features
-            else:
-                # Handle case where samples is not a tuple
-                batch_samples.x = samples[:batch.num_nodes] if hasattr(samples, '__getitem__') else samples
-                batch_samples.edge_attr = samples[batch.num_nodes:] if hasattr(samples, '__getitem__') else samples
-            
-            if not hasattr(batch_samples, 'graph_attr'):
-                batch_samples.graph_attr = torch.zeros(batch_samples.num_graphs, 
-                                                    self.hid_dim, device=self.device)
-            
-            # Decode to graph space
-            try:
-                graph_pred = self.decode_first_stage(batch_samples)
-                
-                # Handle different output formats
-                if hasattr(graph_pred, 'y'):
-                    pred = graph_pred.y
-                elif hasattr(graph_pred, 'graph_attr'):
-                    pred = graph_pred.graph_attr
-                elif isinstance(graph_pred, torch.Tensor):
-                    pred = graph_pred
-                else:
-                    # Fallback to dummy prediction
-                    pred = torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device)
-                
-            except Exception as e:
-                logging.warning(f"Decoding failed: {e}, using dummy prediction")
-                # Fallback prediction
-                pred = torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device)
-        
-        # Compute evaluation loss
-        if hasattr(batch, 'y') and batch.y.numel() > 0:
-            true = batch.y.clone().detach()
-            loss, pred_score = compute_loss(pred, true)
-        else:
-            # No ground truth available, return zero loss
-            loss = torch.zeros(1, device=self.device)
-            pred_score = pred
-        
-        return loss, pred_score
+            v_nodes, v_edges, v_graph = self.forward_velocity(batch_flow, t)
+
+        # Flow 検証損失
+        loss_nodes = F.mse_loss(v_nodes, u_nodes)
+        loss_edges = F.mse_loss(v_edges, u_edges)
+        loss = self.node_factor * loss_nodes + self.edge_factor * loss_edges
+
+        if v_graph is not None and u_graph is not None:
+            loss_graph_val = F.mse_loss(v_graph, u_graph)
+            loss = loss + self.graph_factor * loss_graph_val
+
+        # ロガー互換用のダミー（監督タスクではないため）
+        pred_dummy = torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device)
+        return loss, pred_dummy
 
 
 class LatentFlowInductive(LatentFlow):
