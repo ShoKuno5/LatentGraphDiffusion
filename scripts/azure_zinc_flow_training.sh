@@ -1,43 +1,11 @@
 #!/bin/bash
+set -euo pipefail
 
-# Azure-compatible flow matching training script
-# Uses pretrained encoder from zinc_encoder_fast_hpc run
-
-# -------- paths --------
-CODE=/home/azureuser/LatentGraphDiffusion
-IMG=$CODE/lgd.sif
-DATA=$CODE/data
-RUNS=$CODE/runs
-RESULTS=$CODE/results
-
-# -------- experiment tag ---------
-EXP="zinc_flow_$(date +%Y%m%d_%H%M%S)"
-EXP_DIR=$RUNS/$EXP
-mkdir -p "$DATA" "$EXP_DIR" "$RESULTS"
-echo "Directory created: $EXP_DIR $DATA"
-
-# -------- env / NCCL / PyTorch --------
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
-export NCCL_IB_DISABLE=1
-export NCCL_SOCKET_IFNAME=eth0
-export GLOO_SOCKET_IFNAME=eth0
-export OMP_NUM_THREADS=8
-
-# Use WandB with .wandbrc config (bound to container)
-export WANDB_MODE=online
-echo "Using WandB online mode with .wandbrc config"
-
-export WANDB_PROJECT=LGD-FlowMatching
-export WANDB_NAME="zinc_flow_${EXP}"
-
-# -------- job parameters --------
-CONFIG="${1:-cfg/zinc-flow_rf.yaml}"  # Default to rectified flow config
-ENCODER_CKPT="${2:-results/zinc-encoder-fast/0/ckpt/399.ckpt}"  # Use best encoder checkpoint
-MAX_EPOCH="${3:-300}"  # Default 300 epochs for flow training
-
-# Generate unique run ID
-RUN_ID=$(date +%s)
+# DEPRECATED: use experiments/azure/zinc_train_flow.sh instead
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+echo "[DEPRECATED] scripts/azure_zinc_flow_training.sh -> experiments/azure/zinc_train_flow.sh" >&2
+exec "$REPO_ROOT/experiments/azure/zinc_train_flow.sh" "$@"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 export SEED=$RUN_ID
 

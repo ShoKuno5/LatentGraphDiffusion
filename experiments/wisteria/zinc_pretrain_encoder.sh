@@ -2,7 +2,7 @@
 #PJM -L rscgrp=regular-a
 #PJM -L node=1
 #PJM -L elapse=48:00:00
-#PJM -g jh210022a
+#PJM -g gp15
 #PJM -L jobenv=singularity
 #PJM -j
 #PJM -N zinc_pretrain_encoder
@@ -13,12 +13,10 @@ source /etc/profile.d/modules.sh
 module load singularity/3.7.3
 module load cuda/12.6
 
-# -------- host-side paths --------
-ROOT=/work/jh210022o/q25030
-CODE=$ROOT/LatentGraphDiffusion
-IMG=$CODE/lgd.sif
-DATA=$CODE/data
-RUNS=$CODE/runs
+# -------- host-side paths (via env file) --------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$REPO_ROOT/scripts/env/wisteria.sh"
 
 # -------- experiment tag ---------
 EXP="zinc_encoder_$(date +%Y%m%d_%H%M%S)"
@@ -27,16 +25,6 @@ mkdir -p "$DATA" "$EXP_DIR"
 echo "Directory created: $EXP_DIR $DATA"
 
 # -------- env / NCCL / PyTorch --------
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
-export NCCL_IB_DISABLE=1
-export NCCL_SOCKET_IFNAME=ib0,eth0
-export GLOO_SOCKET_IFNAME=ib0,eth0
-export OMP_NUM_THREADS=8
-export WANDB_MODE=offline
-# WANDB_API_KEY should be set via environment variable or .wandbrc file
-# export WANDB_API_KEY=your_api_key_here
-export WANDB_PROJECT=latentgraphdiffusion
 export WANDB_NAME="zinc_encoder_${EXP}"
 
 # -------- job parameters --------
@@ -69,16 +57,12 @@ singularity exec --nv \
     python -c 'import torch; print(f\"PyTorch version: {torch.__version__}\"); print(f\"CUDA available: {torch.cuda.is_available()}\"); print(f\"CUDA device count: {torch.cuda.device_count()}\")';
     python -c 'import torch_geometric; print(f\"PyG version: {torch_geometric.__version__}\")';
     
-    echo 'Starting ZINC encoder pretraining...';
-    echo 'Command: python pretrain.py --cfg $CONFIG --repeat $REPEAT wandb.use True optim.max_epoch $MAX_EPOCH';
-    
-    python pretrain.py \
-        --cfg $CONFIG \
-        --repeat $REPEAT \
-        wandb.use True \
-        optim.max_epoch $MAX_EPOCH \
-        out_dir /workspace/runs/$EXP \
-        2>&1 | tee /workspace/runs/$EXP/pretrain_full.log;
+    /workspace/scripts/common/run_zinc_pretrain_encoder.sh \
+      --config \"$CONFIG\" \
+      --repeat \"$REPEAT\" \
+      --max-epoch \"$MAX_EPOCH\" \
+      --out-dir \"/workspace/runs/$EXP\" \
+      --wandb-name \"zinc_encoder_${EXP}\";
     
     # Check training results
     echo 'Training completed. Checking results...';

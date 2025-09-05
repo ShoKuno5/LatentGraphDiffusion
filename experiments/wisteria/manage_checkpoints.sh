@@ -3,7 +3,7 @@
 # Checkpoint Management Script for LGD Training
 # Usage: ./manage_checkpoints.sh [command] [options]
 
-ROOT=/work/jh210022o/q25030
+ROOT=/work/gp15/q25030
 RUNS=$ROOT/LatentGraphDiffusion/runs
 
 show_help() {

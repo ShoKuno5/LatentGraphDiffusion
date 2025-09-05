@@ -5,9 +5,9 @@
 #PJM -g gp15
 #PJM -L jobenv=singularity
 #PJM -j
-#PJM -N zinc_train_diffusion
-#PJM -o zinc_train_diffusion_%j.out
-#PJM -e zinc_train_diffusion_%j.err
+#PJM -N zinc_train_flow
+#PJM -o zinc_train_flow_%j.out
+#PJM -e zinc_train_flow_%j.err
 
 source /etc/profile.d/modules.sh
 module load singularity/3.7.3
@@ -19,25 +19,22 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$REPO_ROOT/scripts/env/wisteria.sh"
 
 # -------- job parameters --------
-# You can specify a checkpoint path, otherwise it will auto-detect
 ENCODER_CHECKPOINT="${1:-auto}"  # Pass checkpoint path as first argument, or use 'auto'
-CONFIG="cfg/zinc-diffusion_ddpm.yaml"
-REPEAT=5
-MAX_EPOCH=50
+CONFIG="${2:-cfg/zinc-flow_rf.yaml}"
+MAX_EPOCH="${3:-300}"
 
 # -------- experiment tag ---------
-EXP="zinc_diffusion_$(date +%Y%m%d_%H%M%S)"
+EXP="zinc_flow_$(date +%Y%m%d_%H%M%S)"
 EXP_DIR=$RUNS/$EXP
 mkdir -p "$DATA" "$EXP_DIR"
 echo "Directory created: $EXP_DIR $DATA"
 
 # -------- env / NCCL / PyTorch --------
-export WANDB_NAME="zinc_diffusion_${EXP}"
+export WANDB_NAME="zinc_flow_${EXP}"
 
-echo "Starting ZINC Diffusion Training Job"
+echo "Starting ZINC Flow Matching Training Job"
 echo "Config: $CONFIG"
 echo "Max Epochs: $MAX_EPOCH"
-echo "Repeats: $REPEAT"
 echo "Encoder Checkpoint: $ENCODER_CHECKPOINT"
 echo "Experiment: $EXP"
 echo "Time started: $(date)"
@@ -54,13 +51,12 @@ singularity exec --nv \
     export PYTHONPATH=/workspace:\$PYTHONPATH;
     export PYTHONUNBUFFERED=1;
     mkdir -p /workspace/runs/$EXP;
-    /workspace/scripts/common/run_zinc_train_diffusion.sh \
+    /workspace/scripts/common/run_zinc_train_flow.sh \
       --checkpoint \"$ENCODER_CHECKPOINT\" \
       --config \"$CONFIG\" \
-      --repeat \"$REPEAT\" \
       --max-epoch \"$MAX_EPOCH\" \
       --out-dir \"/workspace/runs/$EXP\" \
-      --wandb-name \"zinc_diffusion_${EXP}\";
+      --wandb-name \"zinc_flow_${EXP}\";
   "
 
 echo "Job completed at: $(date)"
@@ -72,5 +68,5 @@ touch "$EXP_DIR/job_completed.txt"
   echo "Job completed successfully at $(date)";
   echo "Used encoder checkpoint: $ENCODER_CHECKPOINT";
   echo "Config: $CONFIG";
-  echo "Repeat: $REPEAT, Max Epoch: $MAX_EPOCH";
+  echo "Max Epoch: $MAX_EPOCH";
 } > "$EXP_DIR/job_completed.txt"

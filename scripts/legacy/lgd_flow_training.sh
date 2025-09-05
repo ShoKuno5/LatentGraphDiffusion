@@ -1,7 +1,7 @@
 #!/bin/bash
-#PJM -L rscgrp=regular-a
+#PJM -L rscgrp=short-a
 #PJM -L node=1
-#PJM -L elapse=08:00:00
+#PJM -L elapse=02:00:00
 #PJM -g gp15
 #PJM -L jobenv=singularity
 #PJM -j

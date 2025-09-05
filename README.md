@@ -45,3 +45,97 @@ python train_diffusion.py --cfg cfg/zinc-diffusion_ddpm.yaml --repeat 5 wandb.us
 # Remember to change the file path of the checkpoint of the autoencoder in diffusion.first_stage_config
 
 ```
+
+## Unified Operations Guide (HPC + Azure)
+
+This project standardizes how we run training across environments. Use the
+wrappers in `experiments/` which call reusable runners in `scripts/common/` and
+source environment presets from `scripts/env/`.
+
+### Repository Layout
+
+- `cfg/`: YAML configs (datasets, diffusion, flow, unconditional)
+- `scripts/env/`: environment presets (paths, NCCL/GLOO, WandB)
+  - `wisteria.sh` (HPC), `azure.sh` (Azure VM)
+- `scripts/common/`: inside-container runners (single source of truth)
+  - ZINC: `run_zinc_pretrain_encoder.sh`, `run_zinc_train_diffusion.sh`,
+    `run_zinc_train_flow.sh`, `run_zinc_train_diffusion_uncond.sh`
+  - QM9: `run_qm9_pretrain_encoder.sh`, `run_qm9_train_diffusion.sh`
+- `experiments/wisteria/`: PJM job wrappers
+- `experiments/azure/`: Azure VM wrappers
+- `scripts/legacy/`: older one-off scripts (kept for reference)
+
+### WandB Configuration
+
+Set `WANDB_API_KEY` and (optionally) `WANDB_ENTITY` in the environment, or
+create a `.wandbrc` file at the repo root with:
+
+```
+api_key = <your-key>
+entity  = <your-entity>
+```
+
+Wrappers automatically bind `.wandbrc` (if present) and export variables inside
+the container.
+
+### Wisteria HPC (PJM)
+
+Submit jobs after making scripts executable (e.g., `chmod +x experiments/wisteria/*.sh`).
+
+```
+# ZINC encoder pretraining
+pjsub experiments/wisteria/zinc_pretrain_encoder.sh
+
+# ZINC diffusion (uses latest encoder checkpoint if not specified)
+pjsub experiments/wisteria/zinc_train_diffusion.sh
+pjsub experiments/wisteria/zinc_train_diffusion.sh /path/to/encoder.ckpt
+
+# ZINC flow matching (Rectified Flow)
+pjsub experiments/wisteria/zinc_train_flow.sh
+pjsub experiments/wisteria/zinc_train_flow.sh /path/to/encoder.ckpt cfg/zinc-flow_rf.yaml 300
+
+# ZINC unconditional diffusion
+pjsub experiments/wisteria/zinc_train_diffusion_uncond.sh
+pjsub experiments/wisteria/zinc_train_diffusion_uncond.sh /path/to/encoder.ckpt cfg/zinc-diffusion_ddpm_unconditional.yaml 5 50
+```
+
+### Azure VM
+
+Run wrappers directly on the VM. If Singularity is available, training runs in
+the `lgd.sif` container with proper bind mounts; otherwise it runs in the host
+Python environment (ensure dependencies match `env.yaml`).
+
+```
+# ZINC encoder pretraining
+experiments/azure/zinc_pretrain_encoder.sh
+experiments/azure/zinc_pretrain_encoder.sh cfg/zinc-encoder.yaml 5 50
+
+# ZINC diffusion (auto-detect encoder ckpt by default)
+experiments/azure/zinc_train_diffusion.sh
+experiments/azure/zinc_train_diffusion.sh auto cfg/zinc-diffusion_ddpm.yaml 5 50
+
+# ZINC flow matching (Rectified Flow)
+experiments/azure/zinc_train_flow.sh
+experiments/azure/zinc_train_flow.sh /path/to/encoder.ckpt cfg/zinc-flow_rf.yaml 300
+
+# ZINC unconditional diffusion
+experiments/azure/zinc_train_diffusion_uncond.sh
+experiments/azure/zinc_train_diffusion_uncond.sh auto cfg/zinc-diffusion_ddpm_unconditional.yaml 5 50
+```
+
+### Running Runners Directly (inside container)
+
+For quick tests inside the container shell:
+
+```
+scripts/common/run_zinc_pretrain_encoder.sh --config cfg/zinc-encoder.yaml --repeat 1 --max-epoch 1
+scripts/common/run_zinc_train_diffusion.sh --checkpoint auto --config cfg/zinc-diffusion_ddpm.yaml --repeat 1 --max-epoch 1
+scripts/common/run_zinc_train_flow.sh --checkpoint auto --config cfg/zinc-flow_rf.yaml --max-epoch 10
+scripts/common/run_zinc_train_diffusion_uncond.sh --checkpoint auto --config cfg/zinc-diffusion_ddpm_unconditional.yaml --repeat 1 --max-epoch 1
+```
+
+### Notes
+
+- Checkpoints: runners auto-detect latest encoder ckpt when `--checkpoint auto`.
+- Output: runners write logs/ckpts to `runs/<exp>`; YAML `out_dir` may also use `results/`.
+- Legacy: older standalone scripts moved to `scripts/legacy/`.

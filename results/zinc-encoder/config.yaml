@@ -493,8 +493,8 @@ train:
   auto_resume: false
   batch_size: 64
   ckpt_best: true
-  ckpt_clean: false
-  ckpt_period: 25
+  ckpt_clean: true
+  ckpt_period: 1
   enable_ckpt: true
   ensemble_mode: none
   ensemble_repeat: 1

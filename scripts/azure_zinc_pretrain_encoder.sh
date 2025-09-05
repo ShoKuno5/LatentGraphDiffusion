@@ -1,43 +1,11 @@
 #!/bin/bash
+set -euo pipefail
 
-# Azure-compatible version of zinc_pretrain_encoder.sh
-# Runs ZINC encoder pretraining on Azure VM
-
-# -------- paths --------
-CODE=/home/azureuser/LatentGraphDiffusion
-IMG=$CODE/lgd.sif
-DATA=$CODE/data
-RUNS=$CODE/runs
-
-# -------- experiment tag ---------
-EXP="zinc_encoder_$(date +%Y%m%d_%H%M%S)"
-EXP_DIR=$RUNS/$EXP
-mkdir -p "$DATA" "$EXP_DIR"
-echo "Directory created: $EXP_DIR $DATA"
-
-# -------- env / NCCL / PyTorch --------
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
-export NCCL_IB_DISABLE=1
-export NCCL_SOCKET_IFNAME=eth0
-export GLOO_SOCKET_IFNAME=eth0
-export OMP_NUM_THREADS=8
-
-# Check if WANDB_API_KEY is set
-if [ -z "$WANDB_API_KEY" ]; then
-    export WANDB_MODE=offline
-    echo "WANDB_API_KEY not set, using offline mode"
-else
-    export WANDB_MODE=online
-fi
-
-export WANDB_PROJECT=latentgraphdiffusion
-export WANDB_NAME="zinc_encoder_${EXP}"
-
-# -------- job parameters --------
-CONFIG="${1:-cfg/zinc-encoder-fast.yaml}"  # Use fast config by default, allow override
-REPEAT="${2:-5}"                           # Default 5 repeats
-MAX_EPOCH="${3:-400}"                      # Default 400 epochs for fast config
+# DEPRECATED: use experiments/azure/zinc_pretrain_encoder.sh instead
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+echo "[DEPRECATED] scripts/azure_zinc_pretrain_encoder.sh -> experiments/azure/zinc_pretrain_encoder.sh" >&2
+exec "$REPO_ROOT/experiments/azure/zinc_pretrain_encoder.sh" "$@"
 
 echo "Starting ZINC Encoder Pretraining Job"
 echo "Config: $CONFIG"

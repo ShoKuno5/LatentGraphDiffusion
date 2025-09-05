@@ -2,7 +2,7 @@
 #PJM -L rscgrp=regular-a
 #PJM -L node=1
 #PJM -L elapse=48:00:00
-#PJM -g jh210022a
+#PJM -g gp15
 #PJM -L jobenv=singularity
 #PJM -j
 #PJM -N general_pretrain
@@ -34,7 +34,7 @@ else
 fi
 
 # -------- host-side paths --------
-ROOT=/work/jh210022o/q25030
+ROOT=/work/gp15/q25030
 CODE=$ROOT/LatentGraphDiffusion
 IMG=$CODE/lgd.sif
 DATA=$CODE/data

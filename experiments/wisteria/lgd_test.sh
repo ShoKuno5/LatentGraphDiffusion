@@ -2,7 +2,7 @@
 #PJM -L rscgrp=short-a
 #PJM -L node=1
 #PJM -L elapse=02:00:00
-#PJM -g jh210022a
+#PJM -g gp15
 #PJM -L jobenv=singularity
 #PJM -j
 
@@ -11,7 +11,7 @@ module load singularity/3.7.3
 module load cuda/12.6
 
 # -------- host-side paths --------
-ROOT=/work/jh210022o/q25030
+ROOT=/work/gp15/q25030
 CODE=$ROOT/LatentGraphDiffusion
 IMG=$CODE/lgd.sif
 DATA=$CODE/data
