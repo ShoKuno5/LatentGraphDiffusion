@@ -1,5 +1,5 @@
 #!/bin/bash
-#PJM -L rscgrp=regular-a
+#PJM -L rscgrp=short-a
 #PJM -L node=1
 #PJM -L elapse=02:00:00
 #PJM -g gp15
@@ -11,18 +11,49 @@ module load singularity/3.7.3
 module load cuda/12.6
 
 # -------- host-side paths --------
-# Use the currently open (gp15) workspace so edits are reflected inside the container
-ROOT=/work/gp15/q25030
-CODE=$ROOT/LatentGraphDiffusion
-IMG=$CODE/lgd.sif
+# Determine repo root (allow override via LGD_CODE)
+if [ -n "$LGD_CODE" ]; then
+  CODE="$LGD_CODE"
+else
+  SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+  CANDIDATES=(
+    "$SCRIPT_DIR/.."
+    "$PWD"
+    "$PWD/.."
+  )
+  CODE=""
+  for c in "${CANDIDATES[@]}"; do
+    if [ -d "$c/cfg" ] && [ -d "$c/lgd" ]; then CODE="$c"; break; fi
+  done
+  if [ -z "$CODE" ]; then
+    echo "ERROR: Could not locate repo root. Set LGD_CODE to your repo path." >&2
+    exit 2
+  fi
+fi
+
+# Allow override of Singularity image via LGD_IMG, else use repo-local image
+IMG=${LGD_IMG:-"$CODE/lgd.sif"}
 DATA=$CODE/data
 RUNS=$CODE/runs
+
+echo "Using CODE: $CODE"
+echo "Using IMG : $IMG"
+
+# Preflight: ensure the Singularity image exists
+if [ ! -f "$IMG" ]; then
+  echo "ERROR: Singularity image not found at: $IMG" >&2
+  echo "Hint: Set LGD_IMG to your .sif path or place lgd.sif at repo root ($CODE)." >&2
+  exit 2
+fi
 
 # -------- experiment tag ---------
 EXP=$(date +%Y%m%d_%H%M%S)_flow_test
 EXP_DIR=$RUNS/$EXP
 mkdir -p "$DATA" "$EXP_DIR"
 echo "Directory created: $EXP_DIR $DATA"
+
+# Mirror all job stdout/stderr into the run directory as well
+exec > >(tee -a "$EXP_DIR/pjm_stdout.log") 2>&1
 
 # -------- env / NCCL / PyTorch --------
 export MASTER_ADDR=127.0.0.1
@@ -95,10 +126,10 @@ print(f'✓ Flow classes imported successfully')
     
     echo '';
     echo 'Checking pretrained encoder...';
-    if [ ! -f /workspace/results/zinc-encoder-fast/0/ckpt/19.ckpt ]; then
-        echo 'WARNING: Pretrained encoder not found, will use random initialization';
+    if [ -f /workspace/runs/zinc_encoder_fast_hpc/zinc-encoder-fast/0/ckpt/399.ckpt ]; then
+        echo '✓ Pretrained encoder found at runs/zinc_encoder_fast_hpc/.../399.ckpt';
     else
-        echo '✓ Pretrained encoder found';
+        echo 'WARNING: Pretrained encoder not found at runs/zinc_encoder_fast_hpc/.../399.ckpt; will use random initialization';
     fi;
     
     echo '';

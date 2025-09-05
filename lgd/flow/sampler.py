@@ -134,6 +134,18 @@ class FlowSampler(nn.Module):
         """
         device = self.model.device if hasattr(self.model, 'device') else batch.x.device
         
+        # Add randomness during inference to avoid identical predictions
+        # This ensures different random samples during validation/test
+        if not self.model.training:
+            # Use current time + batch info to create unique randomness
+            import time
+            random_offset = int(time.time() * 1000000) % 1000000
+            if hasattr(batch, 'batch_idx'):
+                random_offset += batch.batch_idx[0].item() if len(batch.batch_idx) > 0 else 0
+            # Temporarily modify random state for this sample
+            current_state = torch.get_rng_state()
+            torch.manual_seed(random_offset)
+        
         # Sample initial noise z0
         if isinstance(shape, tuple) and len(shape) == 2 and isinstance(shape[0], tuple):
             # New format: tuple of (shape_nodes, shape_edges) 
@@ -201,6 +213,10 @@ class FlowSampler(nn.Module):
             verbose=verbose
         )
         
+        # Restore original random state if we modified it for inference
+        if not self.model.training:
+            torch.set_rng_state(current_state)
+        
         if return_intermediates:
             intermediates.append(samples)
             return samples, intermediates
@@ -245,9 +261,27 @@ class FlowSampler(nn.Module):
             
             return v_guided_nodes, v_guided_edges, v_guided_graph
         
-        # Sample with guided velocity
-        z0 = torch.randn((batch.num_nodes + batch.edge_index.shape[1], 
-                         self.model.hid_dim), device=batch.x.device)
-        
+        # Sample with guided velocity using consistent latent shapes
+        hid = self.model.hid_dim
+        device = batch.x.device
+
+        # Compute shapes deterministically from graph structure
+        if hasattr(batch, 'num_node_per_graph'):
+            n_per_g = batch.num_node_per_graph
+            E_dense = int((n_per_g * n_per_g).sum().item())
+        else:
+            E_dense = batch.edge_index.shape[1]
+
+        N = batch.num_nodes
+        z0_nodes = torch.randn((N, hid), device=device)
+        z0_edges = torch.randn((E_dense, hid), device=device)
+        z0_graph = None
+        if hasattr(self.model, 'use_graph_latent') and self.model.use_graph_latent and hasattr(batch, 'num_graphs'):
+            z0_graph = torch.randn((batch.num_graphs, hid), device=device)
+
+        z0 = (z0_nodes, z0_edges, z0_graph) if z0_graph is not None else (z0_nodes, z0_edges)
+
         return solve_flow(guided_velocity, z0, steps=steps, 
-                         batch=batch, **kwargs)
+                          method=kwargs.get('method', 'heun'),
+                          batch=batch, 
+                          verbose=kwargs.get('verbose', False))

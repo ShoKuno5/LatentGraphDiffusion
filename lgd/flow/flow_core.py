@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from functools import partial
 from tqdm import tqdm
 import logging
+import networkx as nx
 
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.loss import compute_loss
@@ -23,7 +24,7 @@ from lgd.model.utils import (
     num2batch, symmetrize
 )
 from lgd.model.GraphTransformerEncoder import GraphTransformerEncoder
-from lgd.model.SyntheticGraphTransformerEncoder import SyntheticGraphTransformerEncoder
+from lgd.model.SyntheticGraphTransformerEncoder import GraphTransformerSyntheticEncoder
 from lgd.model.DenoisingTransformer import DenoisingTransformer
 from .sampler import FlowSampler, solve_flow
 
@@ -48,14 +49,8 @@ class VelocityWrapper(nn.Module):
         Forward pass predicting velocity.
         The denoiser outputs a "denoised" version which we interpret as velocity.
         """
-        # The denoiser expects timesteps in [0, num_timesteps]
-        # For flow, t is in [0, 1], so we scale for compatibility
-        # TODO: Consider feeding continuous t directly if denoiser supports it
-        t_scaled = t * 999  # Map [0,1] to [0,999] for compatibility  
-        t_scaled = t_scaled.long()
-        
-        # Call denoiser (it will handle conditioning internally)
-        output = self.denoiser(batch, t_scaled, c)
+        # Feed continuous time directly; the denoiser embeds time internally
+        output = self.denoiser(batch, t, c)
         
         return output
 
@@ -307,7 +302,7 @@ class LatentFlow(pl.LightningModule):
         return mu_t + sigma_t * noise
     
     @torch.no_grad()
-    def get_input(self, batch, return_first_stage_outputs=False):
+    def get_input(self, batch, return_first_stage_outputs=False, force_c_encode=False, return_original_cond=False):
         """Prepare input batch with encoding."""
         batch = batch.to(self.device)
         batch.x_0 = batch.x.clone().detach()
@@ -338,6 +333,20 @@ class LatentFlow(pl.LightningModule):
                                             dtype=torch.long, device=batch.x.device))
         batch_idx = torch.cat([batch.batch, num2batch(batch_num_node ** 2)], dim=0)
         batch.batch_idx = batch_idx
+        
+        # Add decoded versions for compatibility with inference
+        if return_first_stage_outputs:
+            # Store reconstructed versions (for flow, these are just the originals since we don't reconstruct during inference)
+            batch.x_rec = batch.x_0.clone()
+            batch.edge_attr_rec = batch.edge_attr_0.clone()
+            # Ensure graph_start exists for inference compatibility
+            if not hasattr(batch, 'graph_start'):
+                batch.graph_start = None
+            # Handle graph_attr_rec safely
+            if hasattr(batch, 'graph_start') and batch.graph_start is not None:
+                batch.graph_attr_rec = batch.graph_start.clone()
+            else:
+                batch.graph_attr_rec = None
         
         return batch
     
@@ -414,6 +423,17 @@ class LatentFlow(pl.LightningModule):
         # Compute loss
         loss_nodes = F.mse_loss(v_nodes, u_nodes)
         loss_edges = F.mse_loss(v_edges, u_edges)
+
+        # Optional time weighting
+        t_weight_mode = cfg.flow.get('t_weight', 'none') if hasattr(cfg, 'flow') else 'none'
+        if t_weight_mode and t_weight_mode != 'none':
+            if t_weight_mode == 't(1-t)':
+                wn = torch.mean(t_nodes * (1.0 - t_nodes))
+                we = torch.mean(t_edges * (1.0 - t_edges))
+                loss_nodes = loss_nodes * wn
+                loss_edges = loss_edges * we
+            # add other weighting schemes here if needed
+
         loss = self.node_factor * loss_nodes + self.edge_factor * loss_edges
         
         loss_graph_val = torch.zeros(1, device=self.device)
@@ -440,17 +460,26 @@ class LatentFlow(pl.LightningModule):
         return loss, loss_task, pred, loss_nodes, loss_edges, loss_graph_val, loss_encoder
     
     def validation_step(self, batch, batch_idx):
-        """Validation step."""
+        """Validation step using proper inference."""
         with torch.no_grad():
-            # Same as training but without gradients
-            result = self.training_step(batch, batch_idx)
-            # Unpack the result tuple
-            loss = result[0] if isinstance(result, tuple) else result
+            # Use inference method for validation (not training_step)
+            loss_graph, _ = self.inference(batch, ddim_steps=20, sample=True)
             
             # Log validation loss
-            self.log("val/loss", loss, prog_bar=True)
+            self.log("val/loss", loss_graph, prog_bar=True)
             
-            return loss
+            return loss_graph
+    
+    def test_step(self, batch, batch_idx):
+        """Test step using proper inference."""
+        with torch.no_grad():
+            # Use inference method for testing (not training_step)
+            loss_graph, _ = self.inference(batch, ddim_steps=20, sample=True)
+            
+            # Log test loss
+            self.log("test/loss", loss_graph, prog_bar=True)
+            
+            return loss_graph
     
     def configure_optimizers(self):
         """Setup optimizer and scheduler."""
@@ -469,6 +498,136 @@ class LatentFlow(pl.LightningModule):
             return [optimizer], [scheduler]
         
         return optimizer
+    
+    @torch.no_grad()
+    def inference(self, batch, sample=True, ddim_steps=None, ddim_eta=0., use_ddpm_steps=False, return_keys=None,
+                  quantize_denoised=True, inpaint=True, plot_denoise_rows=False, plot_progressive_rows=True,
+                  plot_diffusion_rows=True, visualize=False, **kwargs):
+        """
+        Inference method parallel to diffusion version for compatibility.
+        For flow matching, ddim_steps controls the number of ODE integration steps.
+        """
+        # Flow matching uses ODE steps instead of DDIM
+        flow_steps = ddim_steps if ddim_steps is not None else 20
+        
+        # Follow exact same pattern as diffusion inference
+        N = batch.num_graphs
+        batch = self.get_input(batch, return_first_stage_outputs=True, 
+                               force_c_encode=True, return_original_cond=True)
+        
+        # Extract same components as diffusion (for consistency) - use safe attribute access
+        graph_start = getattr(batch, 'graph_start', None)
+        graph_attr_rec = getattr(batch, 'graph_attr_rec', None)
+        z, c, x, xrec, xc = (batch.x_start, graph_start), batch.get('c', None), (batch.x_0, batch.edge_attr_0), (batch.x_rec, batch.edge_attr_rec, graph_attr_rec), batch.get('xc', None)
+        batch_idx = batch.batch_idx
+        
+        # Flow sampling instead of diffusion sampling
+        samples = self.sample_flow_for_inference(batch=batch, cond=c, batch_size=N, 
+                                                 batch_idx=batch_idx, steps=flow_steps)
+        
+        # Use exact same decoding as diffusion
+        node_decode, edge_decode, graph_decode = self.decode_first_stage(samples)
+        
+        # Same denormalization as diffusion
+        if cfg.dataset.format == 'PyG-QM9':
+            graph_decode = graph_decode * batch.get('y_std', 1.) + batch.get('y_mean', 0.)
+        
+        # Same loss computation as diffusion
+        loss_graph, graph_decode = compute_loss(graph_decode, batch.y.clone().detach())
+        
+        # Same generation mode handling as diffusion
+        if cfg.train.mode in ['qm9_unconditional', 'qm9_conditional']:
+            generated_mol = []
+            accumulated_node, accumulated_edge = 0, 0
+            for i in range(batch.num_graphs):
+                num_nodes_i = batch.num_node_per_graph[i] if hasattr(batch, 'num_node_per_graph') else batch.num_nodes // batch.num_graphs
+                generated_mol.append((
+                    torch.argmax(node_decode[accumulated_node: accumulated_node + num_nodes_i], dim=1, keepdim=False),
+                    torch.argmax(edge_decode[accumulated_edge: accumulated_edge + num_nodes_i ** 2], dim=1, keepdim=False).reshape(num_nodes_i, num_nodes_i),
+                    graph_decode[i].unsqueeze(0)
+                ))
+                accumulated_node += num_nodes_i
+                accumulated_edge += num_nodes_i ** 2
+            graph_decode = generated_mol
+        
+        elif cfg.train.mode in ['generic_generation']:
+            generic_graphs = []
+            accumulated_node, accumulated_edge = 0, 0
+            for i in range(batch.num_graphs):
+                num_nodes_i = batch.num_node_per_graph[i] if hasattr(batch, 'num_node_per_graph') else batch.num_nodes // batch.num_graphs
+                adj = torch.argmax(edge_decode[accumulated_edge: accumulated_edge + num_nodes_i ** 2], dim=1, keepdim=False)\
+                      .reshape(num_nodes_i, num_nodes_i).detach().cpu().numpy()
+                G = nx.from_numpy_array(adj)
+                G.remove_edges_from(nx.selfloop_edges(G))
+                G.remove_nodes_from(list(nx.isolates(G)))
+                if G.number_of_nodes() < 1:
+                    G.add_node(1)
+                generic_graphs.append(G)
+
+                accumulated_node += num_nodes_i
+                accumulated_edge += num_nodes_i ** 2
+            graph_decode = generic_graphs
+        
+        return loss_graph, graph_decode
+    
+    @torch.no_grad()
+    def sample_flow_for_inference(self, batch, cond, batch_size, batch_idx, steps):
+        """
+        Flow sampling that returns a batch object compatible with decode_first_stage.
+        This replaces the diffusion sample_log method.
+        """
+        # Sample latents using flow ODE
+        hid = self.hid_dim
+        device = self.device
+        
+        # Compute shapes from batch structure  
+        if hasattr(batch, 'num_node_per_graph'):
+            n_per_g = batch.num_node_per_graph
+            E_dense = int((n_per_g * n_per_g).sum().item())
+        else:
+            E_dense = batch.edge_index.shape[1]
+        
+        N = batch.num_nodes
+        shape_nodes = (N, hid)
+        shape_edges = (E_dense, hid)
+        
+        # Create sampler
+        sampler = FlowSampler(self)
+        
+        # Sample using flow ODE
+        samples = sampler.sample(
+            batch, 
+            steps=steps,
+            batch_size=batch_size,
+            shape=(shape_nodes, shape_edges),
+            method="heun",
+            verbose=False,
+            cond=cond
+        )
+        
+        # Convert samples to batch format expected by decoder
+        if isinstance(samples, tuple):
+            z_nodes, z_edges = samples[0], samples[1] 
+            z_graph = samples[2] if len(samples) > 2 else None
+        else:
+            # Handle concatenated format
+            z_nodes = samples[:N]
+            z_edges = samples[N:]
+            z_graph = None
+            
+        # Create batch object for decoder (same format as diffusion sample_log output)
+        samples_batch = copy.deepcopy(batch)
+        samples_batch.x = z_nodes
+        samples_batch.edge_attr = z_edges
+        
+        # Handle graph attributes - ensure they exist for decoder
+        if z_graph is not None and self.use_graph_latent:
+            samples_batch.graph_attr = z_graph
+        else:
+            # Create dummy graph_attr to prevent decoder errors
+            samples_batch.graph_attr = torch.zeros(batch_size, hid, device=device)
+            
+        return samples_batch
     
     @torch.no_grad()
     def sample(self, batch, steps=20, method="heun", verbose=True, **kwargs):

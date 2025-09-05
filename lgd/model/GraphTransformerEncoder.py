@@ -638,7 +638,12 @@ class GraphTransformerEncoder(nn.Module):
         # batch.x_0 = batch.x
         # batch.edge_attr_0 = batch.edge_attr
         num_nodes, num_edges = batch.num_nodes, batch.edge_index.shape[1]
-        batch_num_node = batch.num_node_per_graph
+        # Robustly derive num_node_per_graph if missing
+        if hasattr(batch, 'num_node_per_graph'):
+            batch_num_node = batch.num_node_per_graph
+        else:
+            n_graphs = getattr(batch, 'num_graphs', int(batch.batch.max().item()) + 1)
+            batch_num_node = torch.bincount(batch.batch, minlength=n_graphs)
         batch_node_idx = num2batch(batch_num_node)
         assert torch.equal(batch_node_idx, batch.batch)
         batch_edge_idx = num2batch(batch_num_node ** 2)
@@ -991,7 +996,12 @@ class GraphTransformerDecoder(nn.Module):
         # batch.x_0 = batch.x
         # batch.edge_attr_0 = batch.edge_attr
         num_nodes, num_edges = batch.num_nodes, batch.edge_index.shape[1]
-        batch_num_node = batch.num_node_per_graph
+        # Robustly derive num_node_per_graph if missing
+        if hasattr(batch, 'num_node_per_graph'):
+            batch_num_node = batch.num_node_per_graph
+        else:
+            n_graphs = getattr(batch, 'num_graphs', int(batch.batch.max().item()) + 1)
+            batch_num_node = torch.bincount(batch.batch, minlength=n_graphs)
         batch_node_idx = num2batch(batch_num_node)
         assert torch.equal(batch_node_idx, batch.batch)
         batch_edge_idx = num2batch(batch_num_node ** 2)
@@ -1336,7 +1346,12 @@ class GraphTransformerStructureEncoder(nn.Module):
         # batch.x_0 = batch.x
         # batch.edge_attr_0 = batch.edge_attr
         num_nodes, num_edges = batch.num_nodes, batch.edge_index.shape[1]
-        batch_num_node = batch.num_node_per_graph
+        # Robustly derive num_node_per_graph if missing
+        if hasattr(batch, 'num_node_per_graph'):
+            batch_num_node = batch.num_node_per_graph
+        else:
+            n_graphs = getattr(batch, 'num_graphs', int(batch.batch.max().item()) + 1)
+            batch_num_node = torch.bincount(batch.batch, minlength=n_graphs)
         batch_node_idx = num2batch(batch_num_node)
         assert torch.equal(batch_node_idx, batch.batch)
         batch_edge_idx = num2batch(batch_num_node ** 2)

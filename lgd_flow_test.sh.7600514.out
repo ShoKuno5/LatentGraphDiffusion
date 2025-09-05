@@ -1,0 +1,2 @@
+ERROR: Singularity image not found at: /work/02/gp15/q25030/lgd.sif
+Hint: Set LGD_IMG to your .sif path or place lgd.sif at repo root (/work/02/gp15/q25030).

@@ -397,7 +397,6 @@ def load_dataset_master(format, name, dataset_dir):
             dataset[dataset.data['train_graph_index']])
         # print(f"Indegrees: {cfg.gt.pna_degrees}")
         # print(f"Avg:{np.mean(cfg.gt.pna_degrees)}")
-
     # torch.save(dataset, dataset_dir + '/' + name + '/processed.pt')  # TODO: this seems troublesome
 
     return dataset

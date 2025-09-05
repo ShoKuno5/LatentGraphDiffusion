@@ -1,0 +1,54 @@
+Using CODE: /work/02/gp15/q25030/LatentGraphDiffusion_kuno
+Using IMG : /work/02/gp15/q25030/LatentGraphDiffusion_kuno/lgd.sif
+Directory created: /work/02/gp15/q25030/LatentGraphDiffusion_kuno/runs/20250905_163104_flow_test /work/02/gp15/q25030/LatentGraphDiffusion_kuno/data
+=== FLOW MATCHING QUICK TEST ===
+Configuration: zinc-flow_rf.yaml (modified for testing)
+- Short runtime for debugging
+- WandB disabled
+- Focus on model instantiation and basic training loop
+- Run ID: 1757057465
+- Timestamp: 20250905_163105
+
+--- Pre-flight Checks ---
+Checking Python environment...
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+✓ PyTorch: 2.0.1
+✓ PyG: 2.3.1
+✓ CUDA available: True
+✓ Flow classes imported successfully
+
+Checking config file...
+✓ Config file exists
+
+Checking pretrained encoder...
+✓ Pretrained encoder found at runs/zinc_encoder_fast_hpc/.../399.ckpt
+
+--- Starting Flow Test Training ---
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+  File "/opt/conda/lib/python3.10/site-packages/yacs/config.py", line 141, in __getattr__
+    raise AttributeError(name)
+AttributeError: wandb
+
+=== TEST SUMMARY ===
+Duration: 6 seconds
+✓ SUCCESS: Flow matching test passed!
+
+What was tested:
+- LatentFlow model instantiation
+- Config loading and validation
+- Basic training loop (2 epochs)
+- Forward/backward passes
+- Loss computation (Rectified Flow)
+- Checkpoint saving
+
+Ready for full training run!
+Test completed. Logs saved in: /workspace/runs/20250905_163104_flow_test/
+Flow test completed. Check results in: /work/02/gp15/q25030/LatentGraphDiffusion_kuno/runs/20250905_163104_flow_test
