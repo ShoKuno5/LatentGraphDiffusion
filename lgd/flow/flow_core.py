@@ -535,67 +535,54 @@ class LatentFlow(pl.LightningModule):
     @torch.no_grad()
     def inference(self, batch, ddim_steps=None, ddim_eta=0.0, use_ddpm_steps=False, **kwargs):
         """
-        Flow の検証損失（速度場の MSE）を返す。
-        生成→デコード→回帰の代わりに、学習時と同じターゲット u に対する
-        予測速度 v の MSE を計算する。
-        戻り値の第2要素はロガー互換用のダミー。
+        Evaluation for flow matching with decoding to graph properties.
+
+        Returns:
+            (loss_graph, graph_pred)
+            - loss_graph: property loss (e.g., L1) for logging/selection
+            - graph_pred: decoded graph-level predictions for downstream metrics
         """
-        # 入力準備（エンコード等）
+        # Prepare encoded inputs (sets x_start, graph_start, etc.)
         batch = self.get_input(batch)
 
-        # z1 の分割
-        z1 = batch.x_start.clone().detach()
-        num_nodes = batch.num_nodes
-        z1_nodes = z1[:num_nodes]
-        z1_edges = z1[num_nodes:]
-        z1_graph = getattr(batch, 'graph_start', None)
-
-        # ノイズ z0
-        z0_nodes = torch.randn_like(z1_nodes)
-        z0_edges = torch.randn_like(z1_edges)
-        z0_graph = torch.randn_like(z1_graph) if z1_graph is not None else None
-
-        if self.force_undirected:
-            z0_edges = symmetrize(batch.edge_index, batch.batch, z0_edges)
-            z1_edges = symmetrize(batch.edge_index, batch.batch, z1_edges)
-
-        # t のブロードキャスト（疎グラフに対して source ノード起点）
-        t = torch.rand(batch.num_graphs, device=self.device)
-        t_nodes = t[batch.batch]
-        edge_batch = batch.batch[batch.edge_index[0]]
-        t_edges = t[edge_batch]
-
-        # zt とターゲット速度 u
-        zt_nodes = self.sample_zt(z0_nodes, z1_nodes, t_nodes.unsqueeze(-1))
-        zt_edges = self.sample_zt(z0_edges, z1_edges, t_edges.unsqueeze(-1))
-        zt_graph = self.sample_zt(z0_graph, z1_graph, t.unsqueeze(-1)) if z1_graph is not None else None
-
-        u_nodes = self.get_velocity_target(z0_nodes, z1_nodes, t_nodes.unsqueeze(-1), zt_nodes)
-        u_edges = self.get_velocity_target(z0_edges, z1_edges, t_edges.unsqueeze(-1), zt_edges)
-        u_graph = self.get_velocity_target(z0_graph, z1_graph, t.unsqueeze(-1), zt_graph) if z1_graph is not None else None
-
-        # 予測速度 v
-        batch_flow = copy.deepcopy(batch)
-        batch_flow.x = zt_nodes
-        batch_flow.edge_attr = zt_edges
-        if zt_graph is not None:
-            batch_flow.graph_attr = zt_graph
-
+        # Sample final latent z(1) via ODE solver
+        steps = getattr(cfg, 'flow', {}).get('nfe', 20)
+        solver = getattr(cfg, 'flow', {}).get('solver', 'heun')
         with self.ema_scope("Inference"):
-            v_nodes, v_edges, v_graph = self.forward_velocity(batch_flow, t)
+            samples = self.sample(batch, steps=steps, method=solver, verbose=False)
 
-        # Flow 検証損失
-        loss_nodes = F.mse_loss(v_nodes, u_nodes)
-        loss_edges = F.mse_loss(v_edges, u_edges)
-        loss = self.node_factor * loss_nodes + self.edge_factor * loss_edges
+        # Build a decode batch with sampled latents
+        batch_dec = copy.deepcopy(batch)
+        if isinstance(samples, (tuple, list)):
+            z_nodes, z_edges = samples[0], samples[1]
+            z_graph = samples[2] if len(samples) > 2 else None
+            batch_dec.x = z_nodes
+            batch_dec.edge_attr = z_edges
+            if z_graph is not None:
+                batch_dec.graph_attr = z_graph
+            elif hasattr(batch, 'graph_start'):
+                # Fallback: reuse encoder graph latent if graph latent not modeled
+                batch_dec.graph_attr = batch.graph_start
+        else:
+            # Legacy concatenated format (nodes first then edges)
+            num_nodes = batch.num_nodes
+            batch_dec.x = samples[:num_nodes]
+            batch_dec.edge_attr = samples[num_nodes:]
+            if hasattr(batch, 'graph_start'):
+                batch_dec.graph_attr = batch.graph_start
 
-        if v_graph is not None and u_graph is not None:
-            loss_graph_val = F.mse_loss(v_graph, u_graph)
-            loss = loss + self.graph_factor * loss_graph_val
+        # Decode to node/edge/graph predictions
+        node_dec, edge_dec, graph_dec = self.decode_first_stage(batch_dec)
 
-        # ロガー互換用のダミー（監督タスクではないため）
-        pred_dummy = torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device)
-        return loss, pred_dummy
+        # Unnormalize targets for certain datasets (match diffusion behavior)
+        if cfg.dataset.format == 'PyG-QM9':
+            graph_dec = graph_dec * batch.get('y_std', 1.) + batch.get('y_mean', 0.)
+
+        # Compute property loss against ground-truth
+        true = batch.y.clone().detach() if hasattr(batch, 'y') else graph_dec.detach()
+        loss_graph, _ = compute_loss(graph_dec, true)
+
+        return loss_graph, graph_dec
 
 
 class LatentFlowInductive(LatentFlow):

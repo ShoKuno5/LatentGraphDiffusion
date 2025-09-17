@@ -1,0 +1,18 @@
+[wisteria] ROOT=/work/gp15/q25030
+[wisteria] CODE=/work/gp15/q25030/LatentGraphDiffusion
+[wisteria] DATA=/work/gp15/q25030/LatentGraphDiffusion/data
+[wisteria] RUNS=/work/gp15/q25030/LatentGraphDiffusion/runs
+[wisteria] RESULTS=/work/gp15/q25030/LatentGraphDiffusion/runs (unified with RUNS)
+=== LGD Wisteria Job ===
+Dataset     : zinc
+Mode        : uncond
+Config      : cfg/my_zinc-diffusion_ddpm_unconditional.yaml
+Checkpoint  : runs/zinc_encoder_fast_hpc/zinc-encoder-fast/0/ckpt/399.ckpt
+Repeat      : 1
+Max Epoch   : 20
+Experiment  : zinc_uncond_20250917_152411
+Out Dir     : /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_uncond_20250917_152411
+W&B Name    : zinc_uncond_zinc_uncond_20250917_152411
+Start time  : Wed Sep 17 15:24:11 JST 2025
+[wandb] entity='shokuno-the-university-of-tokyo', mode='online'
+Env check:

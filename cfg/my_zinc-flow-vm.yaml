@@ -1,0 +1,251 @@
+# Latent Flow Matching configuration for ZINC dataset - VM Version
+# Using Rectified Flow (RF) objective for unconditional generation
+out_dir: results/zinc-flow-vm
+metric_best: mae
+metric_agg: argmin
+tensorboard_each_run: False
+accelerator: "cuda:0"
+seed: 42
+
+mlflow:
+  use: False
+  project: Exp
+  name: zinc-flow-vm
+
+wandb:
+  use: True
+  project: LatentGraphDiffusion-ZINC-Flow
+  entity: ""  # Set your wandb username/team name here
+  name: "flow-vm-training"
+
+dataset:
+  format: PyG-ZINC
+  name: subset  # Using PyG-ZINC subset (12k molecules) 
+  task: graph
+  num_tasks: 1
+  task_type: regression
+  transductive: False
+  node_encoder: True
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  node_encoder_bn: False
+  edge_encoder: True
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_encoder_bn: False
+  add_virtual_node_edge: True
+  subgraph: False
+
+train:
+  mode: train_diffusion
+  batch_size: 128  # Aligned with baseline capacity
+  eval_period: 20
+  start_eval_epoch: -1
+  enable_ckpt: True
+  ckpt_best: True
+  ckpt_clean: True
+  ckpt_period: 10
+  ensemble_repeat: 1
+  ensemble_mode: none
+  early_stop: True
+  early_stop_patience: 30
+  pretrain:
+    mask_node_prob: 0.0
+    mask_edge_prob: 0.0
+    mask_label_prob: 0.5
+    recon: none
+    original_task: True
+    input_target: True
+    node_factor: 0.0
+    edge_factor: 0.0
+    graph_factor: 1.0
+
+model:
+  type: LatentFlow
+  loss_fun: l2  # MSE loss for velocity matching
+  edge_decoding: dot
+  graph_pooling: add
+
+# Positional encoding (reuse from encoder config)
+posenc_RRWP:
+  enable: True
+  ksteps: 20
+
+# Encoder configuration (frozen pretrained model)
+encoder:
+  type: GraphTransformerEncoder
+  in_dim: 36
+  prefix_dim: 64
+  posenc_in_dim: 20
+  posenc_in_dim_edge: 20
+  posenc_dim: 28
+  pe_raw_norm: None
+  hid_dim: 64  # Using standard encoder config
+  out_dim: 4
+  use_time: False
+  temb_dim: 0
+  num_heads: 4  # Restored baseline head count
+  num_layers: 6                       # Match encoder depth
+  dropout: 0.0
+  attn_dropout: 0.5
+  attn:
+    clamp: 5.
+    act: 'relu'
+    full_attn: True
+    edge_enhance: True
+    O_e: True
+    norm_e: True
+    fwl: False
+    signed_sqrt: True
+    score_act: True
+    deg_scaler: False
+    attn_product: mul
+    attn_reweight: True
+    edge_reweight: True
+  mpnn:
+    enable: True
+    act: 'relu'
+    dropout: 0.0
+    edge_enhance: True
+    project_edge: True
+  residual: True
+  layer_norm: False
+  batch_norm: True
+  act: 'relu'
+  norm_e: True
+  O_e: True
+  ff_e: False
+  update_e: True
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  post_pool: True
+  prefix_type: add_virtual
+  label_embed_type: add_virtual
+  num_task: 1
+  task_type: regression
+  node_encoder: True
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  node_encoder_bn: False
+  edge_encoder: True
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_encoder_bn: False
+
+# Denoising Transformer (velocity network) - reuse LGD's architecture
+dt:
+  in_node_dim: 4     # Must match encoder latent dims
+  in_edge_dim: 4     # Must match encoder latent dims
+  in_dim: 4          # should be the same as encoder.out_dim
+  hid_dim: 64
+  out_dim: 4
+  use_time: True
+  temb_dim: 64
+  cond_dim: 4
+  num_heads: 8
+  num_layers: 6      # Restored baseline depth
+  self_attn: True
+  dropout: 0.05
+  attn_dropout: 0.25
+  residual: True
+  layer_norm: True
+  batch_norm: False
+  act: 'relu'
+  attn:
+    clamp: 5.
+    act: 'relu'
+    full_attn: True
+    edge_enhance: True
+    O_e: True
+    norm_e: True
+    fwl: False
+    signed_sqrt: True
+    score_act: True
+    deg_scaler: False
+    attn_product: mul
+    attn_reweight: False
+    edge_reweight: False
+  norm_e: True
+  O_e: True
+  ff_e: False
+  ff_e_ca: True
+  ff_e_sa: False
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  post_pool: True
+  condition_list: ['unconditional']
+
+# Flow Matching specific configuration
+flow:
+  conditioning_key: none          # Unconditional generation
+  hid_dim: 4                      # Should match dt.in_dim
+  cond_stage_key: unconditional
+  first_stage_config: runs/encoder_retrain_zinc_encoder_20250917_152946/my_zinc-encoder-fast_retrain/0/ckpt/99.ckpt  # Updated to post-pool checkpoint
+  cond_stage_config: __is_unconditional__
+  first_stage_trainable: False    # Freeze pretrained encoder
+  cond_stage_trainable: False
+  objective: rectified            # Rectified Flow objective  
+  solver: heun                    # ODE solver: euler | heun
+  nfe: 50                         # Restored baseline NFEs
+  t_weight: none                  # Time weighting: none | "t(1-t)"
+  node_factor: 1.0                # Loss weighting for nodes
+  edge_factor: 1.0                # Loss weighting for edges  
+  graph_factor: 1.0               # Loss weighting for graph-level
+  use_graph_latent: True          # Restored baseline graph latents
+  force_undirected: False         # Force undirected graphs
+  # Gaussian CFM specific (unused for rectified flow)
+  alpha_fn: linear                # Schedule for mu_t: linear | cosine
+  sigma_fn: constant              # Schedule for sigma_t: constant | linear
+  sigma_min: 0.01
+  sigma_max: 1.0
+
+# Graph Transformer configuration (if used)
+gt:
+  layer_type: GritTransformer
+  layers: 6                       # Match encoder depth
+  n_heads: 4                      # Match encoder head count
+  dim_hidden: 64                  # Match encoder hid_dim
+  dropout: 0.0
+  layer_norm: False
+  batch_norm: True
+  update_e: True
+  attn_dropout: 0.2
+  attn:
+    clamp: 5.
+    act: 'relu'
+    full_attn: True
+    edge_enhance: True
+    O_e: True
+    norm_e: True
+    fwl: False
+
+# GNN decoder configuration
+gnn:
+  head: san_graph
+  layers_pre_mp: 0
+  layers_post_mp: 3
+  dim_inner: 64                   # Must match gt.dim_hidden
+  batchnorm: True
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: False
+
+# Optimization configuration
+optim:
+  clip_grad_norm: True
+  optimizer: adamw                # AdamW optimizer
+  weight_decay: 0.01              # L2 regularization
+  base_lr: 1.0e-4                 # Lower learning rate for stability
+  max_epoch: 200                  # Matches restored training budget
+  num_warmup_epochs: 20           # Warmup epochs
+  scheduler: cosine_with_warmup   # Learning rate schedule
+  min_lr: 1e-6                    # Minimum learning rate
+
+# Training configuration
+train_flow:
+  ema: True                       # Use exponential moving average
+  grad_clip: 1.0                  # Gradient clipping
+  batch_accumulation: 1           # Gradient accumulation steps

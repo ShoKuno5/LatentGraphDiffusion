@@ -49,20 +49,17 @@ python train_diffusion.py --cfg cfg/zinc-diffusion_ddpm.yaml --repeat 5 wandb.us
 ## Unified Operations Guide (HPC + Azure)
 
 This project standardizes how we run training across environments. Use the
-wrappers in `experiments/` which call reusable runners in `scripts/common/` and
-source environment presets from `scripts/env/`.
+unified ops in `ops/`:
+- PJM job wrapper: `ops/lgd_pjm.sh`
+- Inside-container runners: `ops/runners/*`
+- Environment presets: `ops/env/*`
 
 ### Repository Layout
 
 - `cfg/`: YAML configs (datasets, diffusion, flow, unconditional)
-- `scripts/env/`: environment presets (paths, NCCL/GLOO, WandB)
-  - `wisteria.sh` (HPC), `azure.sh` (Azure VM)
-- `scripts/common/`: inside-container runners (single source of truth)
-  - ZINC: `run_zinc_pretrain_encoder.sh`, `run_zinc_train_diffusion.sh`,
-    `run_zinc_train_flow.sh`, `run_zinc_train_diffusion_uncond.sh`
-  - QM9: `run_qm9_pretrain_encoder.sh`, `run_qm9_train_diffusion.sh`
-- `experiments/wisteria/`: PJM job wrappers
-- `experiments/azure/`: Azure VM wrappers
+- `ops/`: operational scripts (PJM wrapper, runners, env)
+  - `lgd_pjm.sh`, `env/wisteria.sh`, `runners/*`
+- `legacy/`: archived Wisteria/Azure wrappers for reference
 - `scripts/legacy/`: older one-off scripts (kept for reference)
 
 ### WandB Configuration
@@ -80,58 +77,26 @@ the container.
 
 ### Wisteria HPC (PJM)
 
-Submit jobs after making scripts executable (e.g., `chmod +x experiments/wisteria/*.sh`).
+Submit jobs after making scripts executable (e.g., `chmod +x ops/*.sh`).
 
-```
-# ZINC encoder pretraining
-pjsub experiments/wisteria/zinc_pretrain_encoder.sh
-
-# ZINC diffusion (uses latest encoder checkpoint if not specified)
-pjsub experiments/wisteria/zinc_train_diffusion.sh
-pjsub experiments/wisteria/zinc_train_diffusion.sh /path/to/encoder.ckpt
-
-# ZINC flow matching (Rectified Flow)
-pjsub experiments/wisteria/zinc_train_flow.sh
-pjsub experiments/wisteria/zinc_train_flow.sh /path/to/encoder.ckpt cfg/zinc-flow_rf.yaml 300
-
-# ZINC unconditional diffusion
-pjsub experiments/wisteria/zinc_train_diffusion_uncond.sh
-pjsub experiments/wisteria/zinc_train_diffusion_uncond.sh /path/to/encoder.ckpt cfg/zinc-diffusion_ddpm_unconditional.yaml 5 50
-```
+Simplest workflow (single script you edit):
+- Open `ops/lgd_pjm.sh` and set `DATASET`, `MODE`, `CONFIG`, `CHECKPOINT`, `REPEAT`, `MAX_EPOCH` at the top.
+- Submit: `pjsub ops/lgd_pjm.sh`
 
 ### Azure VM
 
-Run wrappers directly on the VM. If Singularity is available, training runs in
-the `lgd.sif` container with proper bind mounts; otherwise it runs in the host
-Python environment (ensure dependencies match `env.yaml`).
-
-```
-# ZINC encoder pretraining
-experiments/azure/zinc_pretrain_encoder.sh
-experiments/azure/zinc_pretrain_encoder.sh cfg/zinc-encoder.yaml 5 50
-
-# ZINC diffusion (auto-detect encoder ckpt by default)
-experiments/azure/zinc_train_diffusion.sh
-experiments/azure/zinc_train_diffusion.sh auto cfg/zinc-diffusion_ddpm.yaml 5 50
-
-# ZINC flow matching (Rectified Flow)
-experiments/azure/zinc_train_flow.sh
-experiments/azure/zinc_train_flow.sh /path/to/encoder.ckpt cfg/zinc-flow_rf.yaml 300
-
-# ZINC unconditional diffusion
-experiments/azure/zinc_train_diffusion_uncond.sh
-experiments/azure/zinc_train_diffusion_uncond.sh auto cfg/zinc-diffusion_ddpm_unconditional.yaml 5 50
-```
+If you need Azure VM wrappers, see the archived examples under
+`legacy/azure/`.
 
 ### Running Runners Directly (inside container)
 
 For quick tests inside the container shell:
 
 ```
-scripts/common/run_zinc_pretrain_encoder.sh --config cfg/zinc-encoder.yaml --repeat 1 --max-epoch 1
-scripts/common/run_zinc_train_diffusion.sh --checkpoint auto --config cfg/zinc-diffusion_ddpm.yaml --repeat 1 --max-epoch 1
-scripts/common/run_zinc_train_flow.sh --checkpoint auto --config cfg/zinc-flow_rf.yaml --max-epoch 10
-scripts/common/run_zinc_train_diffusion_uncond.sh --checkpoint auto --config cfg/zinc-diffusion_ddpm_unconditional.yaml --repeat 1 --max-epoch 1
+ops/runners/run_zinc_pretrain_encoder.sh --config cfg/zinc-encoder.yaml --repeat 1 --max-epoch 1
+ops/runners/run_zinc_train_diffusion.sh --checkpoint auto --config cfg/zinc-diffusion_ddpm.yaml --repeat 1 --max-epoch 1
+ops/runners/run_zinc_train_flow.sh --checkpoint auto --config cfg/zinc-flow_rf.yaml --max-epoch 10
+ops/runners/run_zinc_train_diffusion_uncond.sh --checkpoint auto --config cfg/zinc-diffusion_ddpm_unconditional.yaml --repeat 1 --max-epoch 1
 ```
 
 ### Notes
