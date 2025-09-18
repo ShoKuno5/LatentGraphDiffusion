@@ -1,0 +1,1161 @@
+[wisteria] ROOT=/work/gp15/q25030
+[wisteria] CODE=/work/gp15/q25030/LatentGraphDiffusion
+[wisteria] DATA=/work/gp15/q25030/LatentGraphDiffusion/data
+[wisteria] RUNS=/work/gp15/q25030/LatentGraphDiffusion/runs
+[wisteria] RESULTS=/work/gp15/q25030/LatentGraphDiffusion/runs (unified with RUNS)
+=== LGD Wisteria Job ===
+Dataset     : zinc
+Mode        : flow
+Config      : cfg/my_zinc-flow_baseline.yaml
+Checkpoint  : runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Repeat      : 1
+Max Epoch   : 50
+Experiment  : zinc_flow_20250918_155500
+Out Dir     : /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20250918_155500
+W&B Name    : zinc_flow_zinc_flow_20250918_155500
+Start time  : Thu Sep 18 15:55:00 JST 2025
+[wandb] entity='shokuno-the-university-of-tokyo', mode='online'
+Env check:
+PyTorch: 2.0.1
+CUDA available: True
+CUDA device count: 8
+PyG: 2.3.1
+Using encoder checkpoint: runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Starting ZINC flow matching training...
+Config: cfg/my_zinc-flow_baseline.yaml
+Max Epoch: 50
+Out dir: /workspace/runs/zinc_flow_20250918_155500
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+WARNING:root:Layers after message passing should be >=1
+./datasets/ZINC
+[*] Loaded dataset 'subset' from 'PyG-ZINC':
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
+  undirected: True
+  num graphs: 12000
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  avg num_nodes/graph: 23
+  num node features: 1
+  num edge features: 1
+  num classes: (appears to be a regression task)
+Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
+  ...estimated to be undirected: True
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1547.40it/s]
+Done! Took 00:00:08.39
+Adding virtual node and edges
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1745.01it/s]
+Preprocessing PE
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3668.36it/s]
+[*] Run ID 0: seed=0, split_index=0
+    Starting now: 2025-09-18 15:55:50.731054
+/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+Restored encoder from runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Missing Keys: 0, Unexpected Keys: 0
+Using first stage also as cond stage.
+VelocityWrapper has 0.93 M params.
+Keeping EMAs of 434.
+LatentFlow(
+  (first_stage_model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp_2): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+  (cond_stage_model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp_2): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+  (model): VelocityWrapper(
+    (denoiser): DenoisingTransformer(
+      (act): ReLU()
+      (node_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (edge_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (cond_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_in_mlp_2): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_in_mlp_3): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_res_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+        (3): LayerNorm((4,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (layer_norm_in_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (layer_norm_in_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (temb_layer): Sequential(
+        (0): Linear(in_features=64, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (denoising_layers): ModuleList(
+        (0-3): 4 x DenoisingTransformerLayer(in_channels=64, out_channels=64, heads=8, residual=True)
+        [DenoisingTransformerLayer(
+          (act): ReLU()
+          (cross_attention): Cross_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E1): Linear(in_features=64, out_features=64, bias=True)
+            (E2): Linear(in_features=64, out_features=64, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (H): Linear(in_features=64, out_features=64, bias=True)
+            (G1): Linear(in_features=64, out_features=64, bias=True)
+            (G2): Linear(in_features=64, out_features=64, bias=True)
+            (act): ReLU()
+          )
+          (attention): GTE_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E): Linear(in_features=64, out_features=128, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (act): ReLU()
+          )
+          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
+          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h): Linear(in_features=64, out_features=64, bias=True)
+          (O_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h2): Linear(in_features=64, out_features=64, bias=True)
+          (O_e2): Linear(in_features=64, out_features=64, bias=True)
+          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_h_layer3): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer4): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer3): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer4): Linear(in_features=128, out_features=64, bias=True)
+          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm3_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm3_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm4_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm4_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )]
+      )
+      (self_attn_layers): ModuleList(
+        (0-3): 4 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=8, residual=True)
+        [GraphTransformerEncoderLayer(
+          (act): ReLU()
+          (attention): GTE_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E): Linear(in_features=64, out_features=128, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (act): ReLU()
+          )
+          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
+          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h): Linear(in_features=64, out_features=64, bias=True)
+          (O_e): Linear(in_features=64, out_features=64, bias=True)
+          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )]
+      )
+      (final_layer_node): Sequential(
+        (0): Linear(in_features=64, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (final_layer_edge): Sequential(
+        (0): Linear(in_features=64, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (graph_out_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (graph_out_mlp_2): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+    )
+  )
+  (model_ema): LitEma()
+)
+accelerator: cuda:0
+benchmark: False
+bn:
+  eps: 1e-05
+  mom: 0.1
+cfg_dest: config.yaml
+cond:
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    full_attn: True
+    layer_norm: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  edge_encoder_name: TypeDictEdge
+  layer_norm: False
+  node_encoder_name: TypeDictNode
+custom_metrics: []
+dataset:
+  add_virtual_node_edge: True
+  cache_load: False
+  cache_save: False
+  dir: ./datasets
+  edge_dim: 128
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_message_ratio: 0.8
+  edge_negative_sampling_ratio: 1.0
+  edge_train_mode: all
+  encoder: True
+  encoder_bn: True
+  encoder_dim: 128
+  encoder_name: db
+  format: PyG-ZINC
+  label_column: none
+  label_table: none
+  location: local
+  name: subset
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  num_hop: 0
+  num_tasks: 1
+  remove_feature: False
+  resample_disjoint: False
+  resample_negative: False
+  shuffle_split: True
+  slic_compactness: 10
+  split: [0.8, 0.1, 0.1]
+  split_dir: ./splits
+  split_index: 0
+  split_mode: standard
+  subgraph: False
+  task: graph
+  task_type: regression
+  to_undirected: False
+  transductive: False
+  transform: none
+  tu_simple: True
+devices: 1
+diffusion:
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  graph_factor: 0.0
+dt:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: False
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.25
+  batch_norm: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  cond_dim: 4
+  condition_list: ['masked_graph']
+  dropout: 0.05
+  ff_e: False
+  ff_e_ca: True
+  ff_e_sa: False
+  hid_dim: 64
+  in_dim: 4
+  in_edge_dim: 4
+  in_node_dim: 4
+  layer_norm: True
+  norm_e: True
+  num_heads: 8
+  num_layers: 4
+  out_dim: 4
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  post_pool: True
+  residual: True
+  self_attn: True
+  temb_dim: 64
+  use_time: True
+encoder:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: True
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: True
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.5
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dropout: 0.0
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  ff_e: False
+  hid_dim: 64
+  in_dim: 36
+  label_embed_type: add_virtual
+  layer_norm: False
+  mpnn:
+    act: relu
+    dropout: 0.0
+    edge_enhance: True
+    enable: True
+    project_edge: True
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  norm_e: True
+  num_heads: 4
+  num_layers: 10
+  num_task: 1
+  out_dim: 4
+  pe_raw_norm: None
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  posenc_dim: 28
+  posenc_in_dim: 20
+  posenc_in_dim_edge: 20
+  post_pool: True
+  prefix_dim: 64
+  prefix_type: add_virtual
+  residual: True
+  task_type: regression
+  temb_dim: 0
+  type: GraphTransformerEncoder
+  update_e: True
+  use_time: False
+example_arg: example
+example_group:
+  example_arg: example
+flow:
+  alpha_fn: linear
+  cond_stage_config: __is_first_stage__
+  cond_stage_key: masked_graph
+  cond_stage_trainable: False
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  ema: True
+  first_stage_config: runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+  first_stage_trainable: False
+  force_undirected: False
+  graph_factor: 1.0
+  hid_dim: 4
+  nfe: 50
+  node_factor: 1.0
+  objective: rectified
+  sigma_fn: constant
+  sigma_max: 1.0
+  sigma_min: 0.01
+  solver: heun
+  t_weight: none
+  task_factor: 1.0
+  use_graph_latent: True
+gnn:
+  act: relu
+  agg: add
+  att_final_linear: False
+  att_final_linear_bn: False
+  att_heads: 1
+  batchnorm: True
+  clear_feature: True
+  dim_inner: 16
+  dropout: 0.0
+  head: graph
+  keep_edge: 0.5
+  l2norm: True
+  layer_type: generalconv
+  layers_mp: 2
+  layers_post_mp: 1
+  layers_pre_mp: 0
+  msg_direction: single
+  normalize_adj: False
+  residual: False
+  self_msg: concat
+  skip_every: 1
+  stage_type: stack
+gpu_mem: False
+gt:
+  attn:
+    O_e: True
+    act: relu
+    clamp: 5.0
+    deg_scaler: True
+    edge_enhance: True
+    full_attn: True
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.0
+  batch_norm: True
+  bigbird:
+    add_cross_attention: False
+    attention_type: block_sparse
+    block_size: 3
+    chunk_size_feed_forward: 0
+    hidden_act: relu
+    is_decoder: False
+    layer_norm_eps: 1e-06
+    max_position_embeddings: 128
+    num_random_blocks: 3
+    use_bias: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dim_hidden: 64
+  dropout: 0.0
+  full_graph: True
+  gamma: 1e-05
+  layer_norm: False
+  layer_type: GritTransformer
+  layers: 3
+  n_heads: 8
+  pna_degrees: []
+  residual: True
+  update_e: True
+mem:
+  inplace: False
+metric_agg: argmin
+metric_best: mae
+mlflow:
+  name: zinc-flow-baseline
+  project: Exp
+  use: False
+model:
+  edge_decoding: dot
+  graph_pooling: add
+  loss_fun: mse
+  match_upper: True
+  size_average: mean
+  thresh: 0.5
+  type: LatentFlow
+name_tag: 
+num_threads: 6
+num_workers: 0
+optim:
+  base_lr: 0.0001
+  batch_accumulation: 1
+  clip_grad_norm: True
+  lr_decay: 0.1
+  max_epoch: 50
+  min_lr: 1e-06
+  momentum: 0.9
+  num_warmup_epochs: 20
+  optimizer: adamW
+  reduce_factor: 0.1
+  schedule_patience: 10
+  scheduler: cosine_with_warmup
+  steps: [30, 60, 90]
+  weight_decay: 1e-05
+out_dir: /workspace/runs/zinc_flow_20250918_155500/my_zinc-flow_baseline
+posenc_ERE:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ERN:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  er_dim: none
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EdgeRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ElstaticSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: range(10)
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EquivStableLapPE:
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  raw_norm_type: none
+posenc_HKdiagSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_HodgeLap1PE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_InterRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_LapPE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RD:
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RRWP:
+  add_identity: True
+  dim_pe: 16
+  enable: True
+  ksteps: 20
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+  real_emb: True
+  spd: False
+posenc_RWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_SignNet:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  phi_hidden_dim: 64
+  phi_out_dim: 4
+  post_layers: 0
+  raw_norm_type: none
+prep:
+  add_edge_index: True
+  add_reverse_edges: True
+  add_self_loops: False
+  dist_cutoff: 510
+  dist_enable: False
+  exp: False
+  exp_algorithm: Random-d
+  exp_count: 1
+  exp_deg: 5
+  exp_max_num_iters: 100
+  layer_edge_indices_dir: None
+  num_virt_node: 0
+  train_percent: 0.6
+  use_exp_edges: True
+pretrained:
+  dir: 
+  freeze_main: False
+  reset_prediction_head: True
+print: both
+regression_model:
+  encoder:
+    attn:
+      O_e: True
+      act: relu
+      attn_dropout: 0.0
+      batch_norm: True
+      bn_momentum: 0.1
+      bn_no_runner: False
+      clamp: 5.0
+      deg_scaler: False
+      edge_enhance: True
+      full_attn: True
+      layer_norm: False
+      norm_e: True
+      sparse: False
+      use: True
+      use_bias: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    edge_encoder_name: TypeDictEdge
+    layer_norm: False
+    node_encoder_name: TypeDictNode
+round: 5
+run_dir: /workspace/runs/zinc_flow_20250918_155500/my_zinc-flow_baseline/0
+run_id: 0
+run_multiple_splits: []
+seed: 0
+share:
+  dim_in: 1
+  dim_out: 1
+  num_splits: 3
+tensorboard_agg: True
+tensorboard_each_run: False
+train:
+  auto_resume: False
+  batch_size: 256
+  ckpt_best: True
+  ckpt_clean: True
+  ckpt_period: 50
+  early_stop: False
+  enable_ckpt: True
+  ensemble_mode: none
+  ensemble_repeat: 1
+  epoch_resume: -1
+  eval_period: 10
+  iter_per_epoch: 32
+  mode: train_diffusion
+  neighbor_sizes: [20, 15, 10, 5]
+  node_per_graph: 32
+  pretrain:
+    atom_bond_only: True
+    edge_factor: 0.0
+    graph_factor: 1.0
+    input_target: True
+    mask_edge_prob: 0.0
+    mask_label_prob: 0.5
+    mask_node_prob: 0.0
+    node_factor: 0.0
+    original_task: True
+    recon: none
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+  skip_train_eval: False
+  start_eval_epoch: -1
+  walk_length: 4
+val:
+  node_per_graph: 32
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+view_emb: False
+wandb:
+  entity: shokuno-the-university-of-tokyo
+  name: zinc_flow_zinc_flow_20250918_155500
+  project: LGFM-ZINC-Flow
+  use: True
+Num parameters: 1823862
+Start from epoch 0
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: shokuno (shokuno-the-university-of-tokyo). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /workspace/wandb/run-20250918_155559-uizry45c
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run zinc_flow_zinc_flow_20250918_155500
+wandb: ⭐️ View project at https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow
+wandb: 🚀 View run at https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow/runs/uizry45c
+Key encoder.pe_raw_norm with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+Key prep.layer_edge_indices_dir with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+train: {'epoch': 0, 'time_epoch': 19.43497, 'eta': 952.31375, 'eta_hours': 0.26453, 'loss': 1306.10508516, 'lr': 0.0, 'params': 1823862, 'time_iter': 0.48587, 'mae': 0.78391, 'r2': 0.67491, 'spearmanr': 0.83357, 'mse': 1.31447, 'rmse': 1.1465, 'loss_node': 2.7111696434020995, 'loss_edge': 1.3779207445144652, 'loss_graph': 1300.701518359375, 'loss_task': 1.3144677326202392, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.01s
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 0, 'time_epoch': 28.84737, 'loss': 446.80934155, 'lr': 0, 'params': 1823862, 'time_iter': 7.21184, 'mae': 19.95882, 'r2': -112.43922, 'spearmanr': 0.25689, 'mse': 446.80933, 'rmse': 21.13787}
+...computing epoch stats took: 0.00s
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 0, 'time_epoch': 29.11742, 'loss': 450.05054956, 'lr': 0, 'params': 1823862, 'time_iter': 7.27935, 'mae': 20.04837, 'r2': -109.62375, 'spearmanr': 0.28216, 'mse': 450.05054, 'rmse': 21.2144}
+...computing epoch stats took: 0.00s
+> Epoch 0: took 77.4s (avg 77.4s) | Best so far: epoch 0	train_loss: 1306.1051 train_mae: 0.7839	val_loss: 446.8093 val_mae: 19.9588	test_loss: 450.0505 test_mae: 20.0484
+train: {'epoch': 1, 'time_epoch': 12.89256, 'eta': 775.86079, 'eta_hours': 0.21552, 'loss': 425.71587979, 'lr': 5e-06, 'params': 1823862, 'time_iter': 0.32231, 'mae': 0.80455, 'r2': 0.6552, 'spearmanr': 0.82733, 'mse': 1.39418, 'rmse': 1.18075, 'loss_node': 2.6836566410064697, 'loss_edge': 1.306800203704834, 'loss_graph': 420.33124296875, 'loss_task': 1.3941807357788085, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.00s
+train: {'epoch': 2, 'time_epoch': 12.86026, 'eta': 707.94203, 'eta_hours': 0.19665, 'loss': 87.91324687, 'lr': 1e-05, 'params': 1823862, 'time_iter': 0.32151, 'mae': 0.8123, 'r2': 0.61725, 'spearmanr': 0.82336, 'mse': 1.54762, 'rmse': 1.24403, 'loss_node': 2.6911097911834716, 'loss_edge': 1.2685777153015136, 'loss_graph': 82.40593641662598, 'loss_task': 1.5476220387458801, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.01s
+train: {'epoch': 3, 'time_epoch': 12.87732, 'eta': 667.7487, 'eta_hours': 0.18549, 'loss': 76.63733751, 'lr': 1.5e-05, 'params': 1823862, 'time_iter': 0.32193, 'mae': 0.80118, 'r2': 0.64118, 'spearmanr': 0.82719, 'mse': 1.45086, 'rmse': 1.20452, 'loss_node': 2.7610668994903564, 'loss_edge': 1.2641830213546752, 'loss_graph': 71.1612300354004, 'loss_task': 1.4508569580078126, 'loss_encoder': 0.0}
+train: {'epoch': 4, 'time_epoch': 12.88042, 'eta': 638.50972, 'eta_hours': 0.17736, 'loss': 69.59476542, 'lr': 2e-05, 'params': 1823862, 'time_iter': 0.32201, 'mae': 0.8068, 'r2': 0.64723, 'spearmanr': 0.82071, 'mse': 1.42638, 'rmse': 1.19431, 'loss_node': 2.9658852111816407, 'loss_edge': 1.2637059963226318, 'loss_graph': 63.938795181274415, 'loss_task': 1.4263794366836549, 'loss_encoder': 0.0}
+train: {'epoch': 5, 'time_epoch': 12.85445, 'eta': 614.53318, 'eta_hours': 0.1707, 'loss': 63.30290607, 'lr': 2.5e-05, 'params': 1823862, 'time_iter': 0.32136, 'mae': 0.79528, 'r2': 0.64833, 'spearmanr': 0.83379, 'mse': 1.42196, 'rmse': 1.19246, 'loss_node': 3.173076957321167, 'loss_edge': 1.2725383127212524, 'loss_graph': 57.43533612060547, 'loss_task': 1.421955216217041, 'loss_encoder': 0.0}
+train: {'epoch': 6, 'time_epoch': 12.85885, 'eta': 593.7614, 'eta_hours': 0.16493, 'loss': 60.11057415, 'lr': 3e-05, 'params': 1823862, 'time_iter': 0.32147, 'mae': 0.8111, 'r2': 0.64152, 'spearmanr': 0.81336, 'mse': 1.44947, 'rmse': 1.20394, 'loss_node': 3.2969368228912352, 'loss_edge': 1.2793240348815917, 'loss_graph': 54.084845906066896, 'loss_task': 1.4494676871299743, 'loss_encoder': 0.0}
+train: {'epoch': 7, 'time_epoch': 13.03255, 'eta': 575.87975, 'eta_hours': 0.15997, 'loss': 57.34060091, 'lr': 3.5e-05, 'params': 1823862, 'time_iter': 0.32581, 'mae': 0.79219, 'r2': 0.64913, 'spearmanr': 0.83194, 'mse': 1.41872, 'rmse': 1.1911, 'loss_node': 3.3708391761779786, 'loss_edge': 1.2821503017425537, 'loss_graph': 51.26888889160156, 'loss_task': 1.4187227424621582, 'loss_encoder': 0.0}
+train: {'epoch': 8, 'time_epoch': 12.88399, 'eta': 558.39893, 'eta_hours': 0.15511, 'loss': 55.29939607, 'lr': 4e-05, 'params': 1823862, 'time_iter': 0.3221, 'mae': 0.7942, 'r2': 0.67053, 'spearmanr': 0.82808, 'mse': 1.33216, 'rmse': 1.15419, 'loss_node': 3.4048748638153077, 'loss_edge': 1.2819537309646607, 'loss_graph': 49.28040893325806, 'loss_task': 1.3321578136444092, 'loss_encoder': 0.0}
+train: {'epoch': 9, 'time_epoch': 12.87163, 'eta': 541.78801, 'eta_hours': 0.1505, 'loss': 53.63562318, 'lr': 4.5e-05, 'params': 1823862, 'time_iter': 0.32179, 'mae': 0.79367, 'r2': 0.65602, 'spearmanr': 0.82913, 'mse': 1.39086, 'rmse': 1.17935, 'loss_node': 3.442096088409424, 'loss_edge': 1.2835725931167603, 'loss_graph': 47.51909537658691, 'loss_task': 1.3908598821640015, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 9, 'time_epoch': 28.66885, 'loss': 6.21494075, 'lr': 0, 'params': 1823862, 'time_iter': 7.16721, 'mae': 1.56988, 'r2': -0.57789, 'spearmanr': 0.2603, 'mse': 6.21494, 'rmse': 2.49298}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 9, 'time_epoch': 28.73382, 'loss': 6.84577793, 'lr': 0, 'params': 1823862, 'time_iter': 7.18345, 'mae': 1.65184, 'r2': -0.68271, 'spearmanr': 0.23451, 'mse': 6.84578, 'rmse': 2.61644}
+> Epoch 9: took 70.3s (avg 25.1s) | Best so far: epoch 9	train_loss: 53.6356 train_mae: 0.7937	val_loss: 6.2149 val_mae: 1.5699	test_loss: 6.8458 test_mae: 1.6518
+train: {'epoch': 10, 'time_epoch': 12.87769, 'eta': 525.87847, 'eta_hours': 0.14608, 'loss': 51.89798162, 'lr': 5e-05, 'params': 1823862, 'time_iter': 0.32194, 'mae': 0.80597, 'r2': 0.65556, 'spearmanr': 0.82348, 'mse': 1.39269, 'rmse': 1.18012, 'loss_node': 3.476812186431885, 'loss_edge': 1.2832126987457275, 'loss_graph': 45.74526396789551, 'loss_task': 1.3926932165145873, 'loss_encoder': 0.0}
+train: {'epoch': 11, 'time_epoch': 12.88635, 'eta': 510.50164, 'eta_hours': 0.14181, 'loss': 50.64395608, 'lr': 5.5e-05, 'params': 1823862, 'time_iter': 0.32216, 'mae': 0.80721, 'r2': 0.61524, 'spearmanr': 0.8262, 'mse': 1.55573, 'rmse': 1.24729, 'loss_node': 3.481012505722046, 'loss_edge': 1.2841177951812743, 'loss_graph': 44.32309811553955, 'loss_task': 1.5557277496337891, 'loss_encoder': 0.0}
+train: {'epoch': 12, 'time_epoch': 12.83566, 'eta': 495.3637, 'eta_hours': 0.1376, 'loss': 48.50442682, 'lr': 6e-05, 'params': 1823862, 'time_iter': 0.32089, 'mae': 0.81055, 'r2': 0.61306, 'spearmanr': 0.82559, 'mse': 1.56453, 'rmse': 1.25081, 'loss_node': 3.5061476341247557, 'loss_edge': 1.28450302734375, 'loss_graph': 42.14924235076904, 'loss_task': 1.5645342763900756, 'loss_encoder': 0.0}
+train: {'epoch': 13, 'time_epoch': 12.8654, 'eta': 480.63112, 'eta_hours': 0.13351, 'loss': 46.73232846, 'lr': 6.5e-05, 'params': 1823862, 'time_iter': 0.32163, 'mae': 0.80305, 'r2': 0.64468, 'spearmanr': 0.82659, 'mse': 1.43669, 'rmse': 1.19862, 'loss_node': 3.486287874984741, 'loss_edge': 1.2861779819488526, 'loss_graph': 40.52317182846069, 'loss_task': 1.436690194129944, 'loss_encoder': 0.0}
+train: {'epoch': 14, 'time_epoch': 12.8804, 'eta': 466.1825, 'eta_hours': 0.1295, 'loss': 45.33103667, 'lr': 7e-05, 'params': 1823862, 'time_iter': 0.32201, 'mae': 0.81219, 'r2': 0.65389, 'spearmanr': 0.82013, 'mse': 1.39946, 'rmse': 1.18299, 'loss_node': 3.4860574810028075, 'loss_edge': 1.2865454778671264, 'loss_graph': 39.158973388290406, 'loss_task': 1.3994602947235106, 'loss_encoder': 0.0}
+train: {'epoch': 15, 'time_epoch': 12.8415, 'eta': 451.84725, 'eta_hours': 0.12551, 'loss': 44.89192079, 'lr': 7.5e-05, 'params': 1823862, 'time_iter': 0.32104, 'mae': 0.80331, 'r2': 0.61055, 'spearmanr': 0.82388, 'mse': 1.5747, 'rmse': 1.25487, 'loss_node': 3.431246365737915, 'loss_edge': 1.28606102809906, 'loss_graph': 38.59991636962891, 'loss_task': 1.574696886062622, 'loss_encoder': 0.0}
+train: {'epoch': 16, 'time_epoch': 13.08734, 'eta': 438.16496, 'eta_hours': 0.12171, 'loss': 42.31385039, 'lr': 8e-05, 'params': 1823862, 'time_iter': 0.32718, 'mae': 0.80103, 'r2': 0.65806, 'spearmanr': 0.82838, 'mse': 1.38261, 'rmse': 1.17585, 'loss_node': 3.3613360763549807, 'loss_edge': 1.287094889640808, 'loss_graph': 36.28280467681885, 'loss_task': 1.3826147338867187, 'loss_encoder': 0.0}
+train: {'epoch': 17, 'time_epoch': 12.84162, 'eta': 424.11193, 'eta_hours': 0.11781, 'loss': 40.23327828, 'lr': 8.5e-05, 'params': 1823862, 'time_iter': 0.32104, 'mae': 0.80261, 'r2': 0.65315, 'spearmanr': 0.82473, 'mse': 1.40244, 'rmse': 1.18425, 'loss_node': 3.1824073230743406, 'loss_edge': 1.286300127029419, 'loss_graph': 34.3621325805664, 'loss_task': 1.402437818145752, 'loss_encoder': 0.0}
+train: {'epoch': 18, 'time_epoch': 12.87084, 'eta': 410.2341, 'eta_hours': 0.11395, 'loss': 37.52327887, 'lr': 9e-05, 'params': 1823862, 'time_iter': 0.32177, 'mae': 0.80021, 'r2': 0.66658, 'spearmanr': 0.82051, 'mse': 1.34814, 'rmse': 1.16109, 'loss_node': 3.0317975303649902, 'loss_edge': 1.2840641704559326, 'loss_graph': 31.85928141479492, 'loss_task': 1.3481352230072021, 'loss_encoder': 0.0}
+train: {'epoch': 19, 'time_epoch': 12.86461, 'eta': 396.44762, 'eta_hours': 0.11012, 'loss': 35.90531589, 'lr': 9.5e-05, 'params': 1823862, 'time_iter': 0.32162, 'mae': 0.79398, 'r2': 0.65249, 'spearmanr': 0.83259, 'mse': 1.40511, 'rmse': 1.18537, 'loss_node': 2.9488443801879884, 'loss_edge': 1.2847726642608643, 'loss_graph': 30.266588802337647, 'loss_task': 1.405109881210327, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 19, 'time_epoch': 28.6745, 'loss': 3.90689945, 'lr': 0, 'params': 1823862, 'time_iter': 7.16863, 'mae': 0.9753, 'r2': 0.00809, 'spearmanr': 0.80537, 'mse': 3.9069, 'rmse': 1.97659}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 19, 'time_epoch': 28.72646, 'loss': 3.86534828, 'lr': 0, 'params': 1823862, 'time_iter': 7.18161, 'mae': 1.07273, 'r2': 0.04989, 'spearmanr': 0.7489, 'mse': 3.86535, 'rmse': 1.96605}
+> Epoch 19: took 70.3s (avg 21.9s) | Best so far: epoch 19	train_loss: 35.9053 train_mae: 0.7940	val_loss: 3.9069 val_mae: 0.9753	test_loss: 3.8653 test_mae: 1.0727
+train: {'epoch': 20, 'time_epoch': 12.9168, 'eta': 382.82101, 'eta_hours': 0.10634, 'loss': 34.76244123, 'lr': 0.0001, 'params': 1823862, 'time_iter': 0.32292, 'mae': 0.81508, 'r2': 0.64866, 'spearmanr': 0.81648, 'mse': 1.42062, 'rmse': 1.1919, 'loss_node': 2.9167251148223876, 'loss_edge': 1.283554709815979, 'loss_graph': 29.141543090820313, 'loss_task': 1.4206182346343994, 'loss_encoder': 0.0}
+train: {'epoch': 21, 'time_epoch': 12.90177, 'eta': 369.23981, 'eta_hours': 0.10257, 'loss': 32.92830104, 'lr': 9.973e-05, 'params': 1823862, 'time_iter': 0.32254, 'mae': 0.79966, 'r2': 0.64335, 'spearmanr': 0.82951, 'mse': 1.44207, 'rmse': 1.20086, 'loss_node': 2.8998876796722413, 'loss_edge': 1.2832637683868409, 'loss_graph': 27.30308373413086, 'loss_task': 1.4420657837152482, 'loss_encoder': 0.0}
+train: {'epoch': 22, 'time_epoch': 12.85448, 'eta': 355.66216, 'eta_hours': 0.0988, 'loss': 31.10366676, 'lr': 9.891e-05, 'params': 1823862, 'time_iter': 0.32136, 'mae': 0.8045, 'r2': 0.63809, 'spearmanr': 0.82702, 'mse': 1.46336, 'rmse': 1.2097, 'loss_node': 2.885954624557495, 'loss_edge': 1.2838078769683838, 'loss_graph': 25.470540785980223, 'loss_task': 1.4633634170532226, 'loss_encoder': 0.0}
+train: {'epoch': 23, 'time_epoch': 12.87049, 'eta': 342.16212, 'eta_hours': 0.09505, 'loss': 29.63683065, 'lr': 9.755e-05, 'params': 1823862, 'time_iter': 0.32176, 'mae': 0.81884, 'r2': 0.64531, 'spearmanr': 0.81848, 'mse': 1.43417, 'rmse': 1.19757, 'loss_node': 2.8748580280303955, 'loss_edge': 1.2823959712982178, 'loss_graph': 24.045404409790038, 'loss_task': 1.4341716989517213, 'loss_encoder': 0.0}
+train: {'epoch': 24, 'time_epoch': 12.88662, 'eta': 328.72858, 'eta_hours': 0.09131, 'loss': 27.84216818, 'lr': 9.568e-05, 'params': 1823862, 'time_iter': 0.32217, 'mae': 0.80176, 'r2': 0.63675, 'spearmanr': 0.83044, 'mse': 1.46875, 'rmse': 1.21192, 'loss_node': 2.848949904632568, 'loss_edge': 1.2830809173583984, 'loss_graph': 22.241386790466308, 'loss_task': 1.4687504726409912, 'loss_encoder': 0.0}
+train: {'epoch': 25, 'time_epoch': 12.89253, 'eta': 315.34256, 'eta_hours': 0.0876, 'loss': 25.89721297, 'lr': 9.33e-05, 'params': 1823862, 'time_iter': 0.32231, 'mae': 0.79637, 'r2': 0.64998, 'spearmanr': 0.8299, 'mse': 1.41526, 'rmse': 1.18965, 'loss_node': 2.8062619369506834, 'loss_edge': 1.2842310678482056, 'loss_graph': 20.391462408447264, 'loss_task': 1.4152573913574218, 'loss_encoder': 0.0}
+train: {'epoch': 26, 'time_epoch': 12.90331, 'eta': 302.00228, 'eta_hours': 0.08389, 'loss': 23.6353177, 'lr': 9.045e-05, 'params': 1823862, 'time_iter': 0.32258, 'mae': 0.79555, 'r2': 0.66312, 'spearmanr': 0.82823, 'mse': 1.36215, 'rmse': 1.16711, 'loss_node': 2.7906909343719484, 'loss_edge': 1.2840584644317627, 'loss_graph': 18.198422394180298, 'loss_task': 1.3621464155197143, 'loss_encoder': 0.0}
+train: {'epoch': 27, 'time_epoch': 12.88651, 'eta': 288.68002, 'eta_hours': 0.08019, 'loss': 21.72448497, 'lr': 8.716e-05, 'params': 1823862, 'time_iter': 0.32216, 'mae': 0.81219, 'r2': 0.64055, 'spearmanr': 0.82151, 'mse': 1.4534, 'rmse': 1.20557, 'loss_node': 2.7714421001434326, 'loss_edge': 1.2851953239440919, 'loss_graph': 16.214448822402954, 'loss_task': 1.453398802947998, 'loss_encoder': 0.0}
+train: {'epoch': 28, 'time_epoch': 12.88944, 'eta': 275.38992, 'eta_hours': 0.0765, 'loss': 20.35137729, 'lr': 8.346e-05, 'params': 1823862, 'time_iter': 0.32224, 'mae': 0.81227, 'r2': 0.63488, 'spearmanr': 0.82142, 'mse': 1.47631, 'rmse': 1.21503, 'loss_node': 2.76051457862854, 'loss_edge': 1.2842902685165405, 'loss_graph': 14.830263530731202, 'loss_task': 1.4763085990905762, 'loss_encoder': 0.0}
+train: {'epoch': 29, 'time_epoch': 12.8756, 'eta': 262.11732, 'eta_hours': 0.07281, 'loss': 19.23351355, 'lr': 7.939e-05, 'params': 1823862, 'time_iter': 0.32189, 'mae': 0.78221, 'r2': 0.68156, 'spearmanr': 0.83053, 'mse': 1.28757, 'rmse': 1.13471, 'loss_node': 2.740408805465698, 'loss_edge': 1.2841465911865235, 'loss_graph': 13.92138738708496, 'loss_task': 1.287570774078369, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 29, 'time_epoch': 28.68035, 'loss': 2.38548629, 'lr': 0, 'params': 1823862, 'time_iter': 7.17009, 'mae': 0.67612, 'r2': 0.39436, 'spearmanr': 0.90211, 'mse': 2.38549, 'rmse': 1.5445}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 29, 'time_epoch': 28.74526, 'loss': 1.12759704, 'lr': 0, 'params': 1823862, 'time_iter': 7.18631, 'mae': 0.65742, 'r2': 0.72283, 'spearmanr': 0.91841, 'mse': 1.1276, 'rmse': 1.06188}
+> Epoch 29: took 70.3s (avg 20.8s) | Best so far: epoch 29	train_loss: 19.2335 train_mae: 0.7822	val_loss: 2.3855 val_mae: 0.6761	test_loss: 1.1276 test_mae: 0.6574
+train: {'epoch': 30, 'time_epoch': 12.93158, 'eta': 248.90463, 'eta_hours': 0.06914, 'loss': 17.98920628, 'lr': 7.5e-05, 'params': 1823862, 'time_iter': 0.32329, 'mae': 0.80174, 'r2': 0.66088, 'spearmanr': 0.82716, 'mse': 1.37118, 'rmse': 1.17097, 'loss_node': 2.73952378616333, 'loss_edge': 1.2846557689666749, 'loss_graph': 12.593848065376282, 'loss_task': 1.3711791067123413, 'loss_encoder': 0.0}
+train: {'epoch': 31, 'time_epoch': 12.86796, 'eta': 235.67373, 'eta_hours': 0.06546, 'loss': 17.25747197, 'lr': 7.034e-05, 'params': 1823862, 'time_iter': 0.3217, 'mae': 0.80462, 'r2': 0.64859, 'spearmanr': 0.82433, 'mse': 1.42088, 'rmse': 1.19201, 'loss_node': 2.7310385177612306, 'loss_edge': 1.2852309984207153, 'loss_graph': 11.820325564193725, 'loss_task': 1.4208765604019165, 'loss_encoder': 0.0}
+train: {'epoch': 32, 'time_epoch': 12.88437, 'eta': 222.47327, 'eta_hours': 0.0618, 'loss': 17.28076289, 'lr': 6.545e-05, 'params': 1823862, 'time_iter': 0.32211, 'mae': 0.79832, 'r2': 0.64291, 'spearmanr': 0.82615, 'mse': 1.44385, 'rmse': 1.2016, 'loss_node': 2.723047373199463, 'loss_edge': 1.2852868284225465, 'loss_graph': 11.82857709350586, 'loss_task': 1.443851693534851, 'loss_encoder': 0.0}
+train: {'epoch': 33, 'time_epoch': 12.8348, 'eta': 209.26808, 'eta_hours': 0.05813, 'loss': 16.33442357, 'lr': 6.04e-05, 'params': 1823862, 'time_iter': 0.32087, 'mae': 0.80301, 'r2': 0.64773, 'spearmanr': 0.82696, 'mse': 1.42439, 'rmse': 1.19348, 'loss_node': 2.720934578704834, 'loss_edge': 1.2856426042556763, 'loss_graph': 10.903459952354432, 'loss_task': 1.4243863025665284, 'loss_encoder': 0.0}
+train: {'epoch': 34, 'time_epoch': 12.90245, 'eta': 196.11305, 'eta_hours': 0.05448, 'loss': 15.90242659, 'lr': 5.523e-05, 'params': 1823862, 'time_iter': 0.32256, 'mae': 0.80572, 'r2': 0.65626, 'spearmanr': 0.82421, 'mse': 1.38989, 'rmse': 1.17894, 'loss_node': 2.713191358947754, 'loss_edge': 1.2860098009109497, 'loss_graph': 10.513334698486329, 'loss_task': 1.3898904752731323, 'loss_encoder': 0.0}
+train: {'epoch': 35, 'time_epoch': 12.8879, 'eta': 182.9664, 'eta_hours': 0.05082, 'loss': 15.58774495, 'lr': 5e-05, 'params': 1823862, 'time_iter': 0.3222, 'mae': 0.8079, 'r2': 0.6353, 'spearmanr': 0.82299, 'mse': 1.47463, 'rmse': 1.21434, 'loss_node': 2.704508991622925, 'loss_edge': 1.2857780925750733, 'loss_graph': 10.12282703475952, 'loss_task': 1.4746309875488282, 'loss_encoder': 0.0}
+train: {'epoch': 36, 'time_epoch': 12.86586, 'eta': 169.82599, 'eta_hours': 0.04717, 'loss': 15.2506521, 'lr': 4.477e-05, 'params': 1823862, 'time_iter': 0.32165, 'mae': 0.79738, 'r2': 0.65226, 'spearmanr': 0.8337, 'mse': 1.40607, 'rmse': 1.18578, 'loss_node': 2.698485370635986, 'loss_edge': 1.2857097885131836, 'loss_graph': 9.860388754272462, 'loss_task': 1.4060682376861573, 'loss_encoder': 0.0}
+train: {'epoch': 37, 'time_epoch': 12.82469, 'eta': 156.68703, 'eta_hours': 0.04352, 'loss': 15.132425, 'lr': 3.96e-05, 'params': 1823862, 'time_iter': 0.32062, 'mae': 0.80086, 'r2': 0.61602, 'spearmanr': 0.82642, 'mse': 1.55259, 'rmse': 1.24603, 'loss_node': 2.6858801136016845, 'loss_edge': 1.2856096378326416, 'loss_graph': 9.608346144866942, 'loss_task': 1.5525892919540405, 'loss_encoder': 0.0}
+train: {'epoch': 38, 'time_epoch': 12.84061, 'eta': 143.56867, 'eta_hours': 0.03988, 'loss': 15.02270802, 'lr': 3.455e-05, 'params': 1823862, 'time_iter': 0.32102, 'mae': 0.80122, 'r2': 0.62434, 'spearmanr': 0.82219, 'mse': 1.51895, 'rmse': 1.23246, 'loss_node': 2.681942490768433, 'loss_edge': 1.2863680160522462, 'loss_graph': 9.535445574951172, 'loss_task': 1.518952197265625, 'loss_encoder': 0.0}
+train: {'epoch': 39, 'time_epoch': 13.03656, 'eta': 130.51319, 'eta_hours': 0.03625, 'loss': 14.6115261, 'lr': 2.966e-05, 'params': 1823862, 'time_iter': 0.32591, 'mae': 0.79175, 'r2': 0.65596, 'spearmanr': 0.8326, 'mse': 1.39109, 'rmse': 1.17944, 'loss_node': 2.6800376163482666, 'loss_edge': 1.2852563646316528, 'loss_graph': 9.255144913864136, 'loss_task': 1.3910873107910156, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 39, 'time_epoch': 28.66311, 'loss': 2.22649565, 'lr': 0, 'params': 1823862, 'time_iter': 7.16578, 'mae': 0.5845, 'r2': 0.43472, 'spearmanr': 0.91279, 'mse': 2.2265, 'rmse': 1.49214}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 39, 'time_epoch': 28.73293, 'loss': 0.49798402, 'lr': 0, 'params': 1823862, 'time_iter': 7.18323, 'mae': 0.52889, 'r2': 0.87759, 'spearmanr': 0.93218, 'mse': 0.49798, 'rmse': 0.70568}
+> Epoch 39: took 70.4s (avg 20.2s) | Best so far: epoch 39	train_loss: 14.6115 train_mae: 0.7917	val_loss: 2.2265 val_mae: 0.5845	test_loss: 0.4980 test_mae: 0.5289
+train: {'epoch': 40, 'time_epoch': 12.90357, 'eta': 117.42944, 'eta_hours': 0.03262, 'loss': 14.44805814, 'lr': 2.5e-05, 'params': 1823862, 'time_iter': 0.32259, 'mae': 0.80909, 'r2': 0.62423, 'spearmanr': 0.82769, 'mse': 1.5194, 'rmse': 1.23264, 'loss_node': 2.675589027786255, 'loss_edge': 1.2860043611526488, 'loss_graph': 8.967061373519897, 'loss_task': 1.5194030956745148, 'loss_encoder': 0.0}
+train: {'epoch': 41, 'time_epoch': 12.83107, 'eta': 104.34046, 'eta_hours': 0.02898, 'loss': 14.24166585, 'lr': 2.061e-05, 'params': 1823862, 'time_iter': 0.32078, 'mae': 0.80047, 'r2': 0.65429, 'spearmanr': 0.81924, 'mse': 1.39783, 'rmse': 1.1823, 'loss_node': 2.6697150131225587, 'loss_edge': 1.2857716512680053, 'loss_graph': 8.888345402908325, 'loss_task': 1.3978335984230041, 'loss_encoder': 0.0}
+train: {'epoch': 42, 'time_epoch': 12.85852, 'eta': 91.26794, 'eta_hours': 0.02535, 'loss': 14.0227805, 'lr': 1.654e-05, 'params': 1823862, 'time_iter': 0.32146, 'mae': 0.79239, 'r2': 0.66388, 'spearmanr': 0.83433, 'mse': 1.35907, 'rmse': 1.16579, 'loss_node': 2.6608864864349364, 'loss_edge': 1.2861181497573853, 'loss_graph': 8.716709033966065, 'loss_task': 1.359066690826416, 'loss_encoder': 0.0}
+train: {'epoch': 43, 'time_epoch': 12.8477, 'eta': 78.20368, 'eta_hours': 0.02172, 'loss': 14.16575926, 'lr': 1.284e-05, 'params': 1823862, 'time_iter': 0.32119, 'mae': 0.80556, 'r2': 0.63525, 'spearmanr': 0.82309, 'mse': 1.47484, 'rmse': 1.21443, 'loss_node': 2.671601847076416, 'loss_edge': 1.2859512926101684, 'loss_graph': 8.733363771438599, 'loss_task': 1.4748421542167665, 'loss_encoder': 0.0}
+train: {'epoch': 44, 'time_epoch': 12.88057, 'eta': 65.15269, 'eta_hours': 0.0181, 'loss': 14.01159153, 'lr': 9.55e-06, 'params': 1823862, 'time_iter': 0.32201, 'mae': 0.80716, 'r2': 0.63726, 'spearmanr': 0.8256, 'mse': 1.46668, 'rmse': 1.21107, 'loss_node': 2.6588432746887207, 'loss_edge': 1.2859403039932251, 'loss_graph': 8.600123343658447, 'loss_task': 1.4666847129821778, 'loss_encoder': 0.0}
+train: {'epoch': 45, 'time_epoch': 12.83613, 'eta': 52.10524, 'eta_hours': 0.01447, 'loss': 13.86604994, 'lr': 6.7e-06, 'params': 1823862, 'time_iter': 0.3209, 'mae': 0.79292, 'r2': 0.66095, 'spearmanr': 0.83381, 'mse': 1.37092, 'rmse': 1.17086, 'loss_node': 2.6621906578063963, 'loss_edge': 1.2849888500213622, 'loss_graph': 8.547949964523315, 'loss_task': 1.3709204132080077, 'loss_encoder': 0.0}
+train: {'epoch': 46, 'time_epoch': 12.85703, 'eta': 39.06813, 'eta_hours': 0.01085, 'loss': 13.7744315, 'lr': 4.32e-06, 'params': 1823862, 'time_iter': 0.32143, 'mae': 0.79949, 'r2': 0.66297, 'spearmanr': 0.82889, 'mse': 1.36274, 'rmse': 1.16737, 'loss_node': 2.6599793769836424, 'loss_edge': 1.2855099349975585, 'loss_graph': 8.466197400665283, 'loss_task': 1.3627448469161987, 'loss_encoder': 0.0}
+train: {'epoch': 47, 'time_epoch': 12.83521, 'eta': 26.03761, 'eta_hours': 0.00723, 'loss': 13.79361127, 'lr': 2.45e-06, 'params': 1823862, 'time_iter': 0.32088, 'mae': 0.79598, 'r2': 0.65634, 'spearmanr': 0.83364, 'mse': 1.38956, 'rmse': 1.17879, 'loss_node': 2.660410931777954, 'loss_edge': 1.2856716575622558, 'loss_graph': 8.457971579551696, 'loss_task': 1.3895573045730591, 'loss_encoder': 0.0}
+train: {'epoch': 48, 'time_epoch': 13.08299, 'eta': 13.02011, 'eta_hours': 0.00362, 'loss': 13.89524189, 'lr': 1.09e-06, 'params': 1823862, 'time_iter': 0.32707, 'mae': 0.80194, 'r2': 0.62269, 'spearmanr': 0.82792, 'mse': 1.52559, 'rmse': 1.23515, 'loss_node': 2.65649799118042, 'loss_edge': 1.2857381511688233, 'loss_graph': 8.427411053466797, 'loss_task': 1.5255947170257569, 'loss_encoder': 0.0}
+train: {'epoch': 49, 'time_epoch': 12.87984, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 13.7444107, 'lr': 2.7e-07, 'params': 1823862, 'time_iter': 0.322, 'mae': 0.79484, 'r2': 0.65953, 'spearmanr': 0.83108, 'mse': 1.37666, 'rmse': 1.17331, 'loss_node': 2.6575477214813232, 'loss_edge': 1.2854279956817627, 'loss_graph': 8.424774391937255, 'loss_task': 1.3766604034423828, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 49, 'time_epoch': 28.66068, 'loss': 2.13250332, 'lr': 0, 'params': 1823862, 'time_iter': 7.16517, 'mae': 0.56588, 'r2': 0.45858, 'spearmanr': 0.91522, 'mse': 2.1325, 'rmse': 1.46031}
+Inference: Switched to EMA weights

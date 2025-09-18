@@ -149,6 +149,12 @@ class LatentFlow(pl.LightningModule):
         # Load checkpoint if provided
         if ckpt_path is not None:
             self.init_from_ckpt(ckpt_path, ignore_keys)
+
+        # Task decoding configuration (controls how supervised loss is computed)
+        task_decode_cfg = cfg.flow.get('task_decode', {}) or {}
+        self.task_decode_method = str(task_decode_cfg.get('method', 'teacher')).lower()
+        self.task_decode_ode_steps = int(task_decode_cfg.get('ode_steps', 6))
+        self.task_decode_ode_method = str(task_decode_cfg.get('ode_method', 'heun')).lower()
     
     def build_velocity_network(self, config):
         """Build the velocity prediction network."""
@@ -393,6 +399,100 @@ class LatentFlow(pl.LightningModule):
         v_graph = getattr(batch_out, 'graph_attr', None) if self.use_graph_latent else None
         
         return v_nodes, v_edges, v_graph
+
+    def _predict_latents_single_step(self, zt_nodes, zt_edges, zt_graph,
+                                     v_nodes, v_edges, v_graph,
+                                     t_nodes, t_edges, t_gr,
+                                     edge_index, batch_index):
+        """Single-step Euler projection from time t to 1 using predicted velocity."""
+        dt_nodes = (1.0 - t_nodes).unsqueeze(-1)
+        dt_edges = (1.0 - t_edges).unsqueeze(-1)
+        pred_nodes = zt_nodes + dt_nodes * v_nodes
+        pred_edges = zt_edges + dt_edges * v_edges
+        pred_graph = None
+        if zt_graph is not None:
+            if v_graph is not None and t_gr is not None:
+                pred_graph = zt_graph + (1.0 - t_gr).unsqueeze(-1) * v_graph
+            else:
+                pred_graph = zt_graph
+        if self.force_undirected:
+            sym_edges = symmetrize(edge_index, batch_index, pred_edges)
+            pred_edges = pred_edges + (sym_edges - pred_edges).detach()
+        return pred_nodes, pred_edges, pred_graph
+
+    def _integrate_flow_to_one(self, batch_template, z_nodes, z_edges, z_graph):
+        """Integrate the learned velocity field from noise to t=1."""
+        steps = max(int(self.task_decode_ode_steps), 1)
+        method = self.task_decode_ode_method
+        dt = 1.0 / steps
+        device = batch_template.x.device
+
+        template = copy.copy(batch_template)
+        template.edge_index = batch_template.edge_index
+        template.batch = batch_template.batch
+        if hasattr(batch_template, 'c'):
+            template.c = batch_template.c
+
+        z_curr_nodes = z_nodes
+        z_curr_edges = z_edges
+        z_curr_graph = z_graph
+
+        for step in range(steps):
+            t0 = torch.full((batch_template.num_graphs,), step / steps, device=device)
+            template.x = z_curr_nodes
+            template.edge_attr = z_curr_edges
+            if z_curr_graph is not None:
+                template.graph_attr = z_curr_graph
+            v_nodes, v_edges, v_graph = self.forward_velocity(template, t0)
+
+            if method == 'euler':
+                z_next_nodes = z_curr_nodes + dt * v_nodes
+                z_next_edges = z_curr_edges + dt * v_edges
+                if z_curr_graph is not None:
+                    if v_graph is not None:
+                        z_next_graph = z_curr_graph + dt * v_graph
+                    else:
+                        z_next_graph = z_curr_graph
+                else:
+                    z_next_graph = None
+            elif method == 'heun':
+                z_mid_nodes = z_curr_nodes + dt * v_nodes
+                z_mid_edges = z_curr_edges + dt * v_edges
+                z_mid_graph = z_curr_graph
+                if z_curr_graph is not None and v_graph is not None:
+                    z_mid_graph = z_curr_graph + dt * v_graph
+
+                t1 = torch.full((batch_template.num_graphs,), (step + 1) / steps, device=device)
+                template_mid = copy.copy(batch_template)
+                template_mid.x = z_mid_nodes
+                template_mid.edge_attr = z_mid_edges
+                if z_mid_graph is not None:
+                    template_mid.graph_attr = z_mid_graph
+                template_mid.edge_index = batch_template.edge_index
+                template_mid.batch = batch_template.batch
+                if hasattr(batch_template, 'c'):
+                    template_mid.c = batch_template.c
+                v_mid_nodes, v_mid_edges, v_mid_graph = self.forward_velocity(template_mid, t1)
+
+                z_next_nodes = z_curr_nodes + 0.5 * dt * (v_nodes + v_mid_nodes)
+                z_next_edges = z_curr_edges + 0.5 * dt * (v_edges + v_mid_edges)
+                if z_curr_graph is not None:
+                    if v_graph is not None and v_mid_graph is not None:
+                        z_next_graph = z_curr_graph + 0.5 * dt * (v_graph + v_mid_graph)
+                    else:
+                        z_next_graph = z_curr_graph
+                else:
+                    z_next_graph = None
+            else:
+                raise ValueError(f"Unknown ODE method '{method}' for task decode")
+
+            if self.force_undirected:
+                sym_edges = symmetrize(batch_template.edge_index, batch_template.batch, z_next_edges)
+                z_next_edges = z_next_edges + (sym_edges - z_next_edges).detach()
+
+            z_curr_nodes, z_curr_edges, z_curr_graph = z_next_nodes, z_next_edges, z_next_graph
+
+        return z_curr_nodes, z_curr_edges, z_curr_graph
     
     def training_step(self, batch, batch_idx):
         """Main training step."""
@@ -442,7 +542,7 @@ class LatentFlow(pl.LightningModule):
         u_graph = self.get_velocity_target(z0_graph, z1_graph, t.unsqueeze(-1), zt_graph) if z1_graph is not None else None
         
         # Prepare batch for velocity network
-        batch_flow = copy.deepcopy(batch)
+        batch_flow = batch.clone()
         batch_flow.x = zt_nodes
         batch_flow.edge_attr = zt_edges
         if zt_graph is not None:
@@ -466,9 +566,29 @@ class LatentFlow(pl.LightningModule):
         loss_task = torch.zeros(1, device=self.device)
         graph_dec = None
         if hasattr(batch, 'y') and batch.y is not None and cfg.flow.get('task_factor', 0.0) > 0:
-            batch_dec = copy.deepcopy(batch_flow)
-            if self.use_graph_latent and v_graph is not None:
-                batch_dec.graph_attr = zt_graph
+            decode_method = getattr(self, 'task_decode_method', 'teacher')
+
+            if decode_method == 'velocity_step':
+                pred_nodes, pred_edges, pred_graph = self._predict_latents_single_step(
+                    zt_nodes, zt_edges, zt_graph,
+                    v_nodes, v_edges, v_graph,
+                    t_nodes, t_edges, t,
+                    batch.edge_index, batch.batch
+                )
+            elif decode_method == 'ode':
+                pred_nodes, pred_edges, pred_graph = self._integrate_flow_to_one(
+                    batch, z0_nodes, z0_edges, z0_graph
+                )
+            else:
+                pred_nodes = z1_nodes.clone()
+                pred_edges = z1_edges.clone()
+                pred_graph = z1_graph.clone() if z1_graph is not None else None
+
+            batch_dec = batch.clone()
+            batch_dec.x = pred_nodes
+            batch_dec.edge_attr = pred_edges
+            if self.use_graph_latent and pred_graph is not None:
+                batch_dec.graph_attr = pred_graph
             node_dec, edge_dec, graph_dec = self.decode_first_stage(batch_dec)
             if cfg.dataset.format == 'PyG-QM9':
                 graph_dec = graph_dec * batch.get('y_std', 1.) + batch.get('y_mean', 0.)

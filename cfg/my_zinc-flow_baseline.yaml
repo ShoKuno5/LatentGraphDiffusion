@@ -196,6 +196,10 @@ flow:
   sigma_fn: constant
   sigma_min: 0.01
   sigma_max: 1.0
+  task_decode:
+    method: ode  # options: teacher, velocity_step, ode
+    ode_steps: 2
+    ode_method: euler
 
 optim:
   clip_grad_norm: True
