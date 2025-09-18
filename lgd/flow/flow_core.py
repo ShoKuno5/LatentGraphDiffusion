@@ -109,6 +109,8 @@ class LatentFlow(pl.LightningModule):
         self.first_stage_trainable = first_stage_trainable
         self.cond_stage_trainable = cond_stage_trainable
         self.cond_stage_key = cond_stage_key
+        if conditioning_key is None and cond_stage_key not in ['unconditional', None]:
+            conditioning_key = 'crossattn'
         self.conditioning_key = conditioning_key
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -219,12 +221,21 @@ class LatentFlow(pl.LightningModule):
             
             missing, unexpected = self.cond_stage_model.load_state_dict(state_dict, strict=False)
             logging.info(f"Restored cond model from {config}")
-            
-            if not self.cond_stage_trainable:
-                self.cond_stage_model = self.cond_stage_model.eval()
-                self.cond_stage_model.train = disabled_train
-                for param in self.cond_stage_model.parameters():
-                    param.requires_grad = False
+
+        if self.cond_stage_model is not None and not self.cond_stage_trainable:
+            self.cond_stage_model.eval()
+            self.cond_stage_model.train = disabled_train
+            for param in self.cond_stage_model.parameters():
+                param.requires_grad = False
+
+    def encode_cond_stage(self, batch, label=None):
+        if self.cond_stage_model is None:
+            return None
+        if self.cond_stage_model is self.first_stage_model:
+            return self.encode_first_stage(batch, label=label)
+        if hasattr(self.cond_stage_model, 'encode'):
+            return self.cond_stage_model.encode(batch, label=label)
+        return self.cond_stage_model(batch, label=label)
     
     @torch.no_grad()
     def encode_first_stage(self, batch, label=None, prefix=None):
@@ -307,43 +318,61 @@ class LatentFlow(pl.LightningModule):
     
     @torch.no_grad()
     def get_input(self, batch, return_first_stage_outputs=False):
-        """Prepare input batch with encoding."""
+        """Prepare input batch with encoding and optional conditioning."""
         assert hasattr(batch, 'num_node_per_graph'), \
             "Expected `batch.num_node_per_graph` to be set by dataset transforms. " \
             "Ensure virtual node/edge preprocessing is enabled for dense edge layout."
         batch = batch.to(self.device)
         batch.x_0 = batch.x.clone().detach()
         batch.edge_attr_0 = batch.edge_attr.clone().detach()
-        
-        # Encode to latent space
+
         input_label = batch.y.clone().detach() if cfg.train.pretrain.input_target else None
         if input_label is not None and cfg.dataset.format == 'PyG-QM9':
             input_label = (input_label - batch.y_mean) / batch.y_std
-        
+
         batch_z = copy.deepcopy(batch)
+        if batch.get("prefix", None) is not None:
+            batch_z.prefix = batch.prefix
         batch_z = self.encode_first_stage(batch_z, label=input_label)
-        
+
         if not self.first_stage_trainable:
             batch_z.x = batch_z.x.detach()
             batch_z.edge_attr = batch_z.edge_attr.detach()
             if hasattr(batch_z, 'graph_attr'):
                 batch_z.graph_attr = batch_z.graph_attr.detach()
-        
-        # Create concatenated latent representation
+
+        cond = None
+        if self.conditioning_key is not None and self.cond_stage_key not in ['unconditional', None]:
+            batch_masked = copy.deepcopy(batch)
+            if hasattr(batch, 'x_masked'):
+                batch_masked.x = batch.x_masked.clone().detach()
+            if hasattr(batch, 'edge_attr_masked'):
+                batch_masked.edge_attr = batch.edge_attr_masked.clone().detach()
+            if batch.get("prefix", None) is not None:
+                batch_masked.prefix = batch.prefix
+            cond_latent = self.encode_cond_stage(batch_masked, label=input_label)
+            if cond_latent is not None:
+                if not self.cond_stage_trainable:
+                    cond_latent.x = cond_latent.x.detach()
+                    cond_latent.edge_attr = cond_latent.edge_attr.detach()
+                    if hasattr(cond_latent, 'graph_attr'):
+                        cond_latent.graph_attr = cond_latent.graph_attr.detach()
+                cond = (cond_latent.x,
+                        cond_latent.edge_attr,
+                        getattr(cond_latent, 'graph_attr', None))
+        batch.c = cond
+
         batch.x_start = torch.cat([batch_z.x, batch_z.edge_attr], dim=0)
         if hasattr(batch_z, 'graph_attr') and self.use_graph_latent:
             batch.graph_start = batch_z.graph_attr.clone().detach()
-        
-        # Setup batch indices
-        batch_num_node = getattr(batch, 'num_node_per_graph', 
+
+        batch_num_node = getattr(batch, 'num_node_per_graph',
                                  torch.tensor([batch.num_nodes // batch.num_graphs] * batch.num_graphs,
-                                            dtype=torch.long, device=batch.x.device))
-        #batch_idx = torch.cat([batch.batch, num2batch(batch_num_node ** 2)], dim=0)
-        #batch.batch_idx = batch_idx
-        
+                                              dtype=torch.long, device=batch.x.device))
+
         edge_batch = batch.batch[batch.edge_index[0]]
         batch.batch_idx = torch.cat([batch.batch, edge_batch], dim=0)
-        
+
         return batch
     
     def forward_velocity(self, batch, t):
@@ -421,8 +450,8 @@ class LatentFlow(pl.LightningModule):
         
         # Predict velocity
         v_nodes, v_edges, v_graph = self.forward_velocity(batch_flow, t)
-        
-        # Compute loss
+
+        # Compute velocity loss
         loss_nodes = F.mse_loss(v_nodes, u_nodes)
         loss_edges = F.mse_loss(v_edges, u_edges)
         loss = self.node_factor * loss_nodes + self.edge_factor * loss_edges
@@ -432,22 +461,29 @@ class LatentFlow(pl.LightningModule):
             loss_graph_val = F.mse_loss(v_graph, u_graph)
             loss = loss + self.graph_factor * loss_graph_val
             # self.log("train/loss_graph", loss_graph_val, prog_bar=False)
-        
-        # Logging
-        # self.log("train/loss", loss, prog_bar=True)
-        # self.log("train/loss_nodes", loss_nodes, prog_bar=False)
-        # self.log("train/loss_edges", loss_edges, prog_bar=False)
+
+        # Decode for supervised graph loss (if targets available)
+        loss_task = torch.zeros(1, device=self.device)
+        graph_dec = None
+        if hasattr(batch, 'y') and batch.y is not None and cfg.flow.get('task_factor', 0.0) > 0:
+            batch_dec = copy.deepcopy(batch_flow)
+            if self.use_graph_latent and v_graph is not None:
+                batch_dec.graph_attr = zt_graph
+            node_dec, edge_dec, graph_dec = self.decode_first_stage(batch_dec)
+            if cfg.dataset.format == 'PyG-QM9':
+                graph_dec = graph_dec * batch.get('y_std', 1.) + batch.get('y_mean', 0.)
+            loss_task, _ = compute_loss(graph_dec, batch.y)
+            loss = loss + cfg.flow.get('task_factor', 1.0) * loss_task
 
         # Return values expected by train_diffusion mode
         # (loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder)
-        # For flow matching, we don't have a separate task loss or encoder loss
-        loss_task = torch.zeros(1, device=self.device)
+        # For flow matching, we don't have a separate encoder loss
         loss_encoder = torch.zeros(1, device=self.device)
         
         # For pred, we can return the velocity prediction or a dummy value
         # Since we're doing unconditional generation, return dummy predictions
-        pred = torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device)
-        
+        pred = graph_dec if graph_dec is not None else (torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device))
+
         return loss, loss_task, pred, loss_nodes, loss_edges, loss_graph_val, loss_encoder
     
     def validation_step(self, batch, batch_idx):

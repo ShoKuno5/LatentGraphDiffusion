@@ -31,8 +31,20 @@ def train_epoch(logger, loader, model, optimizer, scheduler, batch_accumulation)
         # node_label, edge_label, graph_label = batch.x.clone().detach().flatten(), batch.edge_attr.clone().detach().flatten(), batch.y
         label = batch.y.clone().detach()
         # the embed of labels and prefix are done in fine-tuning of the encoder, not pretraining
-        batch.x_masked = batch.x.clone().detach()
-        batch.edge_attr_masked = batch.edge_attr.clone().detach()
+        if getattr(model, 'cond_stage_key', None) == 'masked_graph':
+            batch_to_mask = deepcopy(batch)
+            batch_to_mask, masked_node_idx, masked_edge_idx = random_mask(
+                batch_to_mask,
+                cfg.train.pretrain.mask_node_prob,
+                cfg.train.pretrain.mask_edge_prob
+            )
+            batch.x_masked = batch_to_mask.x
+            batch.edge_attr_masked = batch_to_mask.edge_attr
+            batch.masked_node_idx = masked_node_idx
+            batch.masked_edge_idx = masked_edge_idx
+        else:
+            batch.x_masked = batch.x.clone().detach()
+            batch.edge_attr_masked = batch.edge_attr.clone().detach()
         loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder = model.training_step(batch, iter)
         loss = loss + loss_task * cfg.diffusion.get("task_factor", 0.0)
         # with torch.autograd.detect_anomaly():
@@ -79,8 +91,20 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
             if ensemble_mode == 'none':
                 # node_label, edge_label, graph_label = batch.x.clone().detach().flatten(), batch.edge_attr.clone().detach().flatten(), batch.y
                 # the embed of labels and prefix are done in fine-tuning of the encoder, not pretraining
-                batch.x_masked = batch.x.clone().detach()
-                batch.edge_attr_masked = batch.edge_attr.clone().detach()
+                if getattr(model, 'cond_stage_key', None) == 'masked_graph':
+                    bc_mask = deepcopy(batch)
+                    bc_mask, masked_node_idx, masked_edge_idx = random_mask(
+                        bc_mask,
+                        cfg.train.pretrain.mask_node_prob,
+                        cfg.train.pretrain.mask_edge_prob
+                    )
+                    batch.x_masked = bc_mask.x
+                    batch.edge_attr_masked = bc_mask.edge_attr
+                    batch.masked_node_idx = masked_node_idx
+                    batch.masked_edge_idx = masked_edge_idx
+                else:
+                    batch.x_masked = batch.x.clone().detach()
+                    batch.edge_attr_masked = batch.edge_attr.clone().detach()
                 ddim_steps = cfg.diffusion.get('ddim_steps', None)
                 ddim_eta = cfg.diffusion.get('ddim_eta', 0.0)
                 use_ddpm_steps = cfg.diffusion.get('use_ddpm_steps', False)
@@ -93,8 +117,19 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
                 use_ddpm_steps = cfg.diffusion.get('use_ddpm_steps', False)
                 for i in range(repeat):
                     bc = deepcopy(batch)
-                    bc.x_masked = batch.x.clone().detach()
-                    bc.edge_attr_masked = batch.edge_attr.clone().detach()
+                    if getattr(model, 'cond_stage_key', None) == 'masked_graph':
+                        bc_mask, masked_node_idx, masked_edge_idx = random_mask(
+                            deepcopy(bc),
+                            cfg.train.pretrain.mask_node_prob,
+                            cfg.train.pretrain.mask_edge_prob
+                        )
+                        bc.x_masked = bc_mask.x
+                        bc.edge_attr_masked = bc_mask.edge_attr
+                        bc.masked_node_idx = masked_node_idx
+                        bc.masked_edge_idx = masked_edge_idx
+                    else:
+                        bc.x_masked = bc.x.clone().detach()
+                        bc.edge_attr_masked = bc.edge_attr.clone().detach()
                     # loss_generation, loss_graph, graph_pred = model.validation_step(bc)
                     loss_graph, graph_pred = model.inference(bc, ddim_steps=ddim_steps, ddim_eta=ddim_eta, use_ddpm_steps=use_ddpm_steps)
                     batch_pred.append(graph_pred)

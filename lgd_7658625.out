@@ -1,0 +1,72 @@
+[wisteria] ROOT=/work/gp15/q25030
+[wisteria] CODE=/work/gp15/q25030/LatentGraphDiffusion
+[wisteria] DATA=/work/gp15/q25030/LatentGraphDiffusion/data
+[wisteria] RUNS=/work/gp15/q25030/LatentGraphDiffusion/runs
+[wisteria] RESULTS=/work/gp15/q25030/LatentGraphDiffusion/runs (unified with RUNS)
+=== LGD Wisteria Job ===
+Dataset     : zinc
+Mode        : flow
+Config      : cfg/my_zinc-flow_baseline.yaml
+Checkpoint  : runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Repeat      : 1
+Max Epoch   : 50
+Experiment  : zinc_flow_20250918_144827
+Out Dir     : /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20250918_144827
+W&B Name    : zinc_flow_zinc_flow_20250918_144827
+Start time  : Thu Sep 18 14:48:27 JST 2025
+[wandb] entity='shokuno-the-university-of-tokyo', mode='online'
+Env check:
+PyTorch: 2.0.1
+CUDA available: True
+CUDA device count: 8
+PyG: 2.3.1
+Using encoder checkpoint: runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Starting ZINC flow matching training...
+Config: cfg/my_zinc-flow_baseline.yaml
+Max Epoch: 50
+Out dir: /workspace/runs/zinc_flow_20250918_144827
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+WARNING:root:Layers after message passing should be >=1
+./datasets/ZINC
+[*] Loaded dataset 'subset' from 'PyG-ZINC':
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
+  undirected: True
+  num graphs: 12000
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  avg num_nodes/graph: 23
+  num node features: 1
+  num edge features: 1
+  num classes: (appears to be a regression task)
+Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
+  ...estimated to be undirected: True
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1551.95it/s]
+Done! Took 00:00:08.32
+Adding virtual node and edges
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1739.05it/s]
+Preprocessing PE
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3702.33it/s]
+[*] Run ID 0: seed=0, split_index=0
+    Starting now: 2025-09-18 14:49:19.666574
+/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+Restored encoder from runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Missing Keys: 0, Unexpected Keys: 0
+Using first stage also as cond stage.
+Traceback (most recent call last):
+  File "/workspace/train_diffusion.py", line 152, in <module>
+    model = LatentFlow(
+  File "/workspace/lgd/flow/flow_core.py", line 130, in __init__
+    self.instantiate_cond_stage(cond_stage_config)
+  File "/workspace/lgd/flow/flow_core.py", line 226, in instantiate_cond_stage
+    self.cond_stage_model = self.cond_stage_model.eval()
+  File "/opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1653, in __setattr__
+    raise TypeError("cannot assign '{}' as child module '{}' "
+TypeError: cannot assign 'bool' as child module 'cond_stage_model' (torch.nn.Module or None expected)
+Training finished with exit code: 1
+Checkpoints in out_dir:

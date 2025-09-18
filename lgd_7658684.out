@@ -1,0 +1,1123 @@
+[wisteria] ROOT=/work/gp15/q25030
+[wisteria] CODE=/work/gp15/q25030/LatentGraphDiffusion
+[wisteria] DATA=/work/gp15/q25030/LatentGraphDiffusion/data
+[wisteria] RUNS=/work/gp15/q25030/LatentGraphDiffusion/runs
+[wisteria] RESULTS=/work/gp15/q25030/LatentGraphDiffusion/runs (unified with RUNS)
+=== LGD Wisteria Job ===
+Dataset     : zinc
+Mode        : flow
+Config      : cfg/my_zinc-flow_baseline.yaml
+Checkpoint  : runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Repeat      : 1
+Max Epoch   : 50
+Experiment  : zinc_flow_20250918_150105
+Out Dir     : /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20250918_150105
+W&B Name    : zinc_flow_zinc_flow_20250918_150105
+Start time  : Thu Sep 18 15:01:05 JST 2025
+[wandb] entity='shokuno-the-university-of-tokyo', mode='online'
+Env check:
+PyTorch: 2.0.1
+CUDA available: True
+CUDA device count: 8
+PyG: 2.3.1
+Using encoder checkpoint: runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Starting ZINC flow matching training...
+Config: cfg/my_zinc-flow_baseline.yaml
+Max Epoch: 50
+Out dir: /workspace/runs/zinc_flow_20250918_150105
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+WARNING:root:Layers after message passing should be >=1
+./datasets/ZINC
+[*] Loaded dataset 'subset' from 'PyG-ZINC':
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
+  undirected: True
+  num graphs: 12000
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  avg num_nodes/graph: 23
+  num node features: 1
+  num edge features: 1
+  num classes: (appears to be a regression task)
+Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
+  ...estimated to be undirected: True
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1519.49it/s]
+Done! Took 00:00:08.55
+Adding virtual node and edges
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1740.37it/s]
+Preprocessing PE
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3735.18it/s]
+[*] Run ID 0: seed=0, split_index=0
+    Starting now: 2025-09-18 15:02:01.466210
+/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+Restored encoder from runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+Missing Keys: 0, Unexpected Keys: 0
+Using first stage also as cond stage.
+VelocityWrapper has 0.93 M params.
+Keeping EMAs of 434.
+LatentFlow(
+  (first_stage_model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp_2): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+  (cond_stage_model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp_2): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+  (model): VelocityWrapper(
+    (denoiser): DenoisingTransformer(
+      (act): ReLU()
+      (node_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (edge_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (cond_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_in_mlp_2): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_in_mlp_3): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_res_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+        (3): LayerNorm((4,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (layer_norm_in_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (layer_norm_in_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (temb_layer): Sequential(
+        (0): Linear(in_features=64, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (denoising_layers): ModuleList(
+        (0-3): 4 x DenoisingTransformerLayer(in_channels=64, out_channels=64, heads=8, residual=True)
+        [DenoisingTransformerLayer(
+          (act): ReLU()
+          (cross_attention): Cross_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E1): Linear(in_features=64, out_features=64, bias=True)
+            (E2): Linear(in_features=64, out_features=64, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (H): Linear(in_features=64, out_features=64, bias=True)
+            (G1): Linear(in_features=64, out_features=64, bias=True)
+            (G2): Linear(in_features=64, out_features=64, bias=True)
+            (act): ReLU()
+          )
+          (attention): GTE_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E): Linear(in_features=64, out_features=128, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (act): ReLU()
+          )
+          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
+          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h): Linear(in_features=64, out_features=64, bias=True)
+          (O_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h2): Linear(in_features=64, out_features=64, bias=True)
+          (O_e2): Linear(in_features=64, out_features=64, bias=True)
+          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_h_layer3): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer4): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer3): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer4): Linear(in_features=128, out_features=64, bias=True)
+          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm3_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm3_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm4_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm4_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )]
+      )
+      (self_attn_layers): ModuleList(
+        (0-3): 4 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=8, residual=True)
+        [GraphTransformerEncoderLayer(
+          (act): ReLU()
+          (attention): GTE_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E): Linear(in_features=64, out_features=128, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (act): ReLU()
+          )
+          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
+          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h): Linear(in_features=64, out_features=64, bias=True)
+          (O_e): Linear(in_features=64, out_features=64, bias=True)
+          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )]
+      )
+      (final_layer_node): Sequential(
+        (0): Linear(in_features=64, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (final_layer_edge): Sequential(
+        (0): Linear(in_features=64, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (graph_out_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (graph_out_mlp_2): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+    )
+  )
+  (model_ema): LitEma()
+)
+accelerator: cuda:0
+benchmark: False
+bn:
+  eps: 1e-05
+  mom: 0.1
+cfg_dest: config.yaml
+cond:
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    full_attn: True
+    layer_norm: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  edge_encoder_name: TypeDictEdge
+  layer_norm: False
+  node_encoder_name: TypeDictNode
+custom_metrics: []
+dataset:
+  add_virtual_node_edge: True
+  cache_load: False
+  cache_save: False
+  dir: ./datasets
+  edge_dim: 128
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_message_ratio: 0.8
+  edge_negative_sampling_ratio: 1.0
+  edge_train_mode: all
+  encoder: True
+  encoder_bn: True
+  encoder_dim: 128
+  encoder_name: db
+  format: PyG-ZINC
+  label_column: none
+  label_table: none
+  location: local
+  name: subset
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  num_hop: 0
+  num_tasks: 1
+  remove_feature: False
+  resample_disjoint: False
+  resample_negative: False
+  shuffle_split: True
+  slic_compactness: 10
+  split: [0.8, 0.1, 0.1]
+  split_dir: ./splits
+  split_index: 0
+  split_mode: standard
+  subgraph: False
+  task: graph
+  task_type: regression
+  to_undirected: False
+  transductive: False
+  transform: none
+  tu_simple: True
+devices: 1
+diffusion:
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  graph_factor: 0.0
+dt:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: False
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.25
+  batch_norm: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  cond_dim: 4
+  condition_list: ['masked_graph']
+  dropout: 0.05
+  ff_e: False
+  ff_e_ca: True
+  ff_e_sa: False
+  hid_dim: 64
+  in_dim: 4
+  in_edge_dim: 4
+  in_node_dim: 4
+  layer_norm: True
+  norm_e: True
+  num_heads: 8
+  num_layers: 4
+  out_dim: 4
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  post_pool: True
+  residual: True
+  self_attn: True
+  temb_dim: 64
+  use_time: True
+encoder:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: True
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: True
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.5
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dropout: 0.0
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  ff_e: False
+  hid_dim: 64
+  in_dim: 36
+  label_embed_type: add_virtual
+  layer_norm: False
+  mpnn:
+    act: relu
+    dropout: 0.0
+    edge_enhance: True
+    enable: True
+    project_edge: True
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  norm_e: True
+  num_heads: 4
+  num_layers: 10
+  num_task: 1
+  out_dim: 4
+  pe_raw_norm: None
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  posenc_dim: 28
+  posenc_in_dim: 20
+  posenc_in_dim_edge: 20
+  post_pool: True
+  prefix_dim: 64
+  prefix_type: add_virtual
+  residual: True
+  task_type: regression
+  temb_dim: 0
+  type: GraphTransformerEncoder
+  update_e: True
+  use_time: False
+example_arg: example
+example_group:
+  example_arg: example
+flow:
+  alpha_fn: linear
+  cond_stage_config: __is_first_stage__
+  cond_stage_key: masked_graph
+  cond_stage_trainable: False
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  ema: True
+  first_stage_config: runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+  first_stage_trainable: False
+  force_undirected: False
+  graph_factor: 1.0
+  hid_dim: 4
+  nfe: 50
+  node_factor: 1.0
+  objective: rectified
+  sigma_fn: constant
+  sigma_max: 1.0
+  sigma_min: 0.01
+  solver: heun
+  t_weight: none
+  use_graph_latent: True
+gnn:
+  act: relu
+  agg: add
+  att_final_linear: False
+  att_final_linear_bn: False
+  att_heads: 1
+  batchnorm: True
+  clear_feature: True
+  dim_inner: 16
+  dropout: 0.0
+  head: graph
+  keep_edge: 0.5
+  l2norm: True
+  layer_type: generalconv
+  layers_mp: 2
+  layers_post_mp: 1
+  layers_pre_mp: 0
+  msg_direction: single
+  normalize_adj: False
+  residual: False
+  self_msg: concat
+  skip_every: 1
+  stage_type: stack
+gpu_mem: False
+gt:
+  attn:
+    O_e: True
+    act: relu
+    clamp: 5.0
+    deg_scaler: True
+    edge_enhance: True
+    full_attn: True
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.0
+  batch_norm: True
+  bigbird:
+    add_cross_attention: False
+    attention_type: block_sparse
+    block_size: 3
+    chunk_size_feed_forward: 0
+    hidden_act: relu
+    is_decoder: False
+    layer_norm_eps: 1e-06
+    max_position_embeddings: 128
+    num_random_blocks: 3
+    use_bias: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dim_hidden: 64
+  dropout: 0.0
+  full_graph: True
+  gamma: 1e-05
+  layer_norm: False
+  layer_type: GritTransformer
+  layers: 3
+  n_heads: 8
+  pna_degrees: []
+  residual: True
+  update_e: True
+mem:
+  inplace: False
+metric_agg: argmin
+metric_best: mae
+mlflow:
+  name: zinc-flow-baseline
+  project: Exp
+  use: False
+model:
+  edge_decoding: dot
+  graph_pooling: add
+  loss_fun: mse
+  match_upper: True
+  size_average: mean
+  thresh: 0.5
+  type: LatentFlow
+name_tag: 
+num_threads: 6
+num_workers: 0
+optim:
+  base_lr: 0.0001
+  batch_accumulation: 1
+  clip_grad_norm: True
+  lr_decay: 0.1
+  max_epoch: 50
+  min_lr: 1e-06
+  momentum: 0.9
+  num_warmup_epochs: 20
+  optimizer: adamW
+  reduce_factor: 0.1
+  schedule_patience: 10
+  scheduler: cosine_with_warmup
+  steps: [30, 60, 90]
+  weight_decay: 1e-05
+out_dir: /workspace/runs/zinc_flow_20250918_150105/my_zinc-flow_baseline
+posenc_ERE:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ERN:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  er_dim: none
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EdgeRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ElstaticSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: range(10)
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EquivStableLapPE:
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  raw_norm_type: none
+posenc_HKdiagSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_HodgeLap1PE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_InterRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_LapPE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RD:
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RRWP:
+  add_identity: True
+  dim_pe: 16
+  enable: True
+  ksteps: 20
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+  real_emb: True
+  spd: False
+posenc_RWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_SignNet:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  phi_hidden_dim: 64
+  phi_out_dim: 4
+  post_layers: 0
+  raw_norm_type: none
+prep:
+  add_edge_index: True
+  add_reverse_edges: True
+  add_self_loops: False
+  dist_cutoff: 510
+  dist_enable: False
+  exp: False
+  exp_algorithm: Random-d
+  exp_count: 1
+  exp_deg: 5
+  exp_max_num_iters: 100
+  layer_edge_indices_dir: None
+  num_virt_node: 0
+  train_percent: 0.6
+  use_exp_edges: True
+pretrained:
+  dir: 
+  freeze_main: False
+  reset_prediction_head: True
+print: both
+regression_model:
+  encoder:
+    attn:
+      O_e: True
+      act: relu
+      attn_dropout: 0.0
+      batch_norm: True
+      bn_momentum: 0.1
+      bn_no_runner: False
+      clamp: 5.0
+      deg_scaler: False
+      edge_enhance: True
+      full_attn: True
+      layer_norm: False
+      norm_e: True
+      sparse: False
+      use: True
+      use_bias: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    edge_encoder_name: TypeDictEdge
+    layer_norm: False
+    node_encoder_name: TypeDictNode
+round: 5
+run_dir: /workspace/runs/zinc_flow_20250918_150105/my_zinc-flow_baseline/0
+run_id: 0
+run_multiple_splits: []
+seed: 0
+share:
+  dim_in: 1
+  dim_out: 1
+  num_splits: 3
+tensorboard_agg: True
+tensorboard_each_run: False
+train:
+  auto_resume: False
+  batch_size: 256
+  ckpt_best: True
+  ckpt_clean: True
+  ckpt_period: 50
+  early_stop: False
+  enable_ckpt: True
+  ensemble_mode: none
+  ensemble_repeat: 1
+  epoch_resume: -1
+  eval_period: 50
+  iter_per_epoch: 32
+  mode: train_diffusion
+  neighbor_sizes: [20, 15, 10, 5]
+  node_per_graph: 32
+  pretrain:
+    atom_bond_only: True
+    edge_factor: 0.0
+    graph_factor: 1.0
+    input_target: True
+    mask_edge_prob: 0.0
+    mask_label_prob: 0.5
+    mask_node_prob: 0.0
+    node_factor: 0.0
+    original_task: True
+    recon: none
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+  skip_train_eval: False
+  start_eval_epoch: -1
+  walk_length: 4
+val:
+  node_per_graph: 32
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+view_emb: False
+wandb:
+  entity: shokuno-the-university-of-tokyo
+  name: zinc_flow_zinc_flow_20250918_150105
+  project: LGFM-ZINC-Flow
+  use: True
+Num parameters: 1823862
+Start from epoch 0
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: shokuno (shokuno-the-university-of-tokyo). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /workspace/wandb/run-20250918_150211-6pvflmw7
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run zinc_flow_zinc_flow_20250918_150105
+wandb: ⭐️ View project at https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow
+wandb: 🚀 View run at https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow/runs/6pvflmw7
+Key encoder.pe_raw_norm with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+Key prep.layer_edge_indices_dir with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 0, 'time_epoch': 20.63143, 'eta': 1010.94012, 'eta_hours': 0.28082, 'loss': 1304.79064863, 'lr': 0.0, 'params': 1823862, 'time_iter': 0.51579, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.711169637298584, 'loss_edge': 1.3779207567214966, 'loss_graph': 1300.701553125, 'loss_task': 0.0, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.02s
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 0, 'time_epoch': 28.83951, 'loss': 446.80934082, 'lr': 0, 'params': 1823862, 'time_iter': 7.20988, 'mae': 19.95882, 'r2': -112.43922, 'spearmanr': 0.25689, 'mse': 446.80936, 'rmse': 21.13787}
+...computing epoch stats took: 0.03s
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 0, 'time_epoch': 28.8846, 'loss': 450.05055664, 'lr': 0, 'params': 1823862, 'time_iter': 7.22115, 'mae': 20.04837, 'r2': -109.62375, 'spearmanr': 0.28216, 'mse': 450.05057, 'rmse': 21.2144}
+...computing epoch stats took: 0.00s
+> Epoch 0: took 78.4s (avg 78.4s) | Best so far: epoch 0	train_loss: 1304.7906 train_mae: 1.5137	val_loss: 446.8093 val_mae: 19.9588	test_loss: 450.0506 test_mae: 20.0484
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 1, 'time_epoch': 12.88348, 'eta': 804.35775, 'eta_hours': 0.22343, 'loss': 424.22123828, 'lr': 5e-06, 'params': 1823862, 'time_iter': 0.32209, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.68375217666626, 'loss_edge': 1.3067687591552735, 'loss_graph': 420.2307193359375, 'loss_task': 0.0, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.00s
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 2, 'time_epoch': 12.87407, 'eta': 726.76062, 'eta_hours': 0.20188, 'loss': 86.29318914, 'lr': 1e-05, 'params': 1823862, 'time_iter': 0.32185, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.692776336288452, 'loss_edge': 1.2685869871139526, 'loss_graph': 82.33182575378417, 'loss_task': 0.0, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.00s
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 3, 'time_epoch': 12.86759, 'eta': 681.45054, 'eta_hours': 0.18929, 'loss': 75.62680252, 'lr': 1.5e-05, 'params': 1823862, 'time_iter': 0.32169, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.750809804916382, 'loss_edge': 1.2638932674407959, 'loss_graph': 71.61209890441894, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 4, 'time_epoch': 13.09953, 'eta': 651.20491, 'eta_hours': 0.18089, 'loss': 69.4663309, 'lr': 2e-05, 'params': 1823862, 'time_iter': 0.32749, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.9267388008117674, 'loss_edge': 1.2635531145095824, 'loss_graph': 65.2760395324707, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 5, 'time_epoch': 12.86174, 'eta': 624.93085, 'eta_hours': 0.17359, 'loss': 63.23318992, 'lr': 2.5e-05, 'params': 1823862, 'time_iter': 0.32154, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.1334931674957276, 'loss_edge': 1.270068603515625, 'loss_graph': 58.829627392578125, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 6, 'time_epoch': 12.86341, 'eta': 602.49912, 'eta_hours': 0.16736, 'loss': 58.87377172, 'lr': 3e-05, 'params': 1823862, 'time_iter': 0.32159, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.2868379817962645, 'loss_edge': 1.2789470119476318, 'loss_graph': 54.307986389541625, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 7, 'time_epoch': 12.85, 'eta': 582.38905, 'eta_hours': 0.16177, 'loss': 56.72421202, 'lr': 3.5e-05, 'params': 1823862, 'time_iter': 0.32125, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.374930495071411, 'loss_edge': 1.2820145101547242, 'loss_graph': 52.0672664276123, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 8, 'time_epoch': 12.84557, 'eta': 563.87215, 'eta_hours': 0.15663, 'loss': 54.22193693, 'lr': 4e-05, 'params': 1823862, 'time_iter': 0.32114, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.41323867225647, 'loss_edge': 1.2823307035446168, 'loss_graph': 49.52636781768799, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 9, 'time_epoch': 12.85091, 'eta': 546.51089, 'eta_hours': 0.15181, 'loss': 52.72891699, 'lr': 4.5e-05, 'params': 1823862, 'time_iter': 0.32127, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.4448911182403563, 'loss_edge': 1.284181156539917, 'loss_graph': 47.999844635009765, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 10, 'time_epoch': 12.83058, 'eta': 529.89761, 'eta_hours': 0.14719, 'loss': 50.35818435, 'lr': 5e-05, 'params': 1823862, 'time_iter': 0.32076, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.478343650054932, 'loss_edge': 1.2846811485290528, 'loss_graph': 45.595159410095214, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 11, 'time_epoch': 12.82822, 'eta': 513.90733, 'eta_hours': 0.14275, 'loss': 49.07738746, 'lr': 5.5e-05, 'params': 1823862, 'time_iter': 0.32071, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.496021704864502, 'loss_edge': 1.2859520973205567, 'loss_graph': 44.295413604736325, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 12, 'time_epoch': 12.83649, 'eta': 498.42705, 'eta_hours': 0.13845, 'loss': 46.88525294, 'lr': 6e-05, 'params': 1823862, 'time_iter': 0.32091, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.491992453765869, 'loss_edge': 1.2849416128158568, 'loss_graph': 42.10831866760254, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 13, 'time_epoch': 12.82368, 'eta': 483.29151, 'eta_hours': 0.13425, 'loss': 44.59109258, 'lr': 6.5e-05, 'params': 1823862, 'time_iter': 0.32059, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.4905154319763185, 'loss_edge': 1.2841876251220703, 'loss_graph': 39.81638991470337, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 14, 'time_epoch': 12.86615, 'eta': 468.56331, 'eta_hours': 0.13016, 'loss': 43.37557685, 'lr': 7e-05, 'params': 1823862, 'time_iter': 0.32165, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.435413618469238, 'loss_edge': 1.2854390222549439, 'loss_graph': 38.65472420501709, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 15, 'time_epoch': 12.85981, 'eta': 454.05439, 'eta_hours': 0.12613, 'loss': 40.89242851, 'lr': 7.5e-05, 'params': 1823862, 'time_iter': 0.3215, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.360025733947754, 'loss_edge': 1.2851394491195678, 'loss_graph': 36.24726363830566, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 16, 'time_epoch': 12.81862, 'eta': 439.65953, 'eta_hours': 0.12213, 'loss': 38.81024, 'lr': 8e-05, 'params': 1823862, 'time_iter': 0.32047, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.155107341003418, 'loss_edge': 1.2846592979431153, 'loss_graph': 34.37047310791016, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 17, 'time_epoch': 12.86068, 'eta': 425.51457, 'eta_hours': 0.1182, 'loss': 37.08035554, 'lr': 8.5e-05, 'params': 1823862, 'time_iter': 0.32152, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 3.0265213668823243, 'loss_edge': 1.2846587490081787, 'loss_graph': 32.769175595092776, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 18, 'time_epoch': 12.82413, 'eta': 411.44519, 'eta_hours': 0.11429, 'loss': 34.56115913, 'lr': 9e-05, 'params': 1823862, 'time_iter': 0.3206, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.9604282943725586, 'loss_edge': 1.2842872320175172, 'loss_graph': 30.31644371032715, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 19, 'time_epoch': 12.84174, 'eta': 397.52673, 'eta_hours': 0.11042, 'loss': 32.89798148, 'lr': 9.5e-05, 'params': 1823862, 'time_iter': 0.32104, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.923641262817383, 'loss_edge': 1.2830926637649536, 'loss_graph': 28.69124727783203, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 20, 'time_epoch': 13.06548, 'eta': 384.01979, 'eta_hours': 0.10667, 'loss': 31.89708982, 'lr': 0.0001, 'params': 1823862, 'time_iter': 0.32664, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.9034786209106445, 'loss_edge': 1.2842809370040893, 'loss_graph': 27.70933028488159, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 21, 'time_epoch': 12.85001, 'eta': 370.27876, 'eta_hours': 0.10286, 'loss': 29.46322944, 'lr': 9.973e-05, 'params': 1823862, 'time_iter': 0.32125, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.897288018035889, 'loss_edge': 1.2838680074691773, 'loss_graph': 25.282073686408996, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 22, 'time_epoch': 12.83805, 'eta': 356.60116, 'eta_hours': 0.09906, 'loss': 27.6690065, 'lr': 9.891e-05, 'params': 1823862, 'time_iter': 0.32095, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.880760778427124, 'loss_edge': 1.2827969612121581, 'loss_graph': 23.50544881477356, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 23, 'time_epoch': 12.84662, 'eta': 343.00281, 'eta_hours': 0.09528, 'loss': 26.36371579, 'lr': 9.755e-05, 'params': 1823862, 'time_iter': 0.32117, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.8721430450439454, 'loss_edge': 1.2828774255752564, 'loss_graph': 22.20869513473511, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 24, 'time_epoch': 12.81074, 'eta': 329.42872, 'eta_hours': 0.09151, 'loss': 24.80131299, 'lr': 9.568e-05, 'params': 1823862, 'time_iter': 0.32027, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.8662130336761473, 'loss_edge': 1.2836369411468507, 'loss_graph': 20.651462939453126, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 25, 'time_epoch': 12.86099, 'eta': 315.95974, 'eta_hours': 0.08777, 'loss': 22.26167343, 'lr': 9.33e-05, 'params': 1823862, 'time_iter': 0.32152, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.849645238494873, 'loss_edge': 1.283185041999817, 'loss_graph': 18.128842810058593, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 26, 'time_epoch': 12.83461, 'eta': 302.51331, 'eta_hours': 0.08403, 'loss': 20.76742093, 'lr': 9.045e-05, 'params': 1823862, 'time_iter': 0.32087, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.8048514587402344, 'loss_edge': 1.2835915271759033, 'loss_graph': 16.678978006744384, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 27, 'time_epoch': 12.85051, 'eta': 289.12309, 'eta_hours': 0.08031, 'loss': 19.06375609, 'lr': 8.716e-05, 'params': 1823862, 'time_iter': 0.32126, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.787629783248901, 'loss_edge': 1.2836238510131837, 'loss_graph': 14.992502616882325, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 28, 'time_epoch': 12.81601, 'eta': 275.7451, 'eta_hours': 0.0766, 'loss': 17.78016498, 'lr': 8.346e-05, 'params': 1823862, 'time_iter': 0.3204, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.7772710315704345, 'loss_edge': 1.2845919258117675, 'loss_graph': 13.71830205860138, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 29, 'time_epoch': 12.84368, 'eta': 262.42302, 'eta_hours': 0.0729, 'loss': 16.78503245, 'lr': 7.939e-05, 'params': 1823862, 'time_iter': 0.32109, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.7589865795135498, 'loss_edge': 1.2842447807312012, 'loss_graph': 12.741801007843018, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 30, 'time_epoch': 12.83441, 'eta': 249.12612, 'eta_hours': 0.0692, 'loss': 16.01067389, 'lr': 7.5e-05, 'params': 1823862, 'time_iter': 0.32086, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.75296222076416, 'loss_edge': 1.2843031778335572, 'loss_graph': 11.97340845413208, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 31, 'time_epoch': 12.81338, 'eta': 235.8463, 'eta_hours': 0.06551, 'loss': 15.29491996, 'lr': 7.034e-05, 'params': 1823862, 'time_iter': 0.32033, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.740018328857422, 'loss_edge': 1.2848998960494995, 'loss_graph': 11.270001836776734, 'loss_task': 0.0, 'loss_encoder': 0.0}
+/opt/conda/lib/python3.10/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+train: {'epoch': 32, 'time_epoch': 12.8254, 'eta': 222.60094, 'eta_hours': 0.06183, 'loss': 14.70218517, 'lr': 6.545e-05, 'params': 1823862, 'time_iter': 0.32063, 'mae': 1.51368, 'r2': -6e-05, 'spearmanr': nan, 'mse': 4.04363, 'rmse': 2.01088, 'loss_node': 2.7261030265808106, 'loss_edge': 1.2859703573226928, 'loss_graph': 10.690111736679077, 'loss_task': 0.0, 'loss_encoder': 0.0}
