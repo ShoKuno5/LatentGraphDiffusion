@@ -1,0 +1,40 @@
+## azure...origin/azure
+ M cfg/my_zinc-encoder_baseline.yaml
+ M cfg/my_zinc-flow_baseline.yaml
+ M cfg/zinc-diffusion_ddpm.yaml
+ M cfg/zinc-encoder.yaml
+ D lgd_7611117.out
+ D lgd_7611118.out
+ D lgd_7611228.out
+ D lgd_7611250.out
+ D lgd_7654107.out
+ D lgd_7654112.out
+ D lgd_7654125.out
+ D lgd_7654491.out
+ D lgd_7656296.out
+ D lgd_7656494.out
+ D lgd_7657360.out
+ D lgd_7658253.out
+ D lgd_7658329.out
+ D lgd_7658421.out
+ D lgd_7658425.out
+ D lgd_7658625.out
+ D lgd_7658634.out
+ D lgd_7658684.out
+ D lgd_7658717.out
+ D lgd_7658772.out
+ D lgd_7658870.out
+ D lgd_7658950.out
+ D lgd_7659050.out
+ D lgd_7659094.out
+ D lgd_7659107.out
+ D lgd_7659126.out
+ D lgd_7659143.out
+ M scripts/zinc_encoder.sh
+ D scripts/zinc_flow_rf.sh
+?? backups/
+?? lgd_7708510.out
+?? lgd_7708514.out
+?? lgd_7708522.out
+?? lgd_7708524.out
+?? scripts/zinc_trainer_diffusion_flow.sh

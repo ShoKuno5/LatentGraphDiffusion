@@ -1,0 +1,43 @@
+[wisteria] ROOT=/work/gp15/q25030
+[wisteria] CODE=/work/gp15/q25030/LatentGraphDiffusion
+[wisteria] DATA=/work/gp15/q25030/LatentGraphDiffusion/data
+[wisteria] RUNS=/work/gp15/q25030/LatentGraphDiffusion/runs
+[wisteria] RESULTS=/work/gp15/q25030/LatentGraphDiffusion/runs (unified with RUNS)
+=== LGD Wisteria Job ===
+Dataset     : zinc
+Mode        : diffusion
+Config      : cfg/my_zinc-flow_rf.yaml
+Checkpoint  : /workspace/runs/zinc_encoder_20250928_204307/zinc-encoder/0/ckpt/392.ckpt
+Repeat      : 5
+Max Epoch   : 400
+Experiment  : zinc_diffusion_20250929_165953
+Out Dir     : /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_diffusion_20250929_165953
+W&B Name    : zinc_diffusion_zinc_diffusion_20250929_165953
+Start time  : Mon Sep 29 16:59:53 JST 2025
+[wandb] entity='shokuno-the-university-of-tokyo', mode='online'
+Env check:
+PyTorch: 2.0.1
+CUDA available: True
+CUDA device count: 8
+PyG: 2.3.1
+Using encoder checkpoint: /workspace/runs/zinc_encoder_20250928_204307/zinc-encoder/0/ckpt/392.ckpt
+Starting ZINC diffusion training...
+Config: cfg/my_zinc-flow_rf.yaml
+Repeat: 5, Max Epoch: 400
+Out dir: /workspace/runs/zinc_diffusion_20250929_165953
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Traceback (most recent call last):
+  File "/workspace/train_diffusion.py", line 123, in <module>
+    load_cfg(cfg, args)
+  File "/opt/conda/lib/python3.10/site-packages/torch_geometric/graphgym/config.py", line 501, in load_cfg
+    cfg.merge_from_list(args.opts)
+  File "/opt/conda/lib/python3.10/site-packages/yacs/config.py", line 243, in merge_from_list
+    _assert_with_logging(subkey in d, "Non-existent key: {}".format(full_key))
+  File "/opt/conda/lib/python3.10/site-packages/yacs/config.py", line 545, in _assert_with_logging
+    assert cond, msg
+AssertionError: Non-existent key: diffusion.first_stage_config
+Training finished with exit code: 1
+Checkpoints:

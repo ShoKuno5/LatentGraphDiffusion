@@ -38,7 +38,7 @@ dataset:
 
 train:
   mode: train_diffusion
-  batch_size: 256
+  batch_size: 64
   eval_period: 10
   start_eval_epoch: -1
   enable_ckpt: True
@@ -61,7 +61,7 @@ train:
 
 model:
   type: LatentFlow
-  loss_fun: mse
+  loss_fun: l1
   edge_decoding: dot
   graph_pooling: add
 
@@ -177,7 +177,7 @@ flow:
   conditioning_key: crossattn
   hid_dim: 4
   cond_stage_key: masked_graph
-  first_stage_config: runs/zinc_encoder_20250918_130725/my_zinc-encoder_baseline/0/ckpt/49.ckpt
+  first_stage_config: runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
   cond_stage_config: __is_first_stage__
   first_stage_trainable: False
   cond_stage_trainable: False
@@ -198,8 +198,8 @@ flow:
   sigma_max: 1.0
   task_decode:
     method: ode  # options: teacher, velocity_step, ode
-    ode_steps: 2
-    ode_method: euler
+    ode_steps: 8
+    ode_method: heun
 
 optim:
   clip_grad_norm: True

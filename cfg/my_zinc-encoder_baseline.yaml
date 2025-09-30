@@ -13,7 +13,7 @@ mlflow:
   name: zinc-GRIT-RRWP
 
 wandb:
-  use: False
+  use: True
   project: ZINC
 
 dataset:

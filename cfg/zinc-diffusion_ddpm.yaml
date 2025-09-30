@@ -11,8 +11,10 @@ mlflow:
   project: Exp
   name: zinc-GRIT-RRWP
 wandb:
-  use: False
-  project: ZINC
+  use: True
+  project: LatentGraphDiffusion-ZINC
+  entity: shokuno-the-university-of-tokyo
+  name: ""
 dataset:
   format: PyG-ZINC
   name: subset
@@ -163,7 +165,7 @@ diffusion:
   conditioning_key: crossattn
   hid_dim: 4  # should be the same as dt.in_dim
   cond_stage_key: masked_graph
-  first_stage_config: results/zinc-encoder/0/ckpt/1849.ckpt
+  first_stage_config: runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
   cond_stage_config: __is_first_stage__
   node_factor: 1.0
   edge_factor: 1.0
