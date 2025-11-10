@@ -152,9 +152,39 @@ class LatentFlow(pl.LightningModule):
 
         # Task decoding configuration (controls how supervised loss is computed)
         task_decode_cfg = cfg.flow.get('task_decode', {}) or {}
-        self.task_decode_method = str(task_decode_cfg.get('method', 'teacher')).lower()
-        self.task_decode_ode_steps = int(task_decode_cfg.get('ode_steps', 6))
-        self.task_decode_ode_method = str(task_decode_cfg.get('ode_method', 'heun')).lower()
+
+        # Allow separate training / evaluation settings while keeping
+        # backwards compatibility with the previous single-key schema.
+        default_method = str(task_decode_cfg.get('method', 'teacher')).lower()
+        default_steps = int(task_decode_cfg.get('ode_steps', 6))
+        default_ode_method = str(task_decode_cfg.get('ode_method', 'heun')).lower()
+
+        self.task_decode_method_train = str(
+            task_decode_cfg.get('method_train', default_method)
+        ).lower()
+        self.task_decode_method_eval = str(
+            task_decode_cfg.get('method_eval', default_method)
+        ).lower()
+
+        self.task_decode_ode_steps_train = int(
+            task_decode_cfg.get('ode_steps_train', default_steps)
+        )
+        self.task_decode_ode_steps_eval = int(
+            task_decode_cfg.get('ode_steps_eval', self.task_decode_ode_steps_train)
+        )
+
+        self.task_decode_ode_method_train = str(
+            task_decode_cfg.get('ode_method_train', default_ode_method)
+        ).lower()
+        self.task_decode_ode_method_eval = str(
+            task_decode_cfg.get('ode_method_eval', self.task_decode_ode_method_train)
+        ).lower()
+
+        # Preserve legacy attributes for any downstream code that still
+        # expects the old names.
+        self.task_decode_method = self.task_decode_method_train
+        self.task_decode_ode_steps = self.task_decode_ode_steps_train
+        self.task_decode_ode_method = self.task_decode_ode_method_train
     
     def build_velocity_network(self, config):
         """Build the velocity prediction network."""
@@ -271,7 +301,7 @@ class LatentFlow(pl.LightningModule):
             alpha_t = t
         
         if self.sigma_fn == "constant":
-            sigma_t = self.sigma_min * torch.ones_like(t)
+            sigma_t = self.sigma_max * torch.ones_like(t)
         elif self.sigma_fn == "linear":
             sigma_t = self.sigma_min + (self.sigma_max - self.sigma_min) * (1 - t)
         else:
@@ -422,8 +452,12 @@ class LatentFlow(pl.LightningModule):
 
     def _integrate_flow_to_one(self, batch_template, z_nodes, z_edges, z_graph):
         """Integrate the learned velocity field from noise to t=1."""
-        steps = max(int(self.task_decode_ode_steps), 1)
-        method = self.task_decode_ode_method
+        if self.training:
+            steps = max(int(self.task_decode_ode_steps_train), 1)
+            method = self.task_decode_ode_method_train
+        else:
+            steps = max(int(self.task_decode_ode_steps_eval), 1)
+            method = self.task_decode_ode_method_eval
         dt = 1.0 / steps
         device = batch_template.x.device
 
@@ -510,6 +544,17 @@ class LatentFlow(pl.LightningModule):
         z0_nodes = torch.randn_like(z1_nodes)
         z0_edges = torch.randn_like(z1_edges)
         z0_graph = torch.randn_like(z1_graph) if z1_graph is not None else None
+
+        if self.objective == "gaussian_cfm":
+            t0_graph = torch.zeros(batch.num_graphs, device=self.device, dtype=z0_nodes.dtype)
+            sigma_nodes = self.get_alpha_sigma(t0_graph[batch.batch].unsqueeze(-1))[1]
+            edge_batch_scale = batch.batch[batch.edge_index[0]]
+            sigma_edges = self.get_alpha_sigma(t0_graph[edge_batch_scale].unsqueeze(-1))[1]
+            z0_nodes = z0_nodes * sigma_nodes
+            z0_edges = z0_edges * sigma_edges
+            if z0_graph is not None:
+                sigma_graph = self.get_alpha_sigma(t0_graph.unsqueeze(-1))[1]
+                z0_graph = z0_graph * sigma_graph
         
         # Force undirected if needed
         if self.force_undirected:
@@ -566,7 +611,7 @@ class LatentFlow(pl.LightningModule):
         loss_task = torch.zeros(1, device=self.device)
         graph_dec = None
         if hasattr(batch, 'y') and batch.y is not None and cfg.flow.get('task_factor', 0.0) > 0:
-            decode_method = getattr(self, 'task_decode_method', 'teacher')
+            decode_method = self.task_decode_method_train if self.training else self.task_decode_method_eval
 
             if decode_method == 'velocity_step':
                 pred_nodes, pred_edges, pred_graph = self._predict_latents_single_step(

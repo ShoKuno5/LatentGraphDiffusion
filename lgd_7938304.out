@@ -1,0 +1,1749 @@
+[wisteria] ROOT=/work/gp15/q25030
+[wisteria] CODE=/work/gp15/q25030/LatentGraphDiffusion
+[wisteria] DATA=/work/gp15/q25030/LatentGraphDiffusion/data
+[wisteria] RUNS=/work/gp15/q25030/LatentGraphDiffusion/runs
+[wisteria] RESULTS=/work/gp15/q25030/LatentGraphDiffusion/runs (unified with RUNS)
+=== LGD Wisteria Job ===
+Dataset     : zinc
+Mode        : flow
+Config      : cfg/zinc-flow_gcfm.yaml
+Checkpoint  : runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
+Repeat      : 1
+Max Epoch   : 200
+Experiment  : zinc_flow_20251103_231513
+Out Dir     : /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20251103_231513
+W&B Name    : zinc_flow_zinc_flow_20251103_231513
+Start time  : Mon Nov  3 23:15:13 JST 2025
+[wandb] entity='shokuno-the-university-of-tokyo', mode='online'
+Env check:
+PyTorch: 2.0.1
+CUDA available: True
+CUDA device count: 8
+PyG: 2.3.1
+Using encoder checkpoint: runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
+Starting ZINC flow matching training...
+Config: cfg/zinc-flow_gcfm.yaml
+Max Epoch: 200
+Out dir: /workspace/runs/zinc_flow_20251103_231513
+/opt/conda/lib/python3.10/site-packages/lightning_fabric/__init__.py:40: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Warning: Could not import san2_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+Warning: Could not import grit_layer: No module named 'opt_einsum'
+Warning: Could not import san_layer: cannot import name 'negate_edge_index' from 'lgd.utils' (/workspace/lgd/utils/__init__.py)
+./datasets/ZINC
+[*] Loaded dataset 'subset' from 'PyG-ZINC':
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  Data(x=[277864, 1], edge_index=[2, 597970], edge_attr=[597970], y=[12000])
+  undirected: True
+  num graphs: 12000
+/opt/conda/lib/python3.10/site-packages/torch_geometric/data/in_memory_dataset.py:157: UserWarning: It is not recommended to directly access the internal storage format `data` of an 'InMemoryDataset'. The data of the dataset is already cached, so any modifications to `data` will not be reflected when accessing its elements. Clearing the cache now by removing all elements in `dataset._data_list`. If you are absolutely certain what you are doing, access the internal storage via `InMemoryDataset._data` instead to suppress this warning. Alternatively, you can access stacked individual attributes of every graph via `dataset.{attr_name}`.
+  warnings.warn(msg)
+  avg num_nodes/graph: 23
+  num node features: 1
+  num edge features: 1
+  num classes: (appears to be a regression task)
+Precomputing Positional Encoding statistics: ['RRWP'] for all graphs...
+  ...estimated to be undirected: True
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:07<00:00, 1566.15it/s]
+Done! Took 00:00:08.29
+Adding virtual node and edges
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:06<00:00, 1744.62it/s]
+Preprocessing PE
+  0%|          | 0/12000 [00:00<?, ?it/s]100%|██████████| 12000/12000 [00:03<00:00, 3716.03it/s]
+[*] Run ID 0: seed=0, split_index=0
+    Starting now: 2025-11-03 23:15:58.979217
+/opt/conda/lib/python3.10/site-packages/torch/nn/init.py:405: UserWarning: Initializing zero-element tensors is a no-op
+  warnings.warn("Initializing zero-element tensors is a no-op")
+Restored encoder from runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
+Missing Keys: 0, Unexpected Keys: 0
+Using first stage also as cond stage.
+VelocityWrapper has 0.93 M params.
+Keeping EMAs of 434.
+LatentFlow(
+  (first_stage_model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp_2): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+  (cond_stage_model): GraphTransformerEncoder(
+    (act): ReLU()
+    (node_emb): TypeDictNodeEncoder(
+      (encoder): Embedding(27, 36, padding_idx=0)
+    )
+    (edge_emb): TypeDictEdgeEncoder(
+      (encoder): Embedding(14, 36, padding_idx=0)
+    )
+    (prefix_emb): Embedding(1, 64, padding_idx=0)
+    (label_embed_regression): Sequential(
+      (0): Linear(in_features=1, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+      (3): Identity()
+      (4): ReLU()
+    )
+    (label_embed_classification): Embedding(3, 64)
+    (posenc_emb): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (posenc_emb_edge): Sequential(
+      (0): Identity()
+      (1): Linear(in_features=20, out_features=28, bias=True)
+    )
+    (node_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (edge_in_mlp): Sequential(
+      (0): Linear(in_features=64, out_features=128, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=128, out_features=64, bias=True)
+    )
+    (batch_norm_in_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (batch_norm_in_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (GTE_layers): ModuleList(
+      (0-9): 10 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=4, residual=True)
+      [GraphTransformerEncoderLayer(
+        (act): ReLU()
+        (attention): GTE_Attention(
+          (dropout): Dropout(p=0.5, inplace=False)
+          (Q): Linear(in_features=64, out_features=64, bias=True)
+          (K): Linear(in_features=64, out_features=64, bias=False)
+          (E): Linear(in_features=64, out_features=128, bias=True)
+          (V): Linear(in_features=64, out_features=64, bias=False)
+          (act): ReLU()
+        )
+        (mpnn): GINE(
+          (dropout): Dropout(p=0.0, inplace=False)
+          (act): ReLU()
+          (lin_edge): Linear(in_features=64, out_features=64, bias=True)
+          (mlp): Sequential(
+            (0): Linear(in_features=64, out_features=128, bias=True)
+            (1): ReLU()
+            (2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (temb_proj_h): Linear(in_features=0, out_features=64, bias=True)
+        (temb_proj_e): Linear(in_features=0, out_features=64, bias=True)
+        (O_h): Linear(in_features=64, out_features=64, bias=True)
+        (O_e): Linear(in_features=64, out_features=64, bias=True)
+        (batch_norm1_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm1_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+        (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+        (batch_norm2_h): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (batch_norm2_e): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )]
+    )
+    (final_layer_node): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (final_layer_edge): Sequential(
+      (0): Linear(in_features=64, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (graph_out_mlp_2): Sequential(
+      (0): Linear(in_features=4, out_features=8, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=8, out_features=4, bias=True)
+    )
+    (decode_node): Linear(in_features=4, out_features=31, bias=True)
+    (decode_edge): Linear(in_features=4, out_features=14, bias=True)
+    (decode_graph): Linear(in_features=4, out_features=1, bias=True)
+  )
+  (model): VelocityWrapper(
+    (denoiser): DenoisingTransformer(
+      (act): ReLU()
+      (node_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (edge_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (cond_in_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_in_mlp_2): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_in_mlp_3): Sequential(
+        (0): Linear(in_features=4, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+        (3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (cond_res_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+        (3): LayerNorm((4,), eps=1e-05, elementwise_affine=True)
+        (4): ReLU()
+      )
+      (layer_norm_in_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (layer_norm_in_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (temb_layer): Sequential(
+        (0): Linear(in_features=64, out_features=128, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=128, out_features=64, bias=True)
+      )
+      (denoising_layers): ModuleList(
+        (0-3): 4 x DenoisingTransformerLayer(in_channels=64, out_channels=64, heads=8, residual=True)
+        [DenoisingTransformerLayer(
+          (act): ReLU()
+          (cross_attention): Cross_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E1): Linear(in_features=64, out_features=64, bias=True)
+            (E2): Linear(in_features=64, out_features=64, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (H): Linear(in_features=64, out_features=64, bias=True)
+            (G1): Linear(in_features=64, out_features=64, bias=True)
+            (G2): Linear(in_features=64, out_features=64, bias=True)
+            (act): ReLU()
+          )
+          (attention): GTE_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E): Linear(in_features=64, out_features=128, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (act): ReLU()
+          )
+          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
+          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h): Linear(in_features=64, out_features=64, bias=True)
+          (O_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h2): Linear(in_features=64, out_features=64, bias=True)
+          (O_e2): Linear(in_features=64, out_features=64, bias=True)
+          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_h_layer3): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer4): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer3): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer4): Linear(in_features=128, out_features=64, bias=True)
+          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm3_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm3_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm4_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm4_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )]
+      )
+      (self_attn_layers): ModuleList(
+        (0-3): 4 x GraphTransformerEncoderLayer(in_channels=64, out_channels=64, heads=8, residual=True)
+        [GraphTransformerEncoderLayer(
+          (act): ReLU()
+          (attention): GTE_Attention(
+            (dropout): Dropout(p=0.25, inplace=False)
+            (Q): Linear(in_features=64, out_features=64, bias=True)
+            (K): Linear(in_features=64, out_features=64, bias=False)
+            (E): Linear(in_features=64, out_features=128, bias=True)
+            (V): Linear(in_features=64, out_features=64, bias=False)
+            (act): ReLU()
+          )
+          (temb_proj_h): Linear(in_features=64, out_features=64, bias=True)
+          (temb_proj_e): Linear(in_features=64, out_features=64, bias=True)
+          (O_h): Linear(in_features=64, out_features=64, bias=True)
+          (O_e): Linear(in_features=64, out_features=64, bias=True)
+          (layer_norm1_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm1_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (FFN_h_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_h_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (FFN_e_layer1): Linear(in_features=64, out_features=128, bias=True)
+          (FFN_e_layer2): Linear(in_features=128, out_features=64, bias=True)
+          (layer_norm2_h): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (layer_norm2_e): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        )]
+      )
+      (final_layer_node): Sequential(
+        (0): Linear(in_features=64, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (final_layer_edge): Sequential(
+        (0): Linear(in_features=64, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (graph_out_mlp): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+      (graph_out_mlp_2): Sequential(
+        (0): Linear(in_features=4, out_features=8, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=8, out_features=4, bias=True)
+      )
+    )
+  )
+  (model_ema): LitEma()
+)
+accelerator: cuda:0
+benchmark: False
+bn:
+  eps: 1e-05
+  mom: 0.1
+cfg_dest: config.yaml
+cond:
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    full_attn: True
+    layer_norm: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  edge_encoder_name: TypeDictEdge
+  layer_norm: False
+  node_encoder_name: TypeDictNode
+custom_metrics: []
+dataset:
+  add_virtual_node_edge: True
+  cache_load: False
+  cache_save: False
+  dir: ./datasets
+  edge_dim: 128
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_message_ratio: 0.8
+  edge_negative_sampling_ratio: 1.0
+  edge_train_mode: all
+  encoder: True
+  encoder_bn: True
+  encoder_dim: 128
+  encoder_name: db
+  format: PyG-ZINC
+  label_column: none
+  label_table: none
+  location: local
+  name: subset
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  num_hop: 0
+  num_tasks: 1
+  remove_feature: False
+  resample_disjoint: False
+  resample_negative: False
+  shuffle_split: True
+  slic_compactness: 10
+  split: [0.8, 0.1, 0.1]
+  split_dir: ./splits
+  split_index: 0
+  split_mode: standard
+  subgraph: False
+  task: graph
+  task_type: regression
+  to_undirected: False
+  transductive: False
+  transform: none
+  tu_simple: True
+devices: 1
+diffusion:
+  cond_stage_config: __is_first_stage__
+  cond_stage_key: masked_graph
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  first_stage_config: runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
+  graph_factor: 1.0
+  hid_dim: 4
+  node_factor: 1.0
+  task_factor: 1.0
+dt:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: False
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.25
+  batch_norm: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  cond_dim: 4
+  condition_list: ['masked_graph']
+  dropout: 0.05
+  ff_e: False
+  ff_e_ca: True
+  ff_e_sa: False
+  hid_dim: 64
+  in_dim: 4
+  layer_norm: True
+  norm_e: True
+  num_heads: 8
+  num_layers: 4
+  out_dim: 4
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  post_pool: True
+  residual: True
+  self_attn: True
+  temb_dim: 64
+  use_time: True
+encoder:
+  O_e: True
+  act: relu
+  attn:
+    O_e: True
+    act: relu
+    attn_dropout: 0.0
+    attn_product: mul
+    attn_reweight: True
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    clamp: 5.0
+    deg_scaler: False
+    edge_enhance: True
+    edge_reweight: True
+    full_attn: True
+    fwl: False
+    layer_norm: False
+    norm_e: True
+    score_act: True
+    signed_sqrt: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.5
+  batch_norm: True
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dropout: 0.0
+  edge_encoder: True
+  edge_encoder_bn: False
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  ff_e: False
+  hid_dim: 64
+  in_dim: 36
+  label_embed_type: add_virtual
+  layer_norm: False
+  mpnn:
+    act: relu
+    dropout: 0.0
+    edge_enhance: True
+    enable: True
+    project_edge: True
+  node_encoder: True
+  node_encoder_bn: False
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 21
+  norm_e: True
+  num_heads: 4
+  num_layers: 10
+  num_task: 1
+  out_dim: 4
+  pe_raw_norm: None
+  pool: add
+  pool_edge: True
+  pool_vn: False
+  posenc_dim: 28
+  posenc_in_dim: 20
+  posenc_in_dim_edge: 20
+  post_pool: True
+  prefix_dim: 64
+  prefix_type: add_virtual
+  residual: True
+  task_type: regression
+  temb_dim: 0
+  type: GraphTransformerEncoder
+  update_e: True
+  use_time: False
+example_arg: example
+example_group:
+  example_arg: example
+flow:
+  alpha_fn: linear
+  cond_stage_config: __is_first_stage__
+  cond_stage_key: masked_graph
+  cond_stage_trainable: False
+  conditioning_key: crossattn
+  edge_factor: 1.0
+  ema: True
+  first_stage_config: runs/zinc_encoder_20250930_004610/my_zinc-encoder_baseline/0/ckpt/399.ckpt
+  first_stage_trainable: False
+  force_undirected: False
+  graph_factor: 1.0
+  hid_dim: 4
+  nfe: 50
+  node_factor: 1.0
+  objective: gaussian_cfm
+  sigma_fn: linear
+  sigma_max: 1.0
+  sigma_min: 0.01
+  solver: heun
+  t_weight: none
+  task_decode:
+    method: ode
+    method_eval: ode
+    method_train: ode
+    ode_method: euler
+    ode_method_eval: heun
+    ode_method_train: euler
+    ode_steps: 2
+    ode_steps_eval: 16
+    ode_steps_train: 2
+  task_factor: 1.0
+  use_graph_latent: True
+gnn:
+  act: relu
+  agg: mean
+  att_final_linear: False
+  att_final_linear_bn: False
+  att_heads: 1
+  batchnorm: True
+  clear_feature: True
+  dim_inner: 64
+  dropout: 0.0
+  head: san_graph
+  keep_edge: 0.5
+  l2norm: True
+  layer_type: generalconv
+  layers_mp: 2
+  layers_post_mp: 3
+  layers_pre_mp: 0
+  msg_direction: single
+  normalize_adj: False
+  residual: False
+  self_msg: concat
+  skip_every: 1
+  stage_type: stack
+gpu_mem: False
+gt:
+  attn:
+    O_e: True
+    act: relu
+    clamp: 5.0
+    deg_scaler: True
+    edge_enhance: True
+    full_attn: True
+    fwl: False
+    norm_e: True
+    sparse: False
+    use: True
+    use_bias: False
+  attn_dropout: 0.2
+  batch_norm: True
+  bigbird:
+    add_cross_attention: False
+    attention_type: block_sparse
+    block_size: 3
+    chunk_size_feed_forward: 0
+    hidden_act: relu
+    is_decoder: False
+    layer_norm_eps: 1e-06
+    max_position_embeddings: 128
+    num_random_blocks: 3
+    use_bias: False
+  bn_momentum: 0.1
+  bn_no_runner: False
+  dim_hidden: 64
+  dropout: 0.0
+  full_graph: True
+  gamma: 1e-05
+  layer_norm: False
+  layer_type: GritTransformer
+  layers: 10
+  n_heads: 8
+  pna_degrees: []
+  residual: True
+  update_e: True
+mem:
+  inplace: False
+metric_agg: argmin
+metric_best: mae
+mlflow:
+  name: zinc-GRIT-RRWP
+  project: Exp
+  use: False
+model:
+  edge_decoding: dot
+  graph_pooling: add
+  loss_fun: l1
+  match_upper: True
+  size_average: mean
+  thresh: 0.5
+  type: LatentFlow
+name_tag: 
+num_threads: 6
+num_workers: 0
+optim:
+  base_lr: 0.0001
+  batch_accumulation: 1
+  clip_grad_norm: True
+  lr_decay: 0.1
+  max_epoch: 200
+  min_lr: 1e-06
+  momentum: 0.9
+  num_warmup_epochs: 50
+  optimizer: adamW
+  reduce_factor: 0.1
+  schedule_patience: 10
+  scheduler: cosine_with_warmup
+  steps: [30, 60, 90]
+  weight_decay: 1e-05
+out_dir: /workspace/runs/zinc_flow_20251103_231513/zinc-flow_gcfm
+posenc_ERE:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ERN:
+  accuracy: 0.1
+  dim_pe: 16
+  enable: False
+  er_dim: none
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EdgeRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_ElstaticSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: range(10)
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_EquivStableLapPE:
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  raw_norm_type: none
+posenc_HKdiagSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_HodgeLap1PE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_InterRWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_LapPE:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RD:
+  dim_pe: 16
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_RRWP:
+  add_identity: True
+  dim_pe: 16
+  enable: True
+  ksteps: 20
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+  real_emb: True
+  spd: False
+posenc_RWSE:
+  dim_pe: 16
+  enable: False
+  kernel:
+    times: []
+    times_func: 
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  post_layers: 0
+  raw_norm_type: none
+posenc_SignNet:
+  dim_pe: 16
+  eigen:
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 10
+  enable: False
+  layers: 3
+  local: False
+  model: none
+  n_heads: 4
+  pass_as_var: False
+  phi_hidden_dim: 64
+  phi_out_dim: 4
+  post_layers: 0
+  raw_norm_type: none
+prep:
+  add_edge_index: True
+  add_reverse_edges: True
+  add_self_loops: False
+  dist_cutoff: 510
+  dist_enable: False
+  exp: False
+  exp_algorithm: Random-d
+  exp_count: 1
+  exp_deg: 5
+  exp_max_num_iters: 100
+  layer_edge_indices_dir: None
+  num_virt_node: 0
+  train_percent: 0.6
+  use_exp_edges: True
+pretrained:
+  dir: 
+  freeze_main: False
+  reset_prediction_head: True
+print: both
+regression_model:
+  encoder:
+    attn:
+      O_e: True
+      act: relu
+      attn_dropout: 0.0
+      batch_norm: True
+      bn_momentum: 0.1
+      bn_no_runner: False
+      clamp: 5.0
+      deg_scaler: False
+      edge_enhance: True
+      full_attn: True
+      layer_norm: False
+      norm_e: True
+      sparse: False
+      use: True
+      use_bias: False
+    batch_norm: True
+    bn_momentum: 0.1
+    bn_no_runner: False
+    edge_encoder_name: TypeDictEdge
+    layer_norm: False
+    node_encoder_name: TypeDictNode
+round: 5
+run_dir: /workspace/runs/zinc_flow_20251103_231513/zinc-flow_gcfm/0
+run_id: 0
+run_multiple_splits: []
+seed: 0
+share:
+  dim_in: 1
+  dim_out: 1
+  num_splits: 3
+tensorboard_agg: True
+tensorboard_each_run: False
+train:
+  auto_resume: False
+  batch_size: 256
+  ckpt_best: True
+  ckpt_clean: True
+  ckpt_period: 100
+  early_stop: True
+  early_stop_patience: 40
+  enable_ckpt: True
+  ensemble_mode: none
+  ensemble_repeat: 1
+  epoch_resume: -1
+  eval_period: 10
+  iter_per_epoch: 32
+  mode: train_diffusion
+  neighbor_sizes: [20, 15, 10, 5]
+  node_per_graph: 32
+  pretrain:
+    atom_bond_only: True
+    edge_factor: 0.0
+    graph_factor: 1.0
+    input_target: True
+    mask_edge_prob: 0.0
+    mask_label_prob: 0.5
+    mask_node_prob: 0.0
+    node_factor: 0.0
+    original_task: True
+    recon: none
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+  skip_train_eval: False
+  start_eval_epoch: -1
+  walk_length: 4
+train_flow:
+  batch_accumulation: 1
+  ema: True
+  grad_clip: 1.0
+val:
+  node_per_graph: 32
+  radius: extend
+  sample_node: False
+  sampler: full_batch
+view_emb: False
+wandb:
+  entity: shokuno-the-university-of-tokyo
+  name: zinc_flow_zinc_flow_20251103_231513
+  project: LGFM-ZINC-Flow
+  use: True
+Num parameters: 1823862
+Start from epoch 0
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: shokuno (shokuno-the-university-of-tokyo). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /workspace/wandb/run-20251103_231607-648mz2dd
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run zinc_flow_zinc_flow_20251103_231513
+wandb: ⭐️ View project at https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow
+wandb: 🚀 View run at https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow/runs/648mz2dd
+Key encoder.pe_raw_norm with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+Key prep.layer_edge_indices_dir with value <class 'NoneType'> is not a valid type; valid types: {<class 'float'>, <class 'list'>, <class 'tuple'>, <class 'bool'>, <class 'int'>, <class 'str'>}
+train: {'epoch': 0, 'time_epoch': 25.61016, 'eta': 5096.42276, 'eta_hours': 1.41567, 'loss': 1756.08870488, 'lr': 0.0, 'params': 1823862, 'time_iter': 0.64025, 'mae': 18.46568, 'r2': -94.59109, 'spearmanr': 0.31792, 'mse': 386.5127, 'rmse': 19.65993, 'loss_node': 6.560862377929688, 'loss_edge': 2.140448378944397, 'loss_graph': 1710.4560716796875, 'loss_task': 18.46567872314453, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.01s
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 0, 'time_epoch': 28.81918, 'loss': 19.0952397, 'lr': 0, 'params': 1823862, 'time_iter': 7.20479, 'mae': 19.09524, 'r2': -103.68143, 'spearmanr': 0.35286, 'mse': 412.31458, 'rmse': 20.30553}
+...computing epoch stats took: 0.00s
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 0, 'time_epoch': 28.90142, 'loss': 19.23794769, 'lr': 0, 'params': 1823862, 'time_iter': 7.22535, 'mae': 19.23795, 'r2': -101.58124, 'spearmanr': 0.37455, 'mse': 417.33124, 'rmse': 20.42869}
+...computing epoch stats took: 0.00s
+> Epoch 0: took 83.4s (avg 83.4s) | Best so far: epoch 0	train_loss: 1756.0887 train_mae: 18.4657	val_loss: 19.0952 val_mae: 19.0952	test_loss: 19.2379 test_mae: 19.2380
+train: {'epoch': 1, 'time_epoch': 18.87642, 'eta': 4404.17224, 'eta_hours': 1.22338, 'loss': 1122.68464531, 'lr': 2e-06, 'params': 1823862, 'time_iter': 0.47191, 'mae': 14.36273, 'r2': -58.64098, 'spearmanr': 0.30992, 'mse': 241.15215, 'rmse': 15.52907, 'loss_node': 6.546036096191406, 'loss_edge': 2.11879111328125, 'loss_graph': 1085.294359765625, 'loss_task': 14.362728553771973, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.01s
+train: {'epoch': 2, 'time_epoch': 19.05868, 'eta': 4172.80606, 'eta_hours': 1.15911, 'loss': 188.47395867, 'lr': 4e-06, 'params': 1823862, 'time_iter': 0.47647, 'mae': 3.69451, 'r2': -5.67663, 'spearmanr': 0.30361, 'mse': 26.99628, 'rmse': 5.19579, 'loss_node': 6.5273223373413085, 'loss_edge': 2.047097909927368, 'loss_graph': 172.51052385253905, 'loss_task': 3.69450696811676, 'loss_encoder': 0.0}
+...computing epoch stats took: 0.00s
+train: {'epoch': 3, 'time_epoch': 18.85958, 'eta': 4037.83742, 'eta_hours': 1.12162, 'loss': 83.23861058, 'lr': 6e-06, 'params': 1823862, 'time_iter': 0.47149, 'mae': 1.85428, 'r2': -0.36335, 'spearmanr': 0.78454, 'mse': 5.51258, 'rmse': 2.34789, 'loss_node': 6.528802265167236, 'loss_edge': 2.039289285469055, 'loss_graph': 70.96195616455078, 'loss_task': 1.8542814687728881, 'loss_encoder': 0.0}
+train: {'epoch': 4, 'time_epoch': 18.80918, 'eta': 3947.34682, 'eta_hours': 1.09649, 'loss': 73.62128093, 'lr': 8e-06, 'params': 1823862, 'time_iter': 0.47023, 'mae': 1.19813, 'r2': 0.18824, 'spearmanr': 0.68227, 'mse': 3.28228, 'rmse': 1.81171, 'loss_node': 6.559968088531494, 'loss_edge': 2.0287716960906983, 'loss_graph': 62.63627360229492, 'loss_task': 1.1981334450721741, 'loss_encoder': 0.0}
+train: {'epoch': 5, 'time_epoch': 18.85162, 'eta': 3882.12227, 'eta_hours': 1.07837, 'loss': 67.29863912, 'lr': 1e-05, 'params': 1823862, 'time_iter': 0.47129, 'mae': 1.15325, 'r2': 0.13644, 'spearmanr': 0.68187, 'mse': 3.49171, 'rmse': 1.86861, 'loss_node': 6.580475689697265, 'loss_edge': 2.041373684692383, 'loss_graph': 56.3702900390625, 'loss_task': 1.1532500240325927, 'loss_encoder': 0.0}
+train: {'epoch': 6, 'time_epoch': 18.86668, 'eta': 3830.56234, 'eta_hours': 1.06405, 'loss': 62.39138796, 'lr': 1.2e-05, 'params': 1823862, 'time_iter': 0.47167, 'mae': 1.05821, 'r2': 0.25583, 'spearmanr': 0.76467, 'mse': 3.00898, 'rmse': 1.73464, 'loss_node': 6.635525967407227, 'loss_edge': 2.0448702671051024, 'loss_graph': 51.59458016204834, 'loss_task': 1.0582061004638672, 'loss_encoder': 0.0}
+train: {'epoch': 7, 'time_epoch': 18.84733, 'eta': 3786.71135, 'eta_hours': 1.05186, 'loss': 58.50457853, 'lr': 1.4e-05, 'params': 1823862, 'time_iter': 0.47118, 'mae': 1.00141, 'r2': 0.33513, 'spearmanr': 0.8009, 'mse': 2.68835, 'rmse': 1.63962, 'loss_node': 6.729040956115723, 'loss_edge': 2.048548091888428, 'loss_graph': 47.72417059936524, 'loss_task': 1.001409114074707, 'loss_encoder': 0.0}
+train: {'epoch': 8, 'time_epoch': 19.32055, 'eta': 3758.45967, 'eta_hours': 1.04402, 'loss': 55.69575312, 'lr': 1.6e-05, 'params': 1823862, 'time_iter': 0.48301, 'mae': 0.94374, 'r2': 0.38844, 'spearmanr': 0.82388, 'mse': 2.47278, 'rmse': 1.57251, 'loss_node': 6.849702072143555, 'loss_edge': 2.0442102586746214, 'loss_graph': 44.91436325531006, 'loss_task': 0.9437389554977417, 'loss_encoder': 0.0}
+train: {'epoch': 9, 'time_epoch': 18.85503, 'eta': 3723.14929, 'eta_hours': 1.03421, 'loss': 53.79016551, 'lr': 1.8e-05, 'params': 1823862, 'time_iter': 0.47138, 'mae': 0.93235, 'r2': 0.4263, 'spearmanr': 0.8311, 'mse': 2.31969, 'rmse': 1.52305, 'loss_node': 6.951312129974365, 'loss_edge': 2.0646422805786133, 'loss_graph': 42.90951061401367, 'loss_task': 0.9323497674942016, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 9, 'time_epoch': 28.64353, 'loss': 0.92594275, 'lr': 0, 'params': 1823862, 'time_iter': 7.16088, 'mae': 0.92594, 'r2': 0.39303, 'spearmanr': 0.815, 'mse': 2.3907, 'rmse': 1.54619}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 9, 'time_epoch': 28.72503, 'loss': 0.97214404, 'lr': 0, 'params': 1823862, 'time_iter': 7.18126, 'mae': 0.97214, 'r2': 0.41502, 'spearmanr': 0.82701, 'mse': 2.37989, 'rmse': 1.54269}
+> Epoch 9: took 76.2s (avg 31.1s) | Best so far: epoch 9	train_loss: 53.7902 train_mae: 0.9324	val_loss: 0.9259 val_mae: 0.9259	test_loss: 0.9721 test_mae: 0.9721
+train: {'epoch': 10, 'time_epoch': 18.86877, 'eta': 3691.0669, 'eta_hours': 1.0253, 'loss': 52.47871577, 'lr': 2e-05, 'params': 1823862, 'time_iter': 0.47172, 'mae': 0.9493, 'r2': 0.42282, 'spearmanr': 0.82527, 'mse': 2.33375, 'rmse': 1.52766, 'loss_node': 7.028161854553223, 'loss_edge': 2.057821576499939, 'loss_graph': 41.494136627197264, 'loss_task': 0.9492982851028442, 'loss_encoder': 0.0}
+train: {'epoch': 11, 'time_epoch': 18.87131, 'eta': 3661.22651, 'eta_hours': 1.01701, 'loss': 51.17277831, 'lr': 2.2e-05, 'params': 1823862, 'time_iter': 0.47178, 'mae': 0.95595, 'r2': 0.41221, 'spearmanr': 0.8167, 'mse': 2.37667, 'rmse': 1.54164, 'loss_node': 7.110137201690674, 'loss_edge': 2.066672672843933, 'loss_graph': 40.08406996002197, 'loss_task': 0.9559490888595581, 'loss_encoder': 0.0}
+train: {'epoch': 12, 'time_epoch': 19.05655, 'eta': 3635.73822, 'eta_hours': 1.00993, 'loss': 49.59145321, 'lr': 2.4e-05, 'params': 1823862, 'time_iter': 0.47641, 'mae': 1.00291, 'r2': 0.36749, 'spearmanr': 0.77998, 'mse': 2.55748, 'rmse': 1.59921, 'loss_node': 7.185436193084716, 'loss_edge': 2.0787372900009156, 'loss_graph': 38.32145313720703, 'loss_task': 1.0029136461257935, 'loss_encoder': 0.0}
+train: {'epoch': 13, 'time_epoch': 18.85425, 'eta': 3608.48115, 'eta_hours': 1.00236, 'loss': 48.28126421, 'lr': 2.6e-05, 'params': 1823862, 'time_iter': 0.47136, 'mae': 1.00099, 'r2': 0.35756, 'spearmanr': 0.77875, 'mse': 2.59762, 'rmse': 1.61171, 'loss_node': 7.238583073425293, 'loss_edge': 2.084754648208618, 'loss_graph': 36.955937603759764, 'loss_task': 1.0009945175170898, 'loss_encoder': 0.0}
+train: {'epoch': 14, 'time_epoch': 18.83014, 'eta': 3582.04711, 'eta_hours': 0.99501, 'loss': 47.10632655, 'lr': 2.8e-05, 'params': 1823862, 'time_iter': 0.47075, 'mae': 1.0005, 'r2': 0.35389, 'spearmanr': 0.77927, 'mse': 2.61247, 'rmse': 1.61631, 'loss_node': 7.253617043304444, 'loss_edge': 2.0919734294891357, 'loss_graph': 35.75974600982666, 'loss_task': 1.0004950315475465, 'loss_encoder': 0.0}
+train: {'epoch': 15, 'time_epoch': 18.86414, 'eta': 3556.95452, 'eta_hours': 0.98804, 'loss': 45.38080905, 'lr': 3e-05, 'params': 1823862, 'time_iter': 0.4716, 'mae': 0.97107, 'r2': 0.35914, 'spearmanr': 0.79587, 'mse': 2.59124, 'rmse': 1.60973, 'loss_node': 7.240528231048584, 'loss_edge': 2.0882244468688964, 'loss_graph': 34.10990931396484, 'loss_task': 0.9710736476898193, 'loss_encoder': 0.0}
+train: {'epoch': 16, 'time_epoch': 18.86159, 'eta': 3532.56724, 'eta_hours': 0.98127, 'loss': 43.63277158, 'lr': 3.2e-05, 'params': 1823862, 'time_iter': 0.47154, 'mae': 0.93992, 'r2': 0.36464, 'spearmanr': 0.80727, 'mse': 2.56901, 'rmse': 1.60281, 'loss_node': 7.207705600738525, 'loss_edge': 2.095137934112549, 'loss_graph': 32.45007831420899, 'loss_task': 0.9399246862411499, 'loss_encoder': 0.0}
+train: {'epoch': 17, 'time_epoch': 18.84994, 'eta': 3508.67611, 'eta_hours': 0.97463, 'loss': 42.44156693, 'lr': 3.4e-05, 'params': 1823862, 'time_iter': 0.47125, 'mae': 0.92932, 'r2': 0.37026, 'spearmanr': 0.81659, 'mse': 2.54627, 'rmse': 1.5957, 'loss_node': 7.190325304412842, 'loss_edge': 2.111351739883423, 'loss_graph': 31.281245223999022, 'loss_task': 0.9293220195770263, 'loss_encoder': 0.0}
+train: {'epoch': 18, 'time_epoch': 19.07624, 'eta': 3487.47145, 'eta_hours': 0.96874, 'loss': 40.69565599, 'lr': 3.6e-05, 'params': 1823862, 'time_iter': 0.47691, 'mae': 0.90895, 'r2': 0.36973, 'spearmanr': 0.821, 'mse': 2.54845, 'rmse': 1.59639, 'loss_node': 7.225344945526123, 'loss_edge': 2.1043773818969727, 'loss_graph': 29.548025500488283, 'loss_task': 0.9089541343688965, 'loss_encoder': 0.0}
+train: {'epoch': 19, 'time_epoch': 18.85842, 'eta': 3464.51925, 'eta_hours': 0.96237, 'loss': 39.33456327, 'lr': 3.8e-05, 'params': 1823862, 'time_iter': 0.47146, 'mae': 0.88997, 'r2': 0.39385, 'spearmanr': 0.83516, 'mse': 2.45089, 'rmse': 1.56553, 'loss_node': 7.210746822357177, 'loss_edge': 2.105049719810486, 'loss_graph': 28.238827793121338, 'loss_task': 0.8899693222999573, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 19, 'time_epoch': 28.63121, 'loss': 0.91682071, 'lr': 0, 'params': 1823862, 'time_iter': 7.1578, 'mae': 0.91682, 'r2': 0.36682, 'spearmanr': 0.84869, 'mse': 2.49393, 'rmse': 1.57922}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 19, 'time_epoch': 28.71907, 'loss': 0.98141457, 'lr': 0, 'params': 1823862, 'time_iter': 7.17977, 'mae': 0.98141, 'r2': 0.37832, 'spearmanr': 0.83517, 'mse': 2.52919, 'rmse': 1.59034}
+> Epoch 19: took 76.2s (avg 27.9s) | Best so far: epoch 19	train_loss: 39.3346 train_mae: 0.8900	val_loss: 0.9168 val_mae: 0.9168	test_loss: 0.9814 test_mae: 0.9814
+train: {'epoch': 20, 'time_epoch': 18.91031, 'eta': 3442.39927, 'eta_hours': 0.95622, 'loss': 37.80700653, 'lr': 4e-05, 'params': 1823862, 'time_iter': 0.47276, 'mae': 0.85285, 'r2': 0.40932, 'spearmanr': 0.84967, 'mse': 2.38834, 'rmse': 1.54543, 'loss_node': 7.189083403015137, 'loss_edge': 2.1035020307540893, 'loss_graph': 26.808722030639647, 'loss_task': 0.8528496753692627, 'loss_encoder': 0.0}
+train: {'epoch': 21, 'time_epoch': 18.86956, 'eta': 3420.2413, 'eta_hours': 0.95007, 'loss': 36.46710042, 'lr': 4.2e-05, 'params': 1823862, 'time_iter': 0.47174, 'mae': 0.82671, 'r2': 0.40649, 'spearmanr': 0.85299, 'mse': 2.39981, 'rmse': 1.54913, 'loss_node': 7.177894504547119, 'loss_edge': 2.104234906578064, 'loss_graph': 25.531547624206542, 'loss_task': 0.826711809539795, 'loss_encoder': 0.0}
+train: {'epoch': 22, 'time_epoch': 19.53095, 'eta': 3403.45912, 'eta_hours': 0.94541, 'loss': 34.82247659, 'lr': 4.4e-05, 'params': 1823862, 'time_iter': 0.48827, 'mae': 0.79727, 'r2': 0.43658, 'spearmanr': 0.86806, 'mse': 2.27814, 'rmse': 1.50935, 'loss_node': 7.127026887512207, 'loss_edge': 2.1103757625579833, 'loss_graph': 23.990544082641602, 'loss_task': 0.7972651000976563, 'loss_encoder': 0.0}
+train: {'epoch': 23, 'time_epoch': 19.22964, 'eta': 3384.23827, 'eta_hours': 0.94007, 'loss': 33.14941235, 'lr': 4.6e-05, 'params': 1823862, 'time_iter': 0.48074, 'mae': 0.77646, 'r2': 0.44987, 'spearmanr': 0.87497, 'mse': 2.22439, 'rmse': 1.49144, 'loss_node': 7.089825788879395, 'loss_edge': 2.110138942718506, 'loss_graph': 22.396533221435547, 'loss_task': 0.7764570789337158, 'loss_encoder': 0.0}
+train: {'epoch': 24, 'time_epoch': 19.11029, 'eta': 3364.1813, 'eta_hours': 0.93449, 'loss': 32.08838133, 'lr': 4.8e-05, 'params': 1823862, 'time_iter': 0.47776, 'mae': 0.75329, 'r2': 0.45724, 'spearmanr': 0.87883, 'mse': 2.1946, 'rmse': 1.48142, 'loss_node': 7.0559039932250975, 'loss_edge': 2.1147656913757324, 'loss_graph': 21.411122155761717, 'loss_task': 0.7532946605682374, 'loss_encoder': 0.0}
+train: {'epoch': 25, 'time_epoch': 19.10358, 'eta': 3344.15223, 'eta_hours': 0.92893, 'loss': 30.74619324, 'lr': 5e-05, 'params': 1823862, 'time_iter': 0.47759, 'mae': 0.73231, 'r2': 0.47963, 'spearmanr': 0.88588, 'mse': 2.10404, 'rmse': 1.45053, 'loss_node': 7.0209638854980465, 'loss_edge': 2.1121024738311767, 'loss_graph': 20.148514404296876, 'loss_task': 0.7323062648773193, 'loss_encoder': 0.0}
+train: {'epoch': 26, 'time_epoch': 19.10694, 'eta': 3324.21324, 'eta_hours': 0.92339, 'loss': 29.0745565, 'lr': 5.2e-05, 'params': 1823862, 'time_iter': 0.47767, 'mae': 0.66933, 'r2': 0.52681, 'spearmanr': 0.90594, 'mse': 1.9133, 'rmse': 1.38322, 'loss_node': 6.982758480072022, 'loss_edge': 2.1027047819137574, 'loss_graph': 18.650441745758055, 'loss_task': 0.6693261988639831, 'loss_encoder': 0.0}
+train: {'epoch': 27, 'time_epoch': 19.11013, 'eta': 3304.35327, 'eta_hours': 0.91788, 'loss': 27.83533424, 'lr': 5.4e-05, 'params': 1823862, 'time_iter': 0.47775, 'mae': 0.68016, 'r2': 0.52761, 'spearmanr': 0.90154, 'mse': 1.91008, 'rmse': 1.38206, 'loss_node': 6.919197566986084, 'loss_edge': 2.103318501281738, 'loss_graph': 17.452498429489136, 'loss_task': 0.680159680557251, 'loss_encoder': 0.0}
+train: {'epoch': 28, 'time_epoch': 19.38738, 'eta': 3286.17986, 'eta_hours': 0.91283, 'loss': 26.68805256, 'lr': 5.6e-05, 'params': 1823862, 'time_iter': 0.48468, 'mae': 0.63369, 'r2': 0.56709, 'spearmanr': 0.91387, 'mse': 1.75041, 'rmse': 1.32303, 'loss_node': 6.875061630249023, 'loss_edge': 2.099723402404785, 'loss_graph': 16.44587767562866, 'loss_task': 0.6336948671340943, 'loss_encoder': 0.0}
+train: {'epoch': 29, 'time_epoch': 19.05815, 'eta': 3266.05985, 'eta_hours': 0.90724, 'loss': 25.64756072, 'lr': 5.8e-05, 'params': 1823862, 'time_iter': 0.47645, 'mae': 0.63277, 'r2': 0.59565, 'spearmanr': 0.9169, 'mse': 1.63493, 'rmse': 1.27864, 'loss_node': 6.841391679382324, 'loss_edge': 2.0887415704727172, 'loss_graph': 15.451887449645996, 'loss_task': 0.6327699381828308, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 29, 'time_epoch': 28.81263, 'loss': 0.77769195, 'lr': 0, 'params': 1823862, 'time_iter': 7.20316, 'mae': 0.77769, 'r2': 0.47107, 'spearmanr': 0.91053, 'mse': 2.08331, 'rmse': 1.44337}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 29, 'time_epoch': 28.88743, 'loss': 0.8219337, 'lr': 0, 'params': 1823862, 'time_iter': 7.22186, 'mae': 0.82193, 'r2': 0.52838, 'spearmanr': 0.90864, 'mse': 1.91871, 'rmse': 1.38518}
+> Epoch 29: took 76.8s (avg 26.9s) | Best so far: epoch 29	train_loss: 25.6476 train_mae: 0.6328	val_loss: 0.7777 val_mae: 0.7777	test_loss: 0.8219 test_mae: 0.8219
+train: {'epoch': 30, 'time_epoch': 19.08629, 'eta': 3246.16178, 'eta_hours': 0.90171, 'loss': 24.49646085, 'lr': 6e-05, 'params': 1823862, 'time_iter': 0.47716, 'mae': 0.59753, 'r2': 0.6066, 'spearmanr': 0.92643, 'mse': 1.59069, 'rmse': 1.26122, 'loss_node': 6.8081090476989745, 'loss_edge': 2.088116736793518, 'loss_graph': 14.405181393432617, 'loss_task': 0.5975268074035645, 'loss_encoder': 0.0}
+train: {'epoch': 31, 'time_epoch': 19.0563, 'eta': 3226.157, 'eta_hours': 0.89615, 'loss': 23.44318202, 'lr': 6.2e-05, 'params': 1823862, 'time_iter': 0.47641, 'mae': 0.56203, 'r2': 0.6391, 'spearmanr': 0.93346, 'mse': 1.45927, 'rmse': 1.208, 'loss_node': 6.776527558898926, 'loss_edge': 2.0894855573654176, 'loss_graph': 13.453110398101806, 'loss_task': 0.5620293373584747, 'loss_encoder': 0.0}
+train: {'epoch': 32, 'time_epoch': 19.04701, 'eta': 3206.16269, 'eta_hours': 0.8906, 'loss': 22.60654193, 'lr': 6.4e-05, 'params': 1823862, 'time_iter': 0.47618, 'mae': 0.55043, 'r2': 0.65467, 'spearmanr': 0.93959, 'mse': 1.39632, 'rmse': 1.18166, 'loss_node': 6.736809244537353, 'loss_edge': 2.084713341522217, 'loss_graph': 12.684151379394532, 'loss_task': 0.5504337321281433, 'loss_encoder': 0.0}
+train: {'epoch': 33, 'time_epoch': 19.03141, 'eta': 3186.14792, 'eta_hours': 0.88504, 'loss': 21.96297328, 'lr': 6.6e-05, 'params': 1823862, 'time_iter': 0.47579, 'mae': 0.55141, 'r2': 0.67121, 'spearmanr': 0.93784, 'mse': 1.32943, 'rmse': 1.15301, 'loss_node': 6.716029135894775, 'loss_edge': 2.082797974395752, 'loss_graph': 12.061318622016907, 'loss_task': 0.5514138751029968, 'loss_encoder': 0.0}
+train: {'epoch': 34, 'time_epoch': 19.36487, 'eta': 3167.76138, 'eta_hours': 0.87993, 'loss': 21.44290166, 'lr': 6.8e-05, 'params': 1823862, 'time_iter': 0.48412, 'mae': 0.5446, 'r2': 0.6841, 'spearmanr': 0.93632, 'mse': 1.27731, 'rmse': 1.13018, 'loss_node': 6.697807674407959, 'loss_edge': 2.086370487213135, 'loss_graph': 11.569515732955933, 'loss_task': 0.5446036673545838, 'loss_encoder': 0.0}
+train: {'epoch': 35, 'time_epoch': 19.03993, 'eta': 3147.84021, 'eta_hours': 0.8744, 'loss': 20.58260741, 'lr': 7e-05, 'params': 1823862, 'time_iter': 0.476, 'mae': 0.50921, 'r2': 0.70552, 'spearmanr': 0.947, 'mse': 1.19072, 'rmse': 1.0912, 'loss_node': 6.676015013122559, 'loss_edge': 2.0788377614974975, 'loss_graph': 10.809328625869751, 'loss_task': 0.5092127964019776, 'loss_encoder': 0.0}
+train: {'epoch': 36, 'time_epoch': 19.08364, 'eta': 3128.15922, 'eta_hours': 0.86893, 'loss': 20.08034889, 'lr': 7.2e-05, 'params': 1823862, 'time_iter': 0.47709, 'mae': 0.5165, 'r2': 0.72354, 'spearmanr': 0.94044, 'mse': 1.11784, 'rmse': 1.05728, 'loss_node': 6.65425668182373, 'loss_edge': 2.073875594329834, 'loss_graph': 10.319211293029785, 'loss_task': 0.5165025882720947, 'loss_encoder': 0.0}
+train: {'epoch': 37, 'time_epoch': 19.73399, 'eta': 3111.28224, 'eta_hours': 0.86425, 'loss': 19.61313313, 'lr': 7.4e-05, 'params': 1823862, 'time_iter': 0.49335, 'mae': 0.51546, 'r2': 0.72052, 'spearmanr': 0.94197, 'mse': 1.13006, 'rmse': 1.06304, 'loss_node': 6.640481991577149, 'loss_edge': 2.0765595302581787, 'loss_graph': 9.86516534461975, 'loss_task': 0.5154633015632629, 'loss_encoder': 0.0}
+train: {'epoch': 38, 'time_epoch': 19.06898, 'eta': 3091.51342, 'eta_hours': 0.85875, 'loss': 18.95048241, 'lr': 7.6e-05, 'params': 1823862, 'time_iter': 0.47672, 'mae': 0.48162, 'r2': 0.7327, 'spearmanr': 0.94786, 'mse': 1.08082, 'rmse': 1.03962, 'loss_node': 6.615112705993653, 'loss_edge': 2.072243081665039, 'loss_graph': 9.299895404052734, 'loss_task': 0.48161570587158203, 'loss_encoder': 0.0}
+train: {'epoch': 39, 'time_epoch': 19.03878, 'eta': 3071.65882, 'eta_hours': 0.85324, 'loss': 18.42811919, 'lr': 7.8e-05, 'params': 1823862, 'time_iter': 0.47597, 'mae': 0.47509, 'r2': 0.75017, 'spearmanr': 0.94821, 'mse': 1.01017, 'rmse': 1.00507, 'loss_node': 6.596139373779297, 'loss_edge': 2.0646878576278684, 'loss_graph': 8.817116181945801, 'loss_task': 0.47508804988861086, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 39, 'time_epoch': 28.82904, 'loss': 0.5784266, 'lr': 0, 'params': 1823862, 'time_iter': 7.20726, 'mae': 0.57843, 'r2': 0.67529, 'spearmanr': 0.92453, 'mse': 1.27896, 'rmse': 1.13091}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 39, 'time_epoch': 28.90013, 'loss': 0.59035558, 'lr': 0, 'params': 1823862, 'time_iter': 7.22503, 'mae': 0.59036, 'r2': 0.79465, 'spearmanr': 0.93424, 'mse': 0.83543, 'rmse': 0.91402}
+> Epoch 39: took 76.8s (avg 26.4s) | Best so far: epoch 39	train_loss: 18.4281 train_mae: 0.4751	val_loss: 0.5784 val_mae: 0.5784	test_loss: 0.5904 test_mae: 0.5904
+train: {'epoch': 40, 'time_epoch': 19.0896, 'eta': 3052.04108, 'eta_hours': 0.84779, 'loss': 18.31162886, 'lr': 8e-05, 'params': 1823862, 'time_iter': 0.47724, 'mae': 0.47324, 'r2': 0.75473, 'spearmanr': 0.94808, 'mse': 0.99171, 'rmse': 0.99585, 'loss_node': 6.57093709564209, 'loss_edge': 2.0682889024734497, 'loss_graph': 8.72591949825287, 'loss_task': 0.4732414589881897, 'loss_encoder': 0.0}
+train: {'epoch': 41, 'time_epoch': 19.05826, 'eta': 3032.33061, 'eta_hours': 0.84231, 'loss': 18.01697924, 'lr': 8.2e-05, 'params': 1823862, 'time_iter': 0.47646, 'mae': 0.47717, 'r2': 0.75778, 'spearmanr': 0.94444, 'mse': 0.97937, 'rmse': 0.98963, 'loss_node': 6.5528037605285645, 'loss_edge': 2.061626505279541, 'loss_graph': 8.44819934501648, 'loss_task': 0.477174737739563, 'loss_encoder': 0.0}
+train: {'epoch': 42, 'time_epoch': 19.0539, 'eta': 3012.63454, 'eta_hours': 0.83684, 'loss': 17.67017895, 'lr': 8.4e-05, 'params': 1823862, 'time_iter': 0.47635, 'mae': 0.4789, 'r2': 0.76473, 'spearmanr': 0.94155, 'mse': 0.95127, 'rmse': 0.97533, 'loss_node': 6.5527357009887695, 'loss_edge': 2.066455715179443, 'loss_graph': 8.093193354797362, 'loss_task': 0.4788971859931946, 'loss_encoder': 0.0}
+train: {'epoch': 43, 'time_epoch': 19.04999, 'eta': 2992.95381, 'eta_hours': 0.83138, 'loss': 17.35612261, 'lr': 8.6e-05, 'params': 1823862, 'time_iter': 0.47625, 'mae': 0.47013, 'r2': 0.77185, 'spearmanr': 0.94588, 'mse': 0.92248, 'rmse': 0.96046, 'loss_node': 6.537095967102051, 'loss_edge': 2.0709827922821047, 'loss_graph': 7.807781593704224, 'loss_task': 0.4701311695098877, 'loss_encoder': 0.0}
+train: {'epoch': 44, 'time_epoch': 19.10735, 'eta': 2973.49868, 'eta_hours': 0.82597, 'loss': 17.04045335, 'lr': 8.8e-05, 'params': 1823862, 'time_iter': 0.47768, 'mae': 0.4578, 'r2': 0.77959, 'spearmanr': 0.94879, 'mse': 0.89119, 'rmse': 0.94403, 'loss_node': 6.508871417236328, 'loss_edge': 2.063268278503418, 'loss_graph': 7.5527199935913085, 'loss_task': 0.457796656703949, 'loss_encoder': 0.0}
+train: {'epoch': 45, 'time_epoch': 19.10459, 'eta': 2954.04943, 'eta_hours': 0.82057, 'loss': 16.8634933, 'lr': 9e-05, 'params': 1823862, 'time_iter': 0.47761, 'mae': 0.44372, 'r2': 0.78628, 'spearmanr': 0.95381, 'mse': 0.86414, 'rmse': 0.92959, 'loss_node': 6.507398219299317, 'loss_edge': 2.057839616394043, 'loss_graph': 7.410815351104737, 'loss_task': 0.44372022747993467, 'loss_encoder': 0.0}
+train: {'epoch': 46, 'time_epoch': 19.09988, 'eta': 2934.59951, 'eta_hours': 0.81517, 'loss': 16.64024865, 'lr': 9.2e-05, 'params': 1823862, 'time_iter': 0.4775, 'mae': 0.45223, 'r2': 0.78642, 'spearmanr': 0.94935, 'mse': 0.86358, 'rmse': 0.92929, 'loss_node': 6.4877735687255855, 'loss_edge': 2.053075604438782, 'loss_graph': 7.194946273803711, 'loss_task': 0.4522264219284058, 'loss_encoder': 0.0}
+train: {'epoch': 47, 'time_epoch': 19.10553, 'eta': 2915.18206, 'eta_hours': 0.80977, 'loss': 16.35748081, 'lr': 9.4e-05, 'params': 1823862, 'time_iter': 0.47764, 'mae': 0.43827, 'r2': 0.79468, 'spearmanr': 0.95209, 'mse': 0.83017, 'rmse': 0.91114, 'loss_node': 6.480110153198242, 'loss_edge': 2.0577379217147826, 'loss_graph': 6.943098421669006, 'loss_task': 0.4382670248031616, 'loss_encoder': 0.0}
+train: {'epoch': 48, 'time_epoch': 19.06286, 'eta': 2895.64586, 'eta_hours': 0.80435, 'loss': 16.10283338, 'lr': 9.6e-05, 'params': 1823862, 'time_iter': 0.47657, 'mae': 0.44282, 'r2': 0.79392, 'spearmanr': 0.95212, 'mse': 0.83325, 'rmse': 0.91282, 'loss_node': 6.457503178405762, 'loss_edge': 2.052064142608643, 'loss_graph': 6.707616206741333, 'loss_task': 0.4428248215675354, 'loss_encoder': 0.0}
+train: {'epoch': 49, 'time_epoch': 19.11151, 'eta': 2876.27454, 'eta_hours': 0.79897, 'loss': 16.05006263, 'lr': 9.8e-05, 'params': 1823862, 'time_iter': 0.47779, 'mae': 0.44638, 'r2': 0.7916, 'spearmanr': 0.94953, 'mse': 0.84266, 'rmse': 0.91796, 'loss_node': 6.452424440765381, 'loss_edge': 2.0469103635787964, 'loss_graph': 6.657958093643188, 'loss_task': 0.4463848020553589, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 49, 'time_epoch': 28.78954, 'loss': 0.471163, 'lr': 0, 'params': 1823862, 'time_iter': 7.19738, 'mae': 0.47116, 'r2': 0.76734, 'spearmanr': 0.94488, 'mse': 0.9164, 'rmse': 0.95729}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 49, 'time_epoch': 28.87377, 'loss': 0.45932187, 'lr': 0, 'params': 1823862, 'time_iter': 7.21844, 'mae': 0.45932, 'r2': 0.90347, 'spearmanr': 0.95057, 'mse': 0.39273, 'rmse': 0.62668}
+> Epoch 49: took 76.8s (avg 26.1s) | Best so far: epoch 49	train_loss: 16.0501 train_mae: 0.4464	val_loss: 0.4712 val_mae: 0.4712	test_loss: 0.4593 test_mae: 0.4593
+train: {'epoch': 50, 'time_epoch': 19.02913, 'eta': 2856.67274, 'eta_hours': 0.79352, 'loss': 15.88043586, 'lr': 0.0001, 'params': 1823862, 'time_iter': 0.47573, 'mae': 0.43639, 'r2': 0.80092, 'spearmanr': 0.95328, 'mse': 0.80495, 'rmse': 0.89719, 'loss_node': 6.4303293106079105, 'loss_edge': 2.047281149291992, 'loss_graph': 6.530046086120605, 'loss_task': 0.43638968477249146, 'loss_encoder': 0.0}
+train: {'epoch': 51, 'time_epoch': 19.03493, 'eta': 2837.10945, 'eta_hours': 0.78809, 'loss': 15.74547105, 'lr': 9.999e-05, 'params': 1823862, 'time_iter': 0.47587, 'mae': 0.43853, 'r2': 0.80476, 'spearmanr': 0.95302, 'mse': 0.78943, 'rmse': 0.8885, 'loss_node': 6.3959356239318845, 'loss_edge': 2.0461524673461913, 'loss_graph': 6.42632063369751, 'loss_task': 0.43853140144348146, 'loss_encoder': 0.0}
+train: {'epoch': 52, 'time_epoch': 19.08265, 'eta': 2817.69848, 'eta_hours': 0.78269, 'loss': 15.60843682, 'lr': 9.996e-05, 'params': 1823862, 'time_iter': 0.47707, 'mae': 0.42899, 'r2': 0.81363, 'spearmanr': 0.95, 'mse': 0.75357, 'rmse': 0.86808, 'loss_node': 6.392543839263916, 'loss_edge': 2.0455199970245364, 'loss_graph': 6.312391200447083, 'loss_task': 0.4289911103248596, 'loss_encoder': 0.0}
+train: {'epoch': 53, 'time_epoch': 19.04204, 'eta': 2798.18985, 'eta_hours': 0.77727, 'loss': 15.5389022, 'lr': 9.99e-05, 'params': 1823862, 'time_iter': 0.47605, 'mae': 0.42306, 'r2': 0.81216, 'spearmanr': 0.9563, 'mse': 0.7595, 'rmse': 0.87149, 'loss_node': 6.37295535736084, 'loss_edge': 2.0451263526916503, 'loss_graph': 6.2747043640136715, 'loss_task': 0.4230580707550049, 'loss_encoder': 0.0}
+train: {'epoch': 54, 'time_epoch': 19.06073, 'eta': 2778.74748, 'eta_hours': 0.77187, 'loss': 15.35801902, 'lr': 9.982e-05, 'params': 1823862, 'time_iter': 0.47652, 'mae': 0.42448, 'r2': 0.82018, 'spearmanr': 0.95504, 'mse': 0.72707, 'rmse': 0.85268, 'loss_node': 6.3456145195007325, 'loss_edge': 2.0381494529724122, 'loss_graph': 6.1252914142608645, 'loss_task': 0.4244818221092224, 'loss_encoder': 0.0}
+train: {'epoch': 55, 'time_epoch': 19.03422, 'eta': 2759.25055, 'eta_hours': 0.76646, 'loss': 15.15423527, 'lr': 9.973e-05, 'params': 1823862, 'time_iter': 0.47586, 'mae': 0.42696, 'r2': 0.81646, 'spearmanr': 0.95362, 'mse': 0.74211, 'rmse': 0.86146, 'loss_node': 6.32710463256836, 'loss_edge': 2.040090134048462, 'loss_graph': 5.933129979324341, 'loss_task': 0.42695526514053345, 'loss_encoder': 0.0}
+train: {'epoch': 56, 'time_epoch': 19.05947, 'eta': 2739.83322, 'eta_hours': 0.76106, 'loss': 14.94805203, 'lr': 9.961e-05, 'params': 1823862, 'time_iter': 0.47649, 'mae': 0.41243, 'r2': 0.81846, 'spearmanr': 0.95413, 'mse': 0.73404, 'rmse': 0.85676, 'loss_node': 6.291732698059082, 'loss_edge': 2.033788373184204, 'loss_graph': 5.797670364379883, 'loss_task': 0.41243034982681276, 'loss_encoder': 0.0}
+train: {'epoch': 57, 'time_epoch': 19.02704, 'eta': 2720.34883, 'eta_hours': 0.75565, 'loss': 14.79307133, 'lr': 9.946e-05, 'params': 1823862, 'time_iter': 0.47568, 'mae': 0.41267, 'r2': 0.83158, 'spearmanr': 0.95294, 'mse': 0.68099, 'rmse': 0.82522, 'loss_node': 6.253755342102051, 'loss_edge': 2.0307356847763063, 'loss_graph': 5.683233427619934, 'loss_task': 0.41267345905303954, 'loss_encoder': 0.0}
+train: {'epoch': 58, 'time_epoch': 19.08875, 'eta': 2701.02741, 'eta_hours': 0.75029, 'loss': 14.55682636, 'lr': 9.93e-05, 'params': 1823862, 'time_iter': 0.47722, 'mae': 0.41447, 'r2': 0.83713, 'spearmanr': 0.95159, 'mse': 0.65856, 'rmse': 0.81152, 'loss_node': 6.22167331161499, 'loss_edge': 2.02636073551178, 'loss_graph': 5.4798438980102535, 'loss_task': 0.4144740507125855, 'loss_encoder': 0.0}
+train: {'epoch': 59, 'time_epoch': 19.06024, 'eta': 2681.64724, 'eta_hours': 0.7449, 'loss': 14.35484197, 'lr': 9.911e-05, 'params': 1823862, 'time_iter': 0.47651, 'mae': 0.39484, 'r2': 0.84469, 'spearmanr': 0.95913, 'mse': 0.62798, 'rmse': 0.79245, 'loss_node': 6.1870951843261714, 'loss_edge': 2.0322293655395507, 'loss_graph': 5.345828326034546, 'loss_task': 0.39484456448554994, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 59, 'time_epoch': 28.7634, 'loss': 0.41930918, 'lr': 0, 'params': 1823862, 'time_iter': 7.19085, 'mae': 0.41931, 'r2': 0.80967, 'spearmanr': 0.95755, 'mse': 0.74966, 'rmse': 0.86583}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 59, 'time_epoch': 28.84229, 'loss': 0.38237892, 'lr': 0, 'params': 1823862, 'time_iter': 7.21057, 'mae': 0.38238, 'r2': 0.94019, 'spearmanr': 0.96405, 'mse': 0.24332, 'rmse': 0.49328}
+> Epoch 59: took 76.7s (avg 25.9s) | Best so far: epoch 59	train_loss: 14.3548 train_mae: 0.3948	val_loss: 0.4193 val_mae: 0.4193	test_loss: 0.3824 test_mae: 0.3824
+train: {'epoch': 60, 'time_epoch': 19.24821, 'eta': 2662.70586, 'eta_hours': 0.73964, 'loss': 14.41729172, 'lr': 9.891e-05, 'params': 1823862, 'time_iter': 0.48121, 'mae': 0.41036, 'r2': 0.83683, 'spearmanr': 0.95629, 'mse': 0.65975, 'rmse': 0.81225, 'loss_node': 6.15524217376709, 'loss_edge': 2.0267032470703126, 'loss_graph': 5.414632542037964, 'loss_task': 0.41035678687095645, 'loss_encoder': 0.0}
+train: {'epoch': 61, 'time_epoch': 19.0693, 'eta': 2643.35638, 'eta_hours': 0.73427, 'loss': 14.11350096, 'lr': 9.868e-05, 'params': 1823862, 'time_iter': 0.47673, 'mae': 0.399, 'r2': 0.84797, 'spearmanr': 0.95806, 'mse': 0.61471, 'rmse': 0.78404, 'loss_node': 6.126221798706054, 'loss_edge': 2.023525994968414, 'loss_graph': 5.165750082397461, 'loss_task': 0.39900149688720704, 'loss_encoder': 0.0}
+train: {'epoch': 62, 'time_epoch': 19.03712, 'eta': 2623.9458, 'eta_hours': 0.72887, 'loss': 14.00621566, 'lr': 9.843e-05, 'params': 1823862, 'time_iter': 0.47593, 'mae': 0.40594, 'r2': 0.83896, 'spearmanr': 0.95726, 'mse': 0.65115, 'rmse': 0.80694, 'loss_node': 6.093940911865235, 'loss_edge': 2.0181238973617552, 'loss_graph': 5.082275166320801, 'loss_task': 0.40593800735473634, 'loss_encoder': 0.0}
+train: {'epoch': 63, 'time_epoch': 19.51509, 'eta': 2605.5626, 'eta_hours': 0.72377, 'loss': 13.94062515, 'lr': 9.816e-05, 'params': 1823862, 'time_iter': 0.48788, 'mae': 0.40064, 'r2': 0.8456, 'spearmanr': 0.95647, 'mse': 0.6243, 'rmse': 0.79013, 'loss_node': 6.060570945739746, 'loss_edge': 2.021085929965973, 'loss_graph': 5.057693150520325, 'loss_task': 0.40063758554458617, 'loss_encoder': 0.0}
+train: {'epoch': 64, 'time_epoch': 19.70935, 'eta': 2587.54802, 'eta_hours': 0.71876, 'loss': 14.17017735, 'lr': 9.787e-05, 'params': 1823862, 'time_iter': 0.49273, 'mae': 0.42262, 'r2': 0.83306, 'spearmanr': 0.95139, 'mse': 0.67501, 'rmse': 0.82159, 'loss_node': 6.020879815673828, 'loss_edge': 2.0165015604019163, 'loss_graph': 5.287563833618164, 'loss_task': 0.4226162096977234, 'loss_encoder': 0.0}
+train: {'epoch': 65, 'time_epoch': 19.73605, 'eta': 2569.53629, 'eta_hours': 0.71376, 'loss': 13.66937416, 'lr': 9.755e-05, 'params': 1823862, 'time_iter': 0.4934, 'mae': 0.40206, 'r2': 0.83074, 'spearmanr': 0.95611, 'mse': 0.68438, 'rmse': 0.82727, 'loss_node': 5.99282693862915, 'loss_edge': 2.00918269367218, 'loss_graph': 4.86323844909668, 'loss_task': 0.4020630850315094, 'loss_encoder': 0.0}
+train: {'epoch': 66, 'time_epoch': 19.26025, 'eta': 2550.5286, 'eta_hours': 0.70848, 'loss': 13.50744382, 'lr': 9.722e-05, 'params': 1823862, 'time_iter': 0.48151, 'mae': 0.41569, 'r2': 0.83549, 'spearmanr': 0.95111, 'mse': 0.66518, 'rmse': 0.81558, 'loss_node': 5.964009456634521, 'loss_edge': 2.008982119178772, 'loss_graph': 4.703066507720948, 'loss_task': 0.4156928144454956, 'loss_encoder': 0.0}
+train: {'epoch': 67, 'time_epoch': 18.9416, 'eta': 2530.89493, 'eta_hours': 0.70303, 'loss': 13.33476047, 'lr': 9.686e-05, 'params': 1823862, 'time_iter': 0.47354, 'mae': 0.39847, 'r2': 0.82649, 'spearmanr': 0.95905, 'mse': 0.70157, 'rmse': 0.8376, 'loss_node': 5.913506951141358, 'loss_edge': 2.005956411933899, 'loss_graph': 4.618366968345642, 'loss_task': 0.39846506729125974, 'loss_encoder': 0.0}
+train: {'epoch': 68, 'time_epoch': 18.90615, 'eta': 2511.21401, 'eta_hours': 0.69756, 'loss': 13.21810783, 'lr': 9.649e-05, 'params': 1823862, 'time_iter': 0.47265, 'mae': 0.3915, 'r2': 0.82695, 'spearmanr': 0.9596, 'mse': 0.69972, 'rmse': 0.83649, 'loss_node': 5.876557942199707, 'loss_edge': 1.992730124092102, 'loss_graph': 4.565815583610535, 'loss_task': 0.3915021553993225, 'loss_encoder': 0.0}
+train: {'epoch': 69, 'time_epoch': 18.8827, 'eta': 2491.51167, 'eta_hours': 0.69209, 'loss': 13.46301248, 'lr': 9.609e-05, 'params': 1823862, 'time_iter': 0.47207, 'mae': 0.42427, 'r2': 0.83316, 'spearmanr': 0.95187, 'mse': 0.67458, 'rmse': 0.82133, 'loss_node': 5.840905226135254, 'loss_edge': 1.997788786315918, 'loss_graph': 4.77578251953125, 'loss_task': 0.4242679508686066, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 69, 'time_epoch': 28.66757, 'loss': 0.43239361, 'lr': 0, 'params': 1823862, 'time_iter': 7.16689, 'mae': 0.43239, 'r2': 0.83342, 'spearmanr': 0.95776, 'mse': 0.6561, 'rmse': 0.81}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 69, 'time_epoch': 28.74031, 'loss': 0.40949135, 'lr': 0, 'params': 1823862, 'time_iter': 7.18508, 'mae': 0.40949, 'r2': 0.93468, 'spearmanr': 0.96435, 'mse': 0.26573, 'rmse': 0.51549}
+> Epoch 69: took 76.3s (avg 25.8s) | Best so far: epoch 59	train_loss: 14.3548 train_mae: 0.3948	val_loss: 0.4193 val_mae: 0.4193	test_loss: 0.3824 test_mae: 0.3824
+train: {'epoch': 70, 'time_epoch': 18.85938, 'eta': 2471.79005, 'eta_hours': 0.68661, 'loss': 13.69325119, 'lr': 9.568e-05, 'params': 1823862, 'time_iter': 0.47148, 'mae': 0.51843, 'r2': 0.81313, 'spearmanr': 0.92871, 'mse': 0.7556, 'rmse': 0.86925, 'loss_node': 5.825552780914307, 'loss_edge': 2.001568618392944, 'loss_graph': 4.829266926956176, 'loss_task': 0.5184312928199768, 'loss_encoder': 0.0}
+train: {'epoch': 71, 'time_epoch': 18.85989, 'eta': 2452.09329, 'eta_hours': 0.68114, 'loss': 12.88230938, 'lr': 9.524e-05, 'params': 1823862, 'time_iter': 0.4715, 'mae': 0.38956, 'r2': 0.85443, 'spearmanr': 0.95816, 'mse': 0.58858, 'rmse': 0.76719, 'loss_node': 5.798418965148926, 'loss_edge': 1.9988611906051637, 'loss_graph': 4.305908789443969, 'loss_task': 0.38956008048057555, 'loss_encoder': 0.0}
+train: {'epoch': 72, 'time_epoch': 19.17394, 'eta': 2432.96582, 'eta_hours': 0.67582, 'loss': 12.74686949, 'lr': 9.479e-05, 'params': 1823862, 'time_iter': 0.47935, 'mae': 0.39908, 'r2': 0.8451, 'spearmanr': 0.95959, 'mse': 0.62631, 'rmse': 0.7914, 'loss_node': 5.738461980438233, 'loss_edge': 2.000767730140686, 'loss_graph': 4.209473539352417, 'loss_task': 0.3990832297325134, 'loss_encoder': 0.0}
+train: {'epoch': 73, 'time_epoch': 18.86616, 'eta': 2413.31304, 'eta_hours': 0.67036, 'loss': 12.73666898, 'lr': 9.431e-05, 'params': 1823862, 'time_iter': 0.47165, 'mae': 0.40373, 'r2': 0.83399, 'spearmanr': 0.9545, 'mse': 0.67126, 'rmse': 0.8193, 'loss_node': 5.6938341529846195, 'loss_edge': 1.9877586484909058, 'loss_graph': 4.247621153831482, 'loss_task': 0.40372752985954286, 'loss_encoder': 0.0}
+train: {'epoch': 74, 'time_epoch': 18.85797, 'eta': 2393.66758, 'eta_hours': 0.66491, 'loss': 12.55990069, 'lr': 9.382e-05, 'params': 1823862, 'time_iter': 0.47145, 'mae': 0.39108, 'r2': 0.83111, 'spearmanr': 0.95719, 'mse': 0.68289, 'rmse': 0.82637, 'loss_node': 5.672621781158448, 'loss_edge': 1.9896756135940552, 'loss_graph': 4.115435354232788, 'loss_task': 0.39108389329910276, 'loss_encoder': 0.0}
+train: {'epoch': 75, 'time_epoch': 18.84322, 'eta': 2374.01878, 'eta_hours': 0.65945, 'loss': 12.55562399, 'lr': 9.33e-05, 'params': 1823862, 'time_iter': 0.47108, 'mae': 0.39647, 'r2': 0.84196, 'spearmanr': 0.95651, 'mse': 0.63903, 'rmse': 0.79939, 'loss_node': 5.634847786712647, 'loss_edge': 1.9845657136917114, 'loss_graph': 4.143268001174927, 'loss_task': 0.396471167755127, 'loss_encoder': 0.0}
+train: {'epoch': 76, 'time_epoch': 18.88375, 'eta': 2354.45565, 'eta_hours': 0.65402, 'loss': 12.2013401, 'lr': 9.277e-05, 'params': 1823862, 'time_iter': 0.47209, 'mae': 0.37714, 'r2': 0.84639, 'spearmanr': 0.95879, 'mse': 0.62109, 'rmse': 0.7881, 'loss_node': 5.592501668548584, 'loss_edge': 1.9839318586349488, 'loss_graph': 3.87061914730072, 'loss_task': 0.37714370164871214, 'loss_encoder': 0.0}
+train: {'epoch': 77, 'time_epoch': 18.87785, 'eta': 2334.90071, 'eta_hours': 0.64858, 'loss': 12.62852088, 'lr': 9.222e-05, 'params': 1823862, 'time_iter': 0.47195, 'mae': 0.39717, 'r2': 0.87843, 'spearmanr': 0.95584, 'mse': 0.49155, 'rmse': 0.70111, 'loss_node': 5.552466161346436, 'loss_edge': 1.9788336277008056, 'loss_graph': 4.302880000114441, 'loss_task': 0.3971704517364502, 'loss_encoder': 0.0}
+train: {'epoch': 78, 'time_epoch': 18.87854, 'eta': 2315.36397, 'eta_hours': 0.64316, 'loss': 12.3008864, 'lr': 9.165e-05, 'params': 1823862, 'time_iter': 0.47196, 'mae': 0.40425, 'r2': 0.86711, 'spearmanr': 0.95536, 'mse': 0.53734, 'rmse': 0.73303, 'loss_node': 5.52653903579712, 'loss_edge': 1.9818083559036255, 'loss_graph': 3.984041547012329, 'loss_task': 0.40424860286712644, 'loss_encoder': 0.0}
+train: {'epoch': 79, 'time_epoch': 19.01714, 'eta': 2296.05158, 'eta_hours': 0.63779, 'loss': 12.0827727, 'lr': 9.106e-05, 'params': 1823862, 'time_iter': 0.47543, 'mae': 0.37975, 'r2': 0.84143, 'spearmanr': 0.95854, 'mse': 0.64115, 'rmse': 0.80072, 'loss_node': 5.495821961212158, 'loss_edge': 1.9739035022735596, 'loss_graph': 3.8535476615905764, 'loss_task': 0.37974984664916994, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 79, 'time_epoch': 28.69974, 'loss': 0.43516337, 'lr': 0, 'params': 1823862, 'time_iter': 7.17494, 'mae': 0.43516, 'r2': 0.85762, 'spearmanr': 0.95645, 'mse': 0.56081, 'rmse': 0.74887}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 79, 'time_epoch': 28.78492, 'loss': 0.41507578, 'lr': 0, 'params': 1823862, 'time_iter': 7.19623, 'mae': 0.41508, 'r2': 0.93416, 'spearmanr': 0.96142, 'mse': 0.26785, 'rmse': 0.51754}
+> Epoch 79: took 76.5s (avg 25.6s) | Best so far: epoch 59	train_loss: 14.3548 train_mae: 0.3948	val_loss: 0.4193 val_mae: 0.4193	test_loss: 0.3824 test_mae: 0.3824
+train: {'epoch': 80, 'time_epoch': 18.86736, 'eta': 2276.52643, 'eta_hours': 0.63237, 'loss': 12.01592474, 'lr': 9.045e-05, 'params': 1823862, 'time_iter': 0.47168, 'mae': 0.4031, 'r2': 0.85406, 'spearmanr': 0.95201, 'mse': 0.59011, 'rmse': 0.76819, 'loss_node': 5.46231806564331, 'loss_edge': 1.97036454372406, 'loss_graph': 3.77704026889801, 'loss_task': 0.40310090894699097, 'loss_encoder': 0.0}
+train: {'epoch': 81, 'time_epoch': 18.88104, 'eta': 2257.03702, 'eta_hours': 0.62695, 'loss': 11.81532838, 'lr': 8.983e-05, 'params': 1823862, 'time_iter': 0.47203, 'mae': 0.37615, 'r2': 0.86472, 'spearmanr': 0.95996, 'mse': 0.54697, 'rmse': 0.73957, 'loss_node': 5.432838766479493, 'loss_edge': 1.9710313541412354, 'loss_graph': 3.6591638301849367, 'loss_task': 0.3761471420764923, 'loss_encoder': 0.0}
+train: {'epoch': 82, 'time_epoch': 18.85437, 'eta': 2237.52467, 'eta_hours': 0.62153, 'loss': 11.79298653, 'lr': 8.918e-05, 'params': 1823862, 'time_iter': 0.47136, 'mae': 0.38425, 'r2': 0.87346, 'spearmanr': 0.95817, 'mse': 0.51164, 'rmse': 0.71529, 'loss_node': 5.400699914550781, 'loss_edge': 1.9637340978622437, 'loss_graph': 3.6600605241775512, 'loss_task': 0.3842459716796875, 'loss_encoder': 0.0}
+train: {'epoch': 83, 'time_epoch': 18.84442, 'eta': 2218.01424, 'eta_hours': 0.61612, 'loss': 11.85866728, 'lr': 8.853e-05, 'params': 1823862, 'time_iter': 0.47111, 'mae': 0.41862, 'r2': 0.85641, 'spearmanr': 0.95258, 'mse': 0.5806, 'rmse': 0.76197, 'loss_node': 5.3733179496765135, 'loss_edge': 1.9640003086090088, 'loss_graph': 3.6841053455352784, 'loss_task': 0.41862173833847044, 'loss_encoder': 0.0}
+train: {'epoch': 84, 'time_epoch': 18.84696, 'eta': 2198.52292, 'eta_hours': 0.6107, 'loss': 11.93395893, 'lr': 8.785e-05, 'params': 1823862, 'time_iter': 0.47117, 'mae': 0.42197, 'r2': 0.85329, 'spearmanr': 0.95361, 'mse': 0.5932, 'rmse': 0.7702, 'loss_node': 5.3417287429809575, 'loss_edge': 1.9610045345306397, 'loss_graph': 3.7872928192138673, 'loss_task': 0.4219663679122925, 'loss_encoder': 0.0}
+train: {'epoch': 85, 'time_epoch': 19.00363, 'eta': 2179.25427, 'eta_hours': 0.60535, 'loss': 11.52310948, 'lr': 8.716e-05, 'params': 1823862, 'time_iter': 0.47509, 'mae': 0.39297, 'r2': 0.86309, 'spearmanr': 0.9563, 'mse': 0.55358, 'rmse': 0.74403, 'loss_node': 5.32206100616455, 'loss_edge': 1.9627094861984253, 'loss_graph': 3.4524058408737184, 'loss_task': 0.39296658635139464, 'loss_encoder': 0.0}
+train: {'epoch': 86, 'time_epoch': 18.83825, 'eta': 2159.7769, 'eta_hours': 0.59994, 'loss': 11.46640993, 'lr': 8.645e-05, 'params': 1823862, 'time_iter': 0.47096, 'mae': 0.37503, 'r2': 0.87254, 'spearmanr': 0.9589, 'mse': 0.51536, 'rmse': 0.71789, 'loss_node': 5.298173851776123, 'loss_edge': 1.95231225566864, 'loss_graph': 3.4658574468612673, 'loss_task': 0.3750330847263336, 'loss_encoder': 0.0}
+train: {'epoch': 87, 'time_epoch': 18.84633, 'eta': 2140.32434, 'eta_hours': 0.59453, 'loss': 11.61836648, 'lr': 8.572e-05, 'params': 1823862, 'time_iter': 0.47116, 'mae': 0.38901, 'r2': 0.866, 'spearmanr': 0.95785, 'mse': 0.5418, 'rmse': 0.73607, 'loss_node': 5.2547485046386715, 'loss_edge': 1.9484061742782592, 'loss_graph': 3.637199433326721, 'loss_task': 0.38900618920326235, 'loss_encoder': 0.0}
+train: {'epoch': 88, 'time_epoch': 18.82432, 'eta': 2120.85795, 'eta_hours': 0.58913, 'loss': 11.3076655, 'lr': 8.498e-05, 'params': 1823862, 'time_iter': 0.47061, 'mae': 0.38367, 'r2': 0.86988, 'spearmanr': 0.95781, 'mse': 0.52612, 'rmse': 0.72534, 'loss_node': 5.232370303344727, 'loss_edge': 1.949921336364746, 'loss_graph': 3.3580318893432617, 'loss_task': 0.38367112255096436, 'loss_encoder': 0.0}
+train: {'epoch': 89, 'time_epoch': 18.85202, 'eta': 2101.4397, 'eta_hours': 0.58373, 'loss': 11.20365484, 'lr': 8.423e-05, 'params': 1823862, 'time_iter': 0.4713, 'mae': 0.38966, 'r2': 0.86865, 'spearmanr': 0.95647, 'mse': 0.53111, 'rmse': 0.72877, 'loss_node': 5.203483673095703, 'loss_edge': 1.9450468988418579, 'loss_graph': 3.275800017738342, 'loss_task': 0.3896620300292969, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 89, 'time_epoch': 28.66893, 'loss': 0.44256966, 'lr': 0, 'params': 1823862, 'time_iter': 7.16723, 'mae': 0.44257, 'r2': 0.87886, 'spearmanr': 0.95026, 'mse': 0.47715, 'rmse': 0.69076}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 89, 'time_epoch': 28.72972, 'loss': 0.40238544, 'lr': 0, 'params': 1823862, 'time_iter': 7.18243, 'mae': 0.40239, 'r2': 0.93546, 'spearmanr': 0.96337, 'mse': 0.26258, 'rmse': 0.51242}
+> Epoch 89: took 76.3s (avg 25.5s) | Best so far: epoch 59	train_loss: 14.3548 train_mae: 0.3948	val_loss: 0.4193 val_mae: 0.4193	test_loss: 0.3824 test_mae: 0.3824
+train: {'epoch': 90, 'time_epoch': 18.83457, 'eta': 2082.01298, 'eta_hours': 0.57834, 'loss': 11.05938177, 'lr': 8.346e-05, 'params': 1823862, 'time_iter': 0.47086, 'mae': 0.37751, 'r2': 0.87609, 'spearmanr': 0.95825, 'mse': 0.50101, 'rmse': 0.70782, 'loss_node': 5.1753349826812745, 'loss_edge': 1.9365287599563599, 'loss_graph': 3.192493872833252, 'loss_task': 0.3775120855331421, 'loss_encoder': 0.0}
+train: {'epoch': 91, 'time_epoch': 19.01514, 'eta': 2062.81111, 'eta_hours': 0.573, 'loss': 11.0882559, 'lr': 8.267e-05, 'params': 1823862, 'time_iter': 0.47538, 'mae': 0.38143, 'r2': 0.87423, 'spearmanr': 0.95744, 'mse': 0.50853, 'rmse': 0.71312, 'loss_node': 5.1542819190979, 'loss_edge': 1.9308776754379273, 'loss_graph': 3.2402352321624757, 'loss_task': 0.3814306467294693, 'loss_encoder': 0.0}
+train: {'epoch': 92, 'time_epoch': 18.83409, 'eta': 2043.40495, 'eta_hours': 0.56761, 'loss': 11.0701564, 'lr': 8.187e-05, 'params': 1823862, 'time_iter': 0.47085, 'mae': 0.37874, 'r2': 0.87041, 'spearmanr': 0.9574, 'mse': 0.52397, 'rmse': 0.72386, 'loss_node': 5.126256719970703, 'loss_edge': 1.9377890396118165, 'loss_graph': 3.248624053955078, 'loss_task': 0.3787434178352356, 'loss_encoder': 0.0}
+train: {'epoch': 93, 'time_epoch': 18.86237, 'eta': 2024.04286, 'eta_hours': 0.56223, 'loss': 10.9618614, 'lr': 8.106e-05, 'params': 1823862, 'time_iter': 0.47156, 'mae': 0.37645, 'r2': 0.87921, 'spearmanr': 0.958, 'mse': 0.4884, 'rmse': 0.69885, 'loss_node': 5.1007439849853515, 'loss_edge': 1.928284557723999, 'loss_graph': 3.17993648853302, 'loss_task': 0.3764482172012329, 'loss_encoder': 0.0}
+train: {'epoch': 94, 'time_epoch': 18.85711, 'eta': 2004.68546, 'eta_hours': 0.55686, 'loss': 10.8473075, 'lr': 8.023e-05, 'params': 1823862, 'time_iter': 0.47143, 'mae': 0.38664, 'r2': 0.87302, 'spearmanr': 0.95435, 'mse': 0.51345, 'rmse': 0.71655, 'loss_node': 5.084608269882202, 'loss_edge': 1.916542970752716, 'loss_graph': 3.0728666791915895, 'loss_task': 0.3866447306632996, 'loss_encoder': 0.0}
+train: {'epoch': 95, 'time_epoch': 18.84628, 'eta': 1985.32677, 'eta_hours': 0.55148, 'loss': 10.85576949, 'lr': 7.939e-05, 'params': 1823862, 'time_iter': 0.47116, 'mae': 0.38049, 'r2': 0.88248, 'spearmanr': 0.95771, 'mse': 0.47517, 'rmse': 0.68933, 'loss_node': 5.045951801300049, 'loss_edge': 1.9227777851104737, 'loss_graph': 3.1260534843444825, 'loss_task': 0.38049324979782106, 'loss_encoder': 0.0}
+train: {'epoch': 96, 'time_epoch': 18.85908, 'eta': 1965.99223, 'eta_hours': 0.54611, 'loss': 10.83090483, 'lr': 7.854e-05, 'params': 1823862, 'time_iter': 0.47148, 'mae': 0.38455, 'r2': 0.86317, 'spearmanr': 0.9579, 'mse': 0.55324, 'rmse': 0.7438, 'loss_node': 5.030656655883789, 'loss_edge': 1.9117394847869873, 'loss_graph': 3.1194158445358275, 'loss_task': 0.38454632806777955, 'loss_encoder': 0.0}
+train: {'epoch': 97, 'time_epoch': 18.83152, 'eta': 1946.6387, 'eta_hours': 0.54073, 'loss': 10.68343969, 'lr': 7.767e-05, 'params': 1823862, 'time_iter': 0.47079, 'mae': 0.36989, 'r2': 0.88542, 'spearmanr': 0.95941, 'mse': 0.46328, 'rmse': 0.68065, 'loss_node': 4.999356241226196, 'loss_edge': 1.9167642679214478, 'loss_graph': 3.0275427862167357, 'loss_task': 0.36988830194473266, 'loss_encoder': 0.0}
+train: {'epoch': 98, 'time_epoch': 19.07867, 'eta': 1927.54786, 'eta_hours': 0.53543, 'loss': 10.64159769, 'lr': 7.679e-05, 'params': 1823862, 'time_iter': 0.47697, 'mae': 0.38328, 'r2': 0.88092, 'spearmanr': 0.95604, 'mse': 0.48147, 'rmse': 0.69388, 'loss_node': 4.988720559692383, 'loss_edge': 1.9137483602523804, 'loss_graph': 2.9725780296325683, 'loss_task': 0.3832754630088806, 'loss_encoder': 0.0}
+train: {'epoch': 99, 'time_epoch': 18.83899, 'eta': 1908.21759, 'eta_hours': 0.53006, 'loss': 10.65771716, 'lr': 7.59e-05, 'params': 1823862, 'time_iter': 0.47097, 'mae': 0.37076, 'r2': 0.88555, 'spearmanr': 0.95887, 'mse': 0.46275, 'rmse': 0.68026, 'loss_node': 4.958350412750244, 'loss_edge': 1.9127426467895507, 'loss_graph': 3.0451031423568726, 'loss_task': 0.3707605526924133, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 99, 'time_epoch': 28.67809, 'loss': 0.44230065, 'lr': 0, 'params': 1823862, 'time_iter': 7.16952, 'mae': 0.4423, 'r2': 0.90288, 'spearmanr': 0.95812, 'mse': 0.38252, 'rmse': 0.61849}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 99, 'time_epoch': 28.74332, 'loss': 0.40289178, 'lr': 0, 'params': 1823862, 'time_iter': 7.18583, 'mae': 0.40289, 'r2': 0.9358, 'spearmanr': 0.9621, 'mse': 0.26117, 'rmse': 0.51105}
+> Epoch 99: took 76.3s (avg 25.4s) | Best so far: epoch 59	train_loss: 14.3548 train_mae: 0.3948	val_loss: 0.4193 val_mae: 0.4193	test_loss: 0.3824 test_mae: 0.3824
+train: {'epoch': 100, 'time_epoch': 18.86553, 'eta': 1888.92306, 'eta_hours': 0.5247, 'loss': 10.54604108, 'lr': 7.5e-05, 'params': 1823862, 'time_iter': 0.47164, 'mae': 0.37362, 'r2': 0.87078, 'spearmanr': 0.95738, 'mse': 0.52249, 'rmse': 0.72284, 'loss_node': 4.935260391235351, 'loss_edge': 1.9057165876388549, 'loss_graph': 2.957828643417358, 'loss_task': 0.3736176398277283, 'loss_encoder': 0.0}
+train: {'epoch': 101, 'time_epoch': 18.82116, 'eta': 1869.5943, 'eta_hours': 0.51933, 'loss': 10.38911097, 'lr': 7.409e-05, 'params': 1823862, 'time_iter': 0.47053, 'mae': 0.38582, 'r2': 0.88498, 'spearmanr': 0.95769, 'mse': 0.46507, 'rmse': 0.68196, 'loss_node': 4.897359103775025, 'loss_edge': 1.905023553276062, 'loss_graph': 2.815091424846649, 'loss_task': 0.38581852893829344, 'loss_encoder': 0.0}
+train: {'epoch': 102, 'time_epoch': 18.85286, 'eta': 1850.30526, 'eta_hours': 0.51397, 'loss': 10.32784355, 'lr': 7.316e-05, 'params': 1823862, 'time_iter': 0.47132, 'mae': 0.37428, 'r2': 0.8814, 'spearmanr': 0.95841, 'mse': 0.47955, 'rmse': 0.69249, 'loss_node': 4.8637225440979, 'loss_edge': 1.902811127471924, 'loss_graph': 2.8127411571502687, 'loss_task': 0.3742843914985657, 'loss_encoder': 0.0}
+train: {'epoch': 103, 'time_epoch': 18.84129, 'eta': 1831.01393, 'eta_hours': 0.50861, 'loss': 10.32114149, 'lr': 7.223e-05, 'params': 1823862, 'time_iter': 0.47103, 'mae': 0.38386, 'r2': 0.88586, 'spearmanr': 0.9568, 'mse': 0.4615, 'rmse': 0.67934, 'loss_node': 4.834283009338379, 'loss_edge': 1.8978393518447876, 'loss_graph': 2.8213012363433836, 'loss_task': 0.38385893039703367, 'loss_encoder': 0.0}
+train: {'epoch': 104, 'time_epoch': 18.84364, 'eta': 1811.7333, 'eta_hours': 0.50326, 'loss': 10.19179141, 'lr': 7.129e-05, 'params': 1823862, 'time_iter': 0.47109, 'mae': 0.37509, 'r2': 0.88648, 'spearmanr': 0.95846, 'mse': 0.45899, 'rmse': 0.67749, 'loss_node': 4.803778996276855, 'loss_edge': 1.89077718334198, 'loss_graph': 2.7470652809143066, 'loss_task': 0.37508503794670106, 'loss_encoder': 0.0}
+train: {'epoch': 105, 'time_epoch': 18.82816, 'eta': 1792.44719, 'eta_hours': 0.4979, 'loss': 10.22749353, 'lr': 7.034e-05, 'params': 1823862, 'time_iter': 0.4707, 'mae': 0.38046, 'r2': 0.88836, 'spearmanr': 0.95782, 'mse': 0.45139, 'rmse': 0.67185, 'loss_node': 4.797565238189697, 'loss_edge': 1.8896857387542725, 'loss_graph': 2.779316028213501, 'loss_task': 0.38046325235366824, 'loss_encoder': 0.0}
+train: {'epoch': 106, 'time_epoch': 18.84628, 'eta': 1773.18538, 'eta_hours': 0.49255, 'loss': 10.0374146, 'lr': 6.938e-05, 'params': 1823862, 'time_iter': 0.47116, 'mae': 0.36791, 'r2': 0.89542, 'spearmanr': 0.95906, 'mse': 0.42287, 'rmse': 0.65028, 'loss_node': 4.76280182723999, 'loss_edge': 1.8853386405944825, 'loss_graph': 2.653459330558777, 'loss_task': 0.36790738611221313, 'loss_encoder': 0.0}
+train: {'epoch': 107, 'time_epoch': 18.84045, 'eta': 1753.9263, 'eta_hours': 0.4872, 'loss': 10.14891741, 'lr': 6.841e-05, 'params': 1823862, 'time_iter': 0.47101, 'mae': 0.3811, 'r2': 0.88322, 'spearmanr': 0.95514, 'mse': 0.47219, 'rmse': 0.68716, 'loss_node': 4.731562872314453, 'loss_edge': 1.8885541330337525, 'loss_graph': 2.766595466041565, 'loss_task': 0.3811025030136108, 'loss_encoder': 0.0}
+train: {'epoch': 108, 'time_epoch': 19.05321, 'eta': 1734.85253, 'eta_hours': 0.4819, 'loss': 10.01168678, 'lr': 6.743e-05, 'params': 1823862, 'time_iter': 0.47633, 'mae': 0.37597, 'r2': 0.90143, 'spearmanr': 0.95805, 'mse': 0.39855, 'rmse': 0.63131, 'loss_node': 4.703474407196045, 'loss_edge': 1.8815483741760255, 'loss_graph': 2.674723704528809, 'loss_task': 0.37597017974853514, 'loss_encoder': 0.0}
+train: {'epoch': 109, 'time_epoch': 18.84463, 'eta': 1715.60848, 'eta_hours': 0.47656, 'loss': 9.89671516, 'lr': 6.644e-05, 'params': 1823862, 'time_iter': 0.47112, 'mae': 0.37026, 'r2': 0.89039, 'spearmanr': 0.95925, 'mse': 0.44321, 'rmse': 0.66574, 'loss_node': 4.676602091598511, 'loss_edge': 1.877743157863617, 'loss_graph': 2.60185822763443, 'loss_task': 0.37025579891204835, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 109, 'time_epoch': 28.67027, 'loss': 0.41387537, 'lr': 0, 'params': 1823862, 'time_iter': 7.16757, 'mae': 0.41388, 'r2': 0.91283, 'spearmanr': 0.95324, 'mse': 0.34334, 'rmse': 0.58595}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 109, 'time_epoch': 28.74457, 'loss': 0.40834996, 'lr': 0, 'params': 1823862, 'time_iter': 7.18614, 'mae': 0.40835, 'r2': 0.93288, 'spearmanr': 0.95807, 'mse': 0.27307, 'rmse': 0.52256}
+> Epoch 109: took 76.3s (avg 25.3s) | Best so far: epoch 109	train_loss: 9.8967 train_mae: 0.3703	val_loss: 0.4139 val_mae: 0.4139	test_loss: 0.4083 test_mae: 0.4083
+train: {'epoch': 110, 'time_epoch': 18.85716, 'eta': 1696.38167, 'eta_hours': 0.47122, 'loss': 9.92325109, 'lr': 6.545e-05, 'params': 1823862, 'time_iter': 0.47143, 'mae': 0.3842, 'r2': 0.89555, 'spearmanr': 0.95398, 'mse': 0.42233, 'rmse': 0.64987, 'loss_node': 4.657603958129883, 'loss_edge': 1.8791014589309691, 'loss_graph': 2.6181414943695067, 'loss_task': 0.38420213775634765, 'loss_encoder': 0.0}
+train: {'epoch': 111, 'time_epoch': 18.86017, 'eta': 1677.16382, 'eta_hours': 0.46588, 'loss': 9.76764724, 'lr': 6.445e-05, 'params': 1823862, 'time_iter': 0.4715, 'mae': 0.37157, 'r2': 0.89359, 'spearmanr': 0.95771, 'mse': 0.43026, 'rmse': 0.65594, 'loss_node': 4.631305065917969, 'loss_edge': 1.877881305885315, 'loss_graph': 2.515323433303833, 'loss_task': 0.37156863379478455, 'loss_encoder': 0.0}
+train: {'epoch': 112, 'time_epoch': 18.85689, 'eta': 1657.94978, 'eta_hours': 0.46054, 'loss': 9.69984152, 'lr': 6.345e-05, 'params': 1823862, 'time_iter': 0.47142, 'mae': 0.37389, 'r2': 0.89704, 'spearmanr': 0.95709, 'mse': 0.4163, 'rmse': 0.64521, 'loss_node': 4.591985927581787, 'loss_edge': 1.8742438010215758, 'loss_graph': 2.485833268928528, 'loss_task': 0.37388923363685606, 'loss_encoder': 0.0}
+train: {'epoch': 113, 'time_epoch': 18.81848, 'eta': 1638.71303, 'eta_hours': 0.4552, 'loss': 9.68695653, 'lr': 6.243e-05, 'params': 1823862, 'time_iter': 0.47046, 'mae': 0.37275, 'r2': 0.89882, 'spearmanr': 0.95861, 'mse': 0.4091, 'rmse': 0.63961, 'loss_node': 4.570849223327636, 'loss_edge': 1.8666329357147218, 'loss_graph': 2.503965468978882, 'loss_task': 0.3727544878959656, 'loss_encoder': 0.0}
+train: {'epoch': 114, 'time_epoch': 19.00063, 'eta': 1619.61819, 'eta_hours': 0.44989, 'loss': 9.71996064, 'lr': 6.142e-05, 'params': 1823862, 'time_iter': 0.47502, 'mae': 0.37324, 'r2': 0.89782, 'spearmanr': 0.95645, 'mse': 0.41315, 'rmse': 0.64276, 'loss_node': 4.544226528930664, 'loss_edge': 1.866261095046997, 'loss_graph': 2.562984872627258, 'loss_task': 0.3732440920352936, 'loss_encoder': 0.0}
+train: {'epoch': 115, 'time_epoch': 18.86397, 'eta': 1600.42601, 'eta_hours': 0.44456, 'loss': 9.54372407, 'lr': 6.04e-05, 'params': 1823862, 'time_iter': 0.4716, 'mae': 0.37212, 'r2': 0.90293, 'spearmanr': 0.95703, 'mse': 0.39249, 'rmse': 0.62649, 'loss_node': 4.516806211853027, 'loss_edge': 1.8604291580200196, 'loss_graph': 2.422240359020233, 'loss_task': 0.37212417068481446, 'loss_encoder': 0.0}
+train: {'epoch': 116, 'time_epoch': 18.85989, 'eta': 1581.23654, 'eta_hours': 0.43923, 'loss': 9.58652494, 'lr': 5.937e-05, 'params': 1823862, 'time_iter': 0.4715, 'mae': 0.3728, 'r2': 0.89882, 'spearmanr': 0.95667, 'mse': 0.40912, 'rmse': 0.63963, 'loss_node': 4.490429191589356, 'loss_edge': 1.867292100906372, 'loss_graph': 2.483210266494751, 'loss_task': 0.3727967193603516, 'loss_encoder': 0.0}
+train: {'epoch': 117, 'time_epoch': 18.85578, 'eta': 1562.04981, 'eta_hours': 0.4339, 'loss': 9.4145158, 'lr': 5.834e-05, 'params': 1823862, 'time_iter': 0.47139, 'mae': 0.36649, 'r2': 0.90065, 'spearmanr': 0.96059, 'mse': 0.40172, 'rmse': 0.63381, 'loss_node': 4.469668270874023, 'loss_edge': 1.8599449781417847, 'loss_graph': 2.3519318267822267, 'loss_task': 0.3664853397369385, 'loss_encoder': 0.0}
+train: {'epoch': 118, 'time_epoch': 18.83044, 'eta': 1542.85139, 'eta_hours': 0.42857, 'loss': 9.39413882, 'lr': 5.73e-05, 'params': 1823862, 'time_iter': 0.47076, 'mae': 0.37096, 'r2': 0.90099, 'spearmanr': 0.95993, 'mse': 0.40033, 'rmse': 0.63272, 'loss_node': 4.4383738891601565, 'loss_edge': 1.8544792163848878, 'loss_graph': 2.359372229576111, 'loss_task': 0.3709566994190216, 'loss_encoder': 0.0}
+train: {'epoch': 119, 'time_epoch': 18.83257, 'eta': 1523.66053, 'eta_hours': 0.42324, 'loss': 9.34651914, 'lr': 5.627e-05, 'params': 1823862, 'time_iter': 0.47081, 'mae': 0.37095, 'r2': 0.90823, 'spearmanr': 0.95966, 'mse': 0.37105, 'rmse': 0.60914, 'loss_node': 4.410981383514405, 'loss_edge': 1.8546336439132691, 'loss_graph': 2.339013550376892, 'loss_task': 0.37094522075653075, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 119, 'time_epoch': 28.6658, 'loss': 0.43394459, 'lr': 0, 'params': 1823862, 'time_iter': 7.16645, 'mae': 0.43394, 'r2': 0.9145, 'spearmanr': 0.94445, 'mse': 0.33675, 'rmse': 0.5803}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 119, 'time_epoch': 28.74463, 'loss': 0.41727869, 'lr': 0, 'params': 1823862, 'time_iter': 7.18616, 'mae': 0.41728, 'r2': 0.93398, 'spearmanr': 0.95658, 'mse': 0.26858, 'rmse': 0.51825}
+> Epoch 119: took 76.3s (avg 25.3s) | Best so far: epoch 109	train_loss: 9.8967 train_mae: 0.3703	val_loss: 0.4139 val_mae: 0.4139	test_loss: 0.4083 test_mae: 0.4083
+train: {'epoch': 120, 'time_epoch': 18.82687, 'eta': 1504.47186, 'eta_hours': 0.41791, 'loss': 9.294423, 'lr': 5.523e-05, 'params': 1823862, 'time_iter': 0.47067, 'mae': 0.37259, 'r2': 0.90563, 'spearmanr': 0.96011, 'mse': 0.38159, 'rmse': 0.61773, 'loss_node': 4.382851321411133, 'loss_edge': 1.8485446069717408, 'loss_graph': 2.317855188369751, 'loss_task': 0.3725859607219696, 'loss_encoder': 0.0}
+train: {'epoch': 121, 'time_epoch': 19.00063, 'eta': 1485.40022, 'eta_hours': 0.41261, 'loss': 9.30332729, 'lr': 5.418e-05, 'params': 1823862, 'time_iter': 0.47502, 'mae': 0.38167, 'r2': 0.9038, 'spearmanr': 0.95616, 'mse': 0.38896, 'rmse': 0.62367, 'loss_node': 4.363748937988281, 'loss_edge': 1.84452631855011, 'loss_graph': 2.331711385726929, 'loss_task': 0.3816703400611877, 'loss_encoder': 0.0}
+train: {'epoch': 122, 'time_epoch': 18.80517, 'eta': 1466.20737, 'eta_hours': 0.40728, 'loss': 9.18462797, 'lr': 5.314e-05, 'params': 1823862, 'time_iter': 0.47013, 'mae': 0.37275, 'r2': 0.90827, 'spearmanr': 0.95651, 'mse': 0.37091, 'rmse': 0.60902, 'loss_node': 4.332946604156494, 'loss_edge': 1.8468088001251222, 'loss_graph': 2.25936815700531, 'loss_task': 0.3727522773742676, 'loss_encoder': 0.0}
+train: {'epoch': 123, 'time_epoch': 18.8012, 'eta': 1447.01835, 'eta_hours': 0.40195, 'loss': 9.14764779, 'lr': 5.209e-05, 'params': 1823862, 'time_iter': 0.47003, 'mae': 0.36502, 'r2': 0.911, 'spearmanr': 0.95872, 'mse': 0.35985, 'rmse': 0.59987, 'loss_node': 4.311996495056152, 'loss_edge': 1.8487104656219482, 'loss_graph': 2.256892408370972, 'loss_task': 0.365024147605896, 'loss_encoder': 0.0}
+train: {'epoch': 124, 'time_epoch': 18.78351, 'eta': 1427.82491, 'eta_hours': 0.39662, 'loss': 9.08259367, 'lr': 5.105e-05, 'params': 1823862, 'time_iter': 0.46959, 'mae': 0.37042, 'r2': 0.90711, 'spearmanr': 0.95795, 'mse': 0.37558, 'rmse': 0.61284, 'loss_node': 4.277557478332519, 'loss_edge': 1.8393660900115967, 'loss_graph': 2.2248275503158568, 'loss_task': 0.37042123379707337, 'loss_encoder': 0.0}
+train: {'epoch': 125, 'time_epoch': 18.79329, 'eta': 1408.64372, 'eta_hours': 0.39129, 'loss': 9.04284809, 'lr': 5e-05, 'params': 1823862, 'time_iter': 0.46983, 'mae': 0.36965, 'r2': 0.91195, 'spearmanr': 0.96015, 'mse': 0.356, 'rmse': 0.59666, 'loss_node': 4.253358870697022, 'loss_edge': 1.835425104522705, 'loss_graph': 2.214757876777649, 'loss_task': 0.3696531353473663, 'loss_encoder': 0.0}
+train: {'epoch': 126, 'time_epoch': 18.79781, 'eta': 1389.47124, 'eta_hours': 0.38596, 'loss': 9.00058859, 'lr': 4.895e-05, 'params': 1823862, 'time_iter': 0.46995, 'mae': 0.37031, 'r2': 0.91249, 'spearmanr': 0.95853, 'mse': 0.35384, 'rmse': 0.59484, 'loss_node': 4.231554612350464, 'loss_edge': 1.829266986465454, 'loss_graph': 2.1991449357986452, 'loss_task': 0.37031099948883056, 'loss_encoder': 0.0}
+train: {'epoch': 127, 'time_epoch': 19.09945, 'eta': 1370.47429, 'eta_hours': 0.38069, 'loss': 8.97375568, 'lr': 4.791e-05, 'params': 1823862, 'time_iter': 0.47749, 'mae': 0.37638, 'r2': 0.90576, 'spearmanr': 0.95869, 'mse': 0.38105, 'rmse': 0.61729, 'loss_node': 4.207715237426758, 'loss_edge': 1.826804190826416, 'loss_graph': 2.1864758323669435, 'loss_task': 0.37638021392822263, 'loss_encoder': 0.0}
+train: {'epoch': 128, 'time_epoch': 18.81239, 'eta': 1351.31775, 'eta_hours': 0.37537, 'loss': 8.90269623, 'lr': 4.686e-05, 'params': 1823862, 'time_iter': 0.47031, 'mae': 0.37367, 'r2': 0.91806, 'spearmanr': 0.95912, 'mse': 0.33131, 'rmse': 0.5756, 'loss_node': 4.186776049041748, 'loss_edge': 1.8284715606689452, 'loss_graph': 2.1401024879455566, 'loss_task': 0.37367300963401795, 'loss_encoder': 0.0}
+train: {'epoch': 129, 'time_epoch': 19.15292, 'eta': 1332.34987, 'eta_hours': 0.3701, 'loss': 8.831045, 'lr': 4.582e-05, 'params': 1823862, 'time_iter': 0.47882, 'mae': 0.36604, 'r2': 0.91502, 'spearmanr': 0.9611, 'mse': 0.3436, 'rmse': 0.58618, 'loss_node': 4.151922397613525, 'loss_edge': 1.8253380912780761, 'loss_graph': 2.121695821762085, 'loss_task': 0.36604426908493043, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 129, 'time_epoch': 28.64898, 'loss': 0.41638802, 'lr': 0, 'params': 1823862, 'time_iter': 7.16225, 'mae': 0.41639, 'r2': 0.91987, 'spearmanr': 0.95074, 'mse': 0.31563, 'rmse': 0.56181}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 129, 'time_epoch': 28.76434, 'loss': 0.42693049, 'lr': 0, 'params': 1823862, 'time_iter': 7.19109, 'mae': 0.42693, 'r2': 0.92914, 'spearmanr': 0.9565, 'mse': 0.28826, 'rmse': 0.5369}
+> Epoch 129: took 76.6s (avg 25.2s) | Best so far: epoch 109	train_loss: 9.8967 train_mae: 0.3703	val_loss: 0.4139 val_mae: 0.4139	test_loss: 0.4083 test_mae: 0.4083
+train: {'epoch': 130, 'time_epoch': 19.05263, 'eta': 1313.32634, 'eta_hours': 0.36481, 'loss': 8.80143059, 'lr': 4.477e-05, 'params': 1823862, 'time_iter': 0.47632, 'mae': 0.36939, 'r2': 0.91173, 'spearmanr': 0.96018, 'mse': 0.35692, 'rmse': 0.59743, 'loss_node': 4.133431226348877, 'loss_edge': 1.8270877960205079, 'loss_graph': 2.102126252746582, 'loss_task': 0.36939269933700564, 'loss_encoder': 0.0}
+train: {'epoch': 131, 'time_epoch': 18.95979, 'eta': 1294.25454, 'eta_hours': 0.35952, 'loss': 8.81817157, 'lr': 4.373e-05, 'params': 1823862, 'time_iter': 0.47399, 'mae': 0.36483, 'r2': 0.91704, 'spearmanr': 0.96114, 'mse': 0.33543, 'rmse': 0.57917, 'loss_node': 4.108484914016723, 'loss_edge': 1.813895478439331, 'loss_graph': 2.1661262559890746, 'loss_task': 0.3648324171066284, 'loss_encoder': 0.0}
+train: {'epoch': 132, 'time_epoch': 18.75621, 'eta': 1275.08187, 'eta_hours': 0.35419, 'loss': 8.69978504, 'lr': 4.27e-05, 'params': 1823862, 'time_iter': 0.46891, 'mae': 0.36741, 'r2': 0.91383, 'spearmanr': 0.96118, 'mse': 0.34843, 'rmse': 0.59028, 'loss_node': 4.094311093521118, 'loss_edge': 1.8137235178947448, 'loss_graph': 2.0569349110603334, 'loss_task': 0.36740781917572024, 'loss_encoder': 0.0}
+train: {'epoch': 133, 'time_epoch': 18.77486, 'eta': 1255.9246, 'eta_hours': 0.34887, 'loss': 8.69184749, 'lr': 4.166e-05, 'params': 1823862, 'time_iter': 0.46937, 'mae': 0.37621, 'r2': 0.91462, 'spearmanr': 0.95825, 'mse': 0.34521, 'rmse': 0.58754, 'loss_node': 4.060069944381714, 'loss_edge': 1.809771936225891, 'loss_graph': 2.069584411621094, 'loss_task': 0.37621060256958005, 'loss_encoder': 0.0}
+train: {'epoch': 134, 'time_epoch': 18.76405, 'eta': 1236.7678, 'eta_hours': 0.34355, 'loss': 8.60870191, 'lr': 4.063e-05, 'params': 1823862, 'time_iter': 0.4691, 'mae': 0.3684, 'r2': 0.91743, 'spearmanr': 0.95942, 'mse': 0.33385, 'rmse': 0.5778, 'loss_node': 4.034172930145264, 'loss_edge': 1.8135871196746827, 'loss_graph': 2.024135834121704, 'loss_task': 0.36840297384262083, 'loss_encoder': 0.0}
+train: {'epoch': 135, 'time_epoch': 18.77421, 'eta': 1217.62155, 'eta_hours': 0.33823, 'loss': 8.56485306, 'lr': 3.96e-05, 'params': 1823862, 'time_iter': 0.46936, 'mae': 0.36165, 'r2': 0.92062, 'spearmanr': 0.96108, 'mse': 0.32098, 'rmse': 0.56655, 'loss_node': 4.008165371322632, 'loss_edge': 1.8074164818763734, 'loss_graph': 2.0259730961799622, 'loss_task': 0.3616490800857544, 'loss_encoder': 0.0}
+train: {'epoch': 136, 'time_epoch': 18.76714, 'eta': 1198.47747, 'eta_hours': 0.33291, 'loss': 8.53323274, 'lr': 3.858e-05, 'params': 1823862, 'time_iter': 0.46918, 'mae': 0.36676, 'r2': 0.91869, 'spearmanr': 0.96044, 'mse': 0.32876, 'rmse': 0.57337, 'loss_node': 3.9750015243530274, 'loss_edge': 1.8057864530563354, 'loss_graph': 2.0189312705993654, 'loss_task': 0.36675669174194336, 'loss_encoder': 0.0}
+train: {'epoch': 137, 'time_epoch': 18.77537, 'eta': 1179.34256, 'eta_hours': 0.3276, 'loss': 8.50832686, 'lr': 3.757e-05, 'params': 1823862, 'time_iter': 0.46938, 'mae': 0.36316, 'r2': 0.92012, 'spearmanr': 0.96082, 'mse': 0.32297, 'rmse': 0.5683, 'loss_node': 3.9552886795043944, 'loss_edge': 1.8067830318450928, 'loss_graph': 2.0199383792877197, 'loss_task': 0.3631583736419678, 'loss_encoder': 0.0}
+train: {'epoch': 138, 'time_epoch': 18.77561, 'eta': 1160.21294, 'eta_hours': 0.32228, 'loss': 8.42754309, 'lr': 3.655e-05, 'params': 1823862, 'time_iter': 0.46939, 'mae': 0.36118, 'r2': 0.92212, 'spearmanr': 0.96188, 'mse': 0.31492, 'rmse': 0.56118, 'loss_node': 3.9285695037841797, 'loss_edge': 1.799282119178772, 'loss_graph': 1.9773339653015136, 'loss_task': 0.3611787195444107, 'loss_encoder': 0.0}
+train: {'epoch': 139, 'time_epoch': 18.76841, 'eta': 1141.08528, 'eta_hours': 0.31697, 'loss': 8.39755121, 'lr': 3.555e-05, 'params': 1823862, 'time_iter': 0.46921, 'mae': 0.36491, 'r2': 0.91999, 'spearmanr': 0.9614, 'mse': 0.32351, 'rmse': 0.56878, 'loss_node': 3.9099785652160644, 'loss_edge': 1.7981416110992432, 'loss_graph': 1.9596107864379884, 'loss_task': 0.36491011052131656, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 139, 'time_epoch': 28.59639, 'loss': 0.38745526, 'lr': 0, 'params': 1823862, 'time_iter': 7.1491, 'mae': 0.38746, 'r2': 0.93007, 'spearmanr': 0.95931, 'mse': 0.27542, 'rmse': 0.52481}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 139, 'time_epoch': 28.69384, 'loss': 0.38982476, 'lr': 0, 'params': 1823862, 'time_iter': 7.17346, 'mae': 0.38982, 'r2': 0.94076, 'spearmanr': 0.96281, 'mse': 0.241, 'rmse': 0.49092}
+> Epoch 139: took 76.1s (avg 25.2s) | Best so far: epoch 139	train_loss: 8.3976 train_mae: 0.3649	val_loss: 0.3875 val_mae: 0.3875	test_loss: 0.3898 test_mae: 0.3898
+train: {'epoch': 140, 'time_epoch': 18.76123, 'eta': 1121.95971, 'eta_hours': 0.31166, 'loss': 8.36466696, 'lr': 3.455e-05, 'params': 1823862, 'time_iter': 0.46903, 'mae': 0.36393, 'r2': 0.92126, 'spearmanr': 0.96236, 'mse': 0.31836, 'rmse': 0.56424, 'loss_node': 3.883016459655762, 'loss_edge': 1.7951826690673829, 'loss_graph': 1.9586160902023315, 'loss_task': 0.36392588596343994, 'loss_encoder': 0.0}
+train: {'epoch': 141, 'time_epoch': 19.02122, 'eta': 1102.94546, 'eta_hours': 0.30637, 'loss': 8.39033391, 'lr': 3.356e-05, 'params': 1823862, 'time_iter': 0.47553, 'mae': 0.36438, 'r2': 0.92125, 'spearmanr': 0.96254, 'mse': 0.31844, 'rmse': 0.5643, 'loss_node': 3.8648278213500977, 'loss_edge': 1.7963515502929688, 'loss_graph': 2.000398366546631, 'loss_task': 0.3643780743122101, 'loss_encoder': 0.0}
+train: {'epoch': 142, 'time_epoch': 19.02499, 'eta': 1083.93263, 'eta_hours': 0.30109, 'loss': 8.33247744, 'lr': 3.257e-05, 'params': 1823862, 'time_iter': 0.47562, 'mae': 0.36602, 'r2': 0.91972, 'spearmanr': 0.95884, 'mse': 0.32462, 'rmse': 0.56976, 'loss_node': 3.8460596817016603, 'loss_edge': 1.8043045309066772, 'loss_graph': 1.9500636631011963, 'loss_task': 0.3660247812271118, 'loss_encoder': 0.0}
+train: {'epoch': 143, 'time_epoch': 18.83467, 'eta': 1064.8456, 'eta_hours': 0.29579, 'loss': 8.29795855, 'lr': 3.159e-05, 'params': 1823862, 'time_iter': 0.47087, 'mae': 0.35785, 'r2': 0.9241, 'spearmanr': 0.96191, 'mse': 0.30689, 'rmse': 0.55398, 'loss_node': 3.81617758102417, 'loss_edge': 1.791773097038269, 'loss_graph': 1.9743014108657837, 'loss_task': 0.35785319333076476, 'loss_encoder': 0.0}
+train: {'epoch': 144, 'time_epoch': 18.7573, 'eta': 1045.73272, 'eta_hours': 0.29048, 'loss': 8.26657309, 'lr': 3.062e-05, 'params': 1823862, 'time_iter': 0.46893, 'mae': 0.36714, 'r2': 0.92042, 'spearmanr': 0.96023, 'mse': 0.32176, 'rmse': 0.56724, 'loss_node': 3.799014047241211, 'loss_edge': 1.7942933592796326, 'loss_graph': 1.9389885551452637, 'loss_task': 0.3671385561943054, 'loss_encoder': 0.0}
+train: {'epoch': 145, 'time_epoch': 18.75324, 'eta': 1026.6232, 'eta_hours': 0.28517, 'loss': 8.16547653, 'lr': 2.966e-05, 'params': 1823862, 'time_iter': 0.46883, 'mae': 0.35709, 'r2': 0.9247, 'spearmanr': 0.96087, 'mse': 0.30445, 'rmse': 0.55177, 'loss_node': 3.7718136878967283, 'loss_edge': 1.792945343208313, 'loss_graph': 1.8865435024261474, 'loss_task': 0.35708695573806765, 'loss_encoder': 0.0}
+train: {'epoch': 146, 'time_epoch': 18.74981, 'eta': 1007.5173, 'eta_hours': 0.27987, 'loss': 8.14244648, 'lr': 2.871e-05, 'params': 1823862, 'time_iter': 0.46875, 'mae': 0.35963, 'r2': 0.9231, 'spearmanr': 0.96141, 'mse': 0.31092, 'rmse': 0.5576, 'loss_node': 3.7504193729400637, 'loss_edge': 1.7890638681411744, 'loss_graph': 1.8836982940673828, 'loss_task': 0.3596325118303299, 'loss_encoder': 0.0}
+train: {'epoch': 147, 'time_epoch': 18.98002, 'eta': 988.49709, 'eta_hours': 0.27458, 'loss': 8.12389308, 'lr': 2.777e-05, 'params': 1823862, 'time_iter': 0.4745, 'mae': 0.36321, 'r2': 0.92328, 'spearmanr': 0.96164, 'mse': 0.31022, 'rmse': 0.55697, 'loss_node': 3.733716678619385, 'loss_edge': 1.786243839263916, 'loss_graph': 1.8775164707183838, 'loss_task': 0.36320805416107177, 'loss_encoder': 0.0}
+train: {'epoch': 148, 'time_epoch': 18.75067, 'eta': 969.39891, 'eta_hours': 0.26928, 'loss': 8.09197776, 'lr': 2.684e-05, 'params': 1823862, 'time_iter': 0.46877, 'mae': 0.36241, 'r2': 0.92499, 'spearmanr': 0.96117, 'mse': 0.30331, 'rmse': 0.55074, 'loss_node': 3.712092973327637, 'loss_edge': 1.7860667499542235, 'loss_graph': 1.8689893955230712, 'loss_task': 0.36241434907913206, 'loss_encoder': 0.0}
+train: {'epoch': 149, 'time_epoch': 18.75211, 'eta': 950.30585, 'eta_hours': 0.26397, 'loss': 8.10186532, 'lr': 2.591e-05, 'params': 1823862, 'time_iter': 0.4688, 'mae': 0.37165, 'r2': 0.92381, 'spearmanr': 0.96027, 'mse': 0.30807, 'rmse': 0.55504, 'loss_node': 3.690879891967773, 'loss_edge': 1.7797776950836182, 'loss_graph': 1.887915577507019, 'loss_task': 0.37164602880477904, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 149, 'time_epoch': 28.60335, 'loss': 0.39420918, 'lr': 0, 'params': 1823862, 'time_iter': 7.15084, 'mae': 0.39421, 'r2': 0.93042, 'spearmanr': 0.95603, 'mse': 0.27406, 'rmse': 0.5235}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 149, 'time_epoch': 28.67485, 'loss': 0.37851833, 'lr': 0, 'params': 1823862, 'time_iter': 7.16871, 'mae': 0.37852, 'r2': 0.94398, 'spearmanr': 0.96591, 'mse': 0.22789, 'rmse': 0.47738}
+> Epoch 149: took 76.0s (avg 25.1s) | Best so far: epoch 139	train_loss: 8.3976 train_mae: 0.3649	val_loss: 0.3875 val_mae: 0.3875	test_loss: 0.3898 test_mae: 0.3898
+train: {'epoch': 150, 'time_epoch': 18.73964, 'eta': 931.21326, 'eta_hours': 0.25867, 'loss': 8.01767377, 'lr': 2.5e-05, 'params': 1823862, 'time_iter': 0.46849, 'mae': 0.35717, 'r2': 0.92814, 'spearmanr': 0.96116, 'mse': 0.29057, 'rmse': 0.53905, 'loss_node': 3.6765925884246826, 'loss_edge': 1.783299854850769, 'loss_graph': 1.843442025756836, 'loss_task': 0.35716970472335813, 'loss_encoder': 0.0}
+train: {'epoch': 151, 'time_epoch': 18.73187, 'eta': 912.12286, 'eta_hours': 0.25337, 'loss': 7.97737183, 'lr': 2.41e-05, 'params': 1823862, 'time_iter': 0.4683, 'mae': 0.35785, 'r2': 0.9276, 'spearmanr': 0.96183, 'mse': 0.29273, 'rmse': 0.54105, 'loss_node': 3.6531497524261476, 'loss_edge': 1.7800172930717468, 'loss_graph': 1.8284967451095582, 'loss_task': 0.3578539978504181, 'loss_encoder': 0.0}
+train: {'epoch': 152, 'time_epoch': 18.77657, 'eta': 893.05088, 'eta_hours': 0.24807, 'loss': 7.98007516, 'lr': 2.321e-05, 'params': 1823862, 'time_iter': 0.46941, 'mae': 0.36052, 'r2': 0.92705, 'spearmanr': 0.96131, 'mse': 0.29496, 'rmse': 0.54311, 'loss_node': 3.6370434200286863, 'loss_edge': 1.7875181656837464, 'loss_graph': 1.8344660495758056, 'loss_task': 0.3605238111495972, 'loss_encoder': 0.0}
+train: {'epoch': 153, 'time_epoch': 18.7383, 'eta': 873.9713, 'eta_hours': 0.24277, 'loss': 7.9461515, 'lr': 2.233e-05, 'params': 1823862, 'time_iter': 0.46846, 'mae': 0.35707, 'r2': 0.92912, 'spearmanr': 0.96255, 'mse': 0.28658, 'rmse': 0.53534, 'loss_node': 3.6137978256225587, 'loss_edge': 1.7821245262145997, 'loss_graph': 1.8360909023284913, 'loss_task': 0.3570691409111023, 'loss_encoder': 0.0}
+train: {'epoch': 154, 'time_epoch': 18.96598, 'eta': 854.96223, 'eta_hours': 0.23749, 'loss': 7.86561145, 'lr': 2.146e-05, 'params': 1823862, 'time_iter': 0.47415, 'mae': 0.36272, 'r2': 0.92686, 'spearmanr': 0.96143, 'mse': 0.29573, 'rmse': 0.54381, 'loss_node': 3.5897788173675536, 'loss_edge': 1.7700452735900878, 'loss_graph': 1.7803470073699952, 'loss_task': 0.3627201283454895, 'loss_encoder': 0.0}
+train: {'epoch': 155, 'time_epoch': 18.77259, 'eta': 835.89917, 'eta_hours': 0.23219, 'loss': 7.89842736, 'lr': 2.061e-05, 'params': 1823862, 'time_iter': 0.46931, 'mae': 0.36352, 'r2': 0.92716, 'spearmanr': 0.9607, 'mse': 0.29454, 'rmse': 0.54271, 'loss_node': 3.5836559646606445, 'loss_edge': 1.7762553518295288, 'loss_graph': 1.8114730886459351, 'loss_task': 0.3635214928150177, 'loss_encoder': 0.0}
+train: {'epoch': 156, 'time_epoch': 18.75617, 'eta': 816.8353, 'eta_hours': 0.2269, 'loss': 7.87343781, 'lr': 1.977e-05, 'params': 1823862, 'time_iter': 0.4689, 'mae': 0.3641, 'r2': 0.92848, 'spearmanr': 0.96162, 'mse': 0.28918, 'rmse': 0.53776, 'loss_node': 3.5745842407226562, 'loss_edge': 1.7699616456985474, 'loss_graph': 1.800695566558838, 'loss_task': 0.3640982186794281, 'loss_encoder': 0.0}
+train: {'epoch': 157, 'time_epoch': 18.7486, 'eta': 797.77332, 'eta_hours': 0.2216, 'loss': 7.82922433, 'lr': 1.894e-05, 'params': 1823862, 'time_iter': 0.46871, 'mae': 0.36002, 'r2': 0.92791, 'spearmanr': 0.96207, 'mse': 0.2915, 'rmse': 0.5399, 'loss_node': 3.5483667781829835, 'loss_edge': 1.7733703575134276, 'loss_graph': 1.7874489130020141, 'loss_task': 0.3600191227912903, 'loss_encoder': 0.0}
+train: {'epoch': 158, 'time_epoch': 18.76478, 'eta': 778.71946, 'eta_hours': 0.21631, 'loss': 7.81611451, 'lr': 1.813e-05, 'params': 1823862, 'time_iter': 0.46912, 'mae': 0.36142, 'r2': 0.93017, 'spearmanr': 0.96241, 'mse': 0.28234, 'rmse': 0.53135, 'loss_node': 3.5427494258880614, 'loss_edge': 1.7738128692626953, 'loss_graph': 1.776717426300049, 'loss_task': 0.36141736278533937, 'loss_encoder': 0.0}
+train: {'epoch': 159, 'time_epoch': 18.71624, 'eta': 759.65707, 'eta_hours': 0.21102, 'loss': 7.79204759, 'lr': 1.733e-05, 'params': 1823862, 'time_iter': 0.46791, 'mae': 0.36183, 'r2': 0.9293, 'spearmanr': 0.9606, 'mse': 0.28589, 'rmse': 0.53469, 'loss_node': 3.5317690216064452, 'loss_edge': 1.7739255367279052, 'loss_graph': 1.7626832397460936, 'loss_task': 0.36183478775024414, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 159, 'time_epoch': 28.59066, 'loss': 0.35734598, 'lr': 0, 'params': 1823862, 'time_iter': 7.14766, 'mae': 0.35735, 'r2': 0.93962, 'spearmanr': 0.96325, 'mse': 0.23784, 'rmse': 0.48769}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 159, 'time_epoch': 28.68046, 'loss': 0.35665928, 'lr': 0, 'params': 1823862, 'time_iter': 7.17012, 'mae': 0.35666, 'r2': 0.94956, 'spearmanr': 0.96903, 'mse': 0.20521, 'rmse': 0.453}
+> Epoch 159: took 76.0s (avg 25.1s) | Best so far: epoch 159	train_loss: 7.7920 train_mae: 0.3618	val_loss: 0.3573 val_mae: 0.3574	test_loss: 0.3567 test_mae: 0.3567
+train: {'epoch': 160, 'time_epoch': 18.73289, 'eta': 740.60302, 'eta_hours': 0.20572, 'loss': 7.81946762, 'lr': 1.654e-05, 'params': 1823862, 'time_iter': 0.46832, 'mae': 0.36691, 'r2': 0.93034, 'spearmanr': 0.96118, 'mse': 0.28167, 'rmse': 0.53072, 'loss_node': 3.5086733734130857, 'loss_edge': 1.7667802669525146, 'loss_graph': 1.8101989068984985, 'loss_task': 0.3669075565814972, 'loss_encoder': 0.0}
+train: {'epoch': 161, 'time_epoch': 18.77022, 'eta': 721.56169, 'eta_hours': 0.20043, 'loss': 7.76225854, 'lr': 1.577e-05, 'params': 1823862, 'time_iter': 0.46926, 'mae': 0.36204, 'r2': 0.92777, 'spearmanr': 0.96194, 'mse': 0.29206, 'rmse': 0.54043, 'loss_node': 3.504523944091797, 'loss_edge': 1.7706548320770263, 'loss_graph': 1.7630096723556519, 'loss_task': 0.36203508343696594, 'loss_encoder': 0.0}
+train: {'epoch': 162, 'time_epoch': 18.74062, 'eta': 702.51696, 'eta_hours': 0.19514, 'loss': 7.73405648, 'lr': 1.502e-05, 'params': 1823862, 'time_iter': 0.46852, 'mae': 0.36034, 'r2': 0.93314, 'spearmanr': 0.96002, 'mse': 0.27035, 'rmse': 0.51996, 'loss_node': 3.4889244663238523, 'loss_edge': 1.7673984519958497, 'loss_graph': 1.757062802505493, 'loss_task': 0.3603354016304016, 'loss_encoder': 0.0}
+train: {'epoch': 163, 'time_epoch': 18.75099, 'eta': 683.47822, 'eta_hours': 0.18986, 'loss': 7.72240432, 'lr': 1.428e-05, 'params': 1823862, 'time_iter': 0.46877, 'mae': 0.35957, 'r2': 0.93132, 'spearmanr': 0.96131, 'mse': 0.27769, 'rmse': 0.52696, 'loss_node': 3.472174559020996, 'loss_edge': 1.7582490093231202, 'loss_graph': 1.7728384059906006, 'loss_task': 0.35957113304138183, 'loss_encoder': 0.0}
+train: {'epoch': 164, 'time_epoch': 18.74054, 'eta': 664.44075, 'eta_hours': 0.18457, 'loss': 7.68697982, 'lr': 1.355e-05, 'params': 1823862, 'time_iter': 0.46851, 'mae': 0.35618, 'r2': 0.93191, 'spearmanr': 0.96266, 'mse': 0.2753, 'rmse': 0.52469, 'loss_node': 3.4663370559692384, 'loss_edge': 1.7672727500915528, 'loss_graph': 1.7410105304718018, 'loss_task': 0.3561797619342804, 'loss_encoder': 0.0}
+train: {'epoch': 165, 'time_epoch': 18.74661, 'eta': 645.40811, 'eta_hours': 0.17928, 'loss': 7.66103855, 'lr': 1.284e-05, 'params': 1823862, 'time_iter': 0.46867, 'mae': 0.35437, 'r2': 0.93235, 'spearmanr': 0.96244, 'mse': 0.27353, 'rmse': 0.523, 'loss_node': 3.4510190937042236, 'loss_edge': 1.7634039768218994, 'loss_graph': 1.7378846736907958, 'loss_task': 0.3543654179573059, 'loss_encoder': 0.0}
+train: {'epoch': 166, 'time_epoch': 18.76176, 'eta': 626.38188, 'eta_hours': 0.17399, 'loss': 7.67770683, 'lr': 1.215e-05, 'params': 1823862, 'time_iter': 0.46904, 'mae': 0.3602, 'r2': 0.93175, 'spearmanr': 0.96268, 'mse': 0.27597, 'rmse': 0.52533, 'loss_node': 3.438685057449341, 'loss_edge': 1.7637834419250489, 'loss_graph': 1.7548296051025392, 'loss_task': 0.36020436854362486, 'loss_encoder': 0.0}
+train: {'epoch': 167, 'time_epoch': 18.72393, 'eta': 607.35159, 'eta_hours': 0.16871, 'loss': 7.63800182, 'lr': 1.147e-05, 'params': 1823862, 'time_iter': 0.4681, 'mae': 0.35735, 'r2': 0.93186, 'spearmanr': 0.96274, 'mse': 0.27553, 'rmse': 0.52491, 'loss_node': 3.4237829837799074, 'loss_edge': 1.7582766904830933, 'loss_graph': 1.741246426010132, 'loss_task': 0.35734789628982544, 'loss_encoder': 0.0}
+train: {'epoch': 168, 'time_epoch': 18.76353, 'eta': 588.33219, 'eta_hours': 0.16343, 'loss': 7.61838279, 'lr': 1.082e-05, 'params': 1823862, 'time_iter': 0.46909, 'mae': 0.35767, 'r2': 0.93413, 'spearmanr': 0.96235, 'mse': 0.26634, 'rmse': 0.51608, 'loss_node': 3.4151826374053953, 'loss_edge': 1.753612873649597, 'loss_graph': 1.7342485780715942, 'loss_task': 0.3576693639755249, 'loss_encoder': 0.0}
+train: {'epoch': 169, 'time_epoch': 18.72864, 'eta': 569.30965, 'eta_hours': 0.15814, 'loss': 7.58089818, 'lr': 1.017e-05, 'params': 1823862, 'time_iter': 0.46822, 'mae': 0.3586, 'r2': 0.93176, 'spearmanr': 0.96275, 'mse': 0.27593, 'rmse': 0.52529, 'loss_node': 3.400575189971924, 'loss_edge': 1.7472025537490845, 'loss_graph': 1.7159202917099, 'loss_task': 0.3586000430107117, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 169, 'time_epoch': 28.59488, 'loss': 0.36464639, 'lr': 0, 'params': 1823862, 'time_iter': 7.14872, 'mae': 0.36465, 'r2': 0.93885, 'spearmanr': 0.96316, 'mse': 0.24085, 'rmse': 0.49077}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 169, 'time_epoch': 28.66967, 'loss': 0.36810925, 'lr': 0, 'params': 1823862, 'time_iter': 7.16742, 'mae': 0.36811, 'r2': 0.94861, 'spearmanr': 0.97014, 'mse': 0.20907, 'rmse': 0.45725}
+> Epoch 169: took 76.0s (avg 25.1s) | Best so far: epoch 159	train_loss: 7.7920 train_mae: 0.3618	val_loss: 0.3573 val_mae: 0.3574	test_loss: 0.3567 test_mae: 0.3567
+train: {'epoch': 170, 'time_epoch': 18.75425, 'eta': 550.29489, 'eta_hours': 0.15286, 'loss': 7.56474352, 'lr': 9.55e-06, 'params': 1823862, 'time_iter': 0.46886, 'mae': 0.35478, 'r2': 0.93355, 'spearmanr': 0.96256, 'mse': 0.26867, 'rmse': 0.51834, 'loss_node': 3.3936990829467772, 'loss_edge': 1.7512726215362548, 'loss_graph': 1.7102036962509155, 'loss_task': 0.3547840229511261, 'loss_encoder': 0.0}
+train: {'epoch': 171, 'time_epoch': 18.90973, 'eta': 531.30846, 'eta_hours': 0.14759, 'loss': 7.56222669, 'lr': 8.94e-06, 'params': 1823862, 'time_iter': 0.47274, 'mae': 0.35552, 'r2': 0.93519, 'spearmanr': 0.96294, 'mse': 0.26206, 'rmse': 0.51192, 'loss_node': 3.3811676292419435, 'loss_edge': 1.7442822397232056, 'loss_graph': 1.725742251586914, 'loss_task': 0.35551725630760195, 'loss_encoder': 0.0}
+train: {'epoch': 172, 'time_epoch': 18.75469, 'eta': 512.29873, 'eta_hours': 0.14231, 'loss': 7.55049178, 'lr': 8.35e-06, 'params': 1823862, 'time_iter': 0.46887, 'mae': 0.35256, 'r2': 0.93478, 'spearmanr': 0.96342, 'mse': 0.2637, 'rmse': 0.51351, 'loss_node': 3.377269616699219, 'loss_edge': 1.7520597366333008, 'loss_graph': 1.7160447093963622, 'loss_task': 0.3525588073730469, 'loss_encoder': 0.0}
+train: {'epoch': 173, 'time_epoch': 18.75197, 'eta': 493.29152, 'eta_hours': 0.13703, 'loss': 7.56283145, 'lr': 7.78e-06, 'params': 1823862, 'time_iter': 0.4688, 'mae': 0.36035, 'r2': 0.93265, 'spearmanr': 0.96155, 'mse': 0.27232, 'rmse': 0.52184, 'loss_node': 3.366483206939697, 'loss_edge': 1.7538056932449342, 'loss_graph': 1.7218406204223633, 'loss_task': 0.3603509482383728, 'loss_encoder': 0.0}
+train: {'epoch': 174, 'time_epoch': 18.74963, 'eta': 474.2869, 'eta_hours': 0.13175, 'loss': 7.5192468, 'lr': 7.23e-06, 'params': 1823862, 'time_iter': 0.46874, 'mae': 0.35598, 'r2': 0.93257, 'spearmanr': 0.96346, 'mse': 0.27265, 'rmse': 0.52216, 'loss_node': 3.361100263977051, 'loss_edge': 1.749427257156372, 'loss_graph': 1.6967523551940917, 'loss_task': 0.35598343534469606, 'loss_encoder': 0.0}
+train: {'epoch': 175, 'time_epoch': 18.7369, 'eta': 455.28343, 'eta_hours': 0.12647, 'loss': 7.50770495, 'lr': 6.7e-06, 'params': 1823862, 'time_iter': 0.46842, 'mae': 0.35718, 'r2': 0.93382, 'spearmanr': 0.96254, 'mse': 0.26759, 'rmse': 0.51729, 'loss_node': 3.3468562461853026, 'loss_edge': 1.7460420827865601, 'loss_graph': 1.7004378025054931, 'loss_task': 0.35718437724113467, 'loss_encoder': 0.0}
+train: {'epoch': 176, 'time_epoch': 18.74497, 'eta': 436.28403, 'eta_hours': 0.12119, 'loss': 7.50419043, 'lr': 6.18e-06, 'params': 1823862, 'time_iter': 0.46862, 'mae': 0.35546, 'r2': 0.93421, 'spearmanr': 0.96349, 'mse': 0.26601, 'rmse': 0.51576, 'loss_node': 3.3447321876525877, 'loss_edge': 1.7492412685394287, 'loss_graph': 1.699296506500244, 'loss_task': 0.35546025295257566, 'loss_encoder': 0.0}
+train: {'epoch': 177, 'time_epoch': 18.7109, 'eta': 417.28328, 'eta_hours': 0.11591, 'loss': 7.49867805, 'lr': 5.69e-06, 'params': 1823862, 'time_iter': 0.46777, 'mae': 0.35598, 'r2': 0.93313, 'spearmanr': 0.96267, 'mse': 0.2704, 'rmse': 0.52, 'loss_node': 3.3393543334960936, 'loss_edge': 1.7435457250595092, 'loss_graph': 1.7038239147186278, 'loss_task': 0.35597705774307253, 'loss_encoder': 0.0}
+train: {'epoch': 178, 'time_epoch': 18.75485, 'eta': 398.29092, 'eta_hours': 0.11064, 'loss': 7.47923617, 'lr': 5.21e-06, 'params': 1823862, 'time_iter': 0.46887, 'mae': 0.35196, 'r2': 0.93622, 'spearmanr': 0.96348, 'mse': 0.25787, 'rmse': 0.50781, 'loss_node': 3.3333608779907227, 'loss_edge': 1.7435871868133546, 'loss_graph': 1.698358226776123, 'loss_task': 0.35196489429473876, 'loss_encoder': 0.0}
+train: {'epoch': 179, 'time_epoch': 18.74662, 'eta': 379.30028, 'eta_hours': 0.10536, 'loss': 7.45481458, 'lr': 4.76e-06, 'params': 1823862, 'time_iter': 0.46867, 'mae': 0.35495, 'r2': 0.93472, 'spearmanr': 0.96268, 'mse': 0.26395, 'rmse': 0.51376, 'loss_node': 3.329721883392334, 'loss_edge': 1.7371244806289672, 'loss_graph': 1.678058576965332, 'loss_task': 0.35495480523109435, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 179, 'time_epoch': 28.58452, 'loss': 0.37956559, 'lr': 0, 'params': 1823862, 'time_iter': 7.14613, 'mae': 0.37957, 'r2': 0.93676, 'spearmanr': 0.96413, 'mse': 0.24908, 'rmse': 0.49908}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 179, 'time_epoch': 28.65778, 'loss': 0.35052039, 'lr': 0, 'params': 1823862, 'time_iter': 7.16445, 'mae': 0.35052, 'r2': 0.95199, 'spearmanr': 0.9697, 'mse': 0.19531, 'rmse': 0.44194}
+> Epoch 179: took 76.0s (avg 25.0s) | Best so far: epoch 159	train_loss: 7.7920 train_mae: 0.3618	val_loss: 0.3573 val_mae: 0.3574	test_loss: 0.3567 test_mae: 0.3567
+train: {'epoch': 180, 'time_epoch': 18.73426, 'eta': 360.31104, 'eta_hours': 0.10009, 'loss': 7.48198712, 'lr': 4.32e-06, 'params': 1823862, 'time_iter': 0.46836, 'mae': 0.35606, 'r2': 0.9349, 'spearmanr': 0.96294, 'mse': 0.26321, 'rmse': 0.51304, 'loss_node': 3.3262544456481935, 'loss_edge': 1.7506111309051513, 'loss_graph': 1.6929959266662598, 'loss_task': 0.35606281566619874, 'loss_encoder': 0.0}
+train: {'epoch': 181, 'time_epoch': 18.9361, 'eta': 341.34457, 'eta_hours': 0.09482, 'loss': 7.4749867, 'lr': 3.91e-06, 'params': 1823862, 'time_iter': 0.4734, 'mae': 0.35625, 'r2': 0.93467, 'spearmanr': 0.96305, 'mse': 0.26415, 'rmse': 0.51396, 'loss_node': 3.3269438106536864, 'loss_edge': 1.7453923988342286, 'loss_graph': 1.6901444175720215, 'loss_task': 0.35625304012298586, 'loss_encoder': 0.0}
+train: {'epoch': 182, 'time_epoch': 18.75763, 'eta': 322.36185, 'eta_hours': 0.08954, 'loss': 7.4742631, 'lr': 3.51e-06, 'params': 1823862, 'time_iter': 0.46894, 'mae': 0.3541, 'r2': 0.93522, 'spearmanr': 0.96334, 'mse': 0.26193, 'rmse': 0.51179, 'loss_node': 3.321346843338013, 'loss_edge': 1.7399516059875488, 'loss_graph': 1.704761654663086, 'loss_task': 0.3541015016078949, 'loss_encoder': 0.0}
+train: {'epoch': 183, 'time_epoch': 18.76437, 'eta': 303.38216, 'eta_hours': 0.08427, 'loss': 7.46772645, 'lr': 3.14e-06, 'params': 1823862, 'time_iter': 0.46911, 'mae': 0.3589, 'r2': 0.9336, 'spearmanr': 0.96243, 'mse': 0.26848, 'rmse': 0.51815, 'loss_node': 3.3200368646621703, 'loss_edge': 1.7384245142936707, 'loss_graph': 1.691464054107666, 'loss_task': 0.35890046310424806, 'loss_encoder': 0.0}
+train: {'epoch': 184, 'time_epoch': 18.7108, 'eta': 284.40046, 'eta_hours': 0.079, 'loss': 7.45382838, 'lr': 2.78e-06, 'params': 1823862, 'time_iter': 0.46777, 'mae': 0.35556, 'r2': 0.93563, 'spearmanr': 0.96334, 'mse': 0.26029, 'rmse': 0.51019, 'loss_node': 3.3203540435791017, 'loss_edge': 1.7362199266433715, 'loss_graph': 1.686140700149536, 'loss_task': 0.3555568998813629, 'loss_encoder': 0.0}
+train: {'epoch': 185, 'time_epoch': 18.71324, 'eta': 265.42185, 'eta_hours': 0.07373, 'loss': 7.46009528, 'lr': 2.45e-06, 'params': 1823862, 'time_iter': 0.46783, 'mae': 0.35315, 'r2': 0.93519, 'spearmanr': 0.96317, 'mse': 0.26204, 'rmse': 0.5119, 'loss_node': 3.307252105331421, 'loss_edge': 1.7372510257720948, 'loss_graph': 1.7092846111297608, 'loss_task': 0.35315381660461426, 'loss_encoder': 0.0}
+train: {'epoch': 186, 'time_epoch': 18.71474, 'eta': 246.44619, 'eta_hours': 0.06846, 'loss': 7.45699505, 'lr': 2.13e-06, 'params': 1823862, 'time_iter': 0.46787, 'mae': 0.35369, 'r2': 0.93658, 'spearmanr': 0.96352, 'mse': 0.25642, 'rmse': 0.50638, 'loss_node': 3.309466014480591, 'loss_edge': 1.7407230382919312, 'loss_graph': 1.6994165410995483, 'loss_task': 0.35369476847648623, 'loss_encoder': 0.0}
+train: {'epoch': 187, 'time_epoch': 18.77159, 'eta': 227.47693, 'eta_hours': 0.06319, 'loss': 7.43525298, 'lr': 1.84e-06, 'params': 1823862, 'time_iter': 0.46929, 'mae': 0.35327, 'r2': 0.9359, 'spearmanr': 0.9642, 'mse': 0.25917, 'rmse': 0.50909, 'loss_node': 3.307932112121582, 'loss_edge': 1.7412026048660278, 'loss_graph': 1.6795749158859252, 'loss_task': 0.35327170815467834, 'loss_encoder': 0.0}
+train: {'epoch': 188, 'time_epoch': 18.88871, 'eta': 208.51658, 'eta_hours': 0.05792, 'loss': 7.4217732, 'lr': 1.57e-06, 'params': 1823862, 'time_iter': 0.47222, 'mae': 0.35267, 'r2': 0.9346, 'spearmanr': 0.96426, 'mse': 0.26445, 'rmse': 0.51424, 'loss_node': 3.3038612342834472, 'loss_edge': 1.7360160659790038, 'loss_graph': 1.676549160385132, 'loss_task': 0.35267330379486084, 'loss_encoder': 0.0}
+train: {'epoch': 189, 'time_epoch': 18.71839, 'eta': 189.54802, 'eta_hours': 0.05265, 'loss': 7.43232779, 'lr': 1.32e-06, 'params': 1823862, 'time_iter': 0.46796, 'mae': 0.35294, 'r2': 0.93512, 'spearmanr': 0.96432, 'mse': 0.26235, 'rmse': 0.5122, 'loss_node': 3.3119629680633547, 'loss_edge': 1.7413183115005493, 'loss_graph': 1.6731760959625244, 'loss_task': 0.3529351500511169, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 189, 'time_epoch': 28.59408, 'loss': 0.37262215, 'lr': 0, 'params': 1823862, 'time_iter': 7.14852, 'mae': 0.37262, 'r2': 0.9408, 'spearmanr': 0.96553, 'mse': 0.23318, 'rmse': 0.48289}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 189, 'time_epoch': 28.66008, 'loss': 0.37353851, 'lr': 0, 'params': 1823862, 'time_iter': 7.16502, 'mae': 0.37354, 'r2': 0.94552, 'spearmanr': 0.96691, 'mse': 0.22166, 'rmse': 0.47081}
+> Epoch 189: took 76.0s (avg 25.0s) | Best so far: epoch 159	train_loss: 7.7920 train_mae: 0.3618	val_loss: 0.3573 val_mae: 0.3574	test_loss: 0.3567 test_mae: 0.3567
+train: {'epoch': 190, 'time_epoch': 18.72395, 'eta': 170.58234, 'eta_hours': 0.04738, 'loss': 7.44388815, 'lr': 1.09e-06, 'params': 1823862, 'time_iter': 0.4681, 'mae': 0.3535, 'r2': 0.9352, 'spearmanr': 0.96326, 'mse': 0.26203, 'rmse': 0.51189, 'loss_node': 3.2980920780181884, 'loss_edge': 1.7364308731079101, 'loss_graph': 1.702364573097229, 'loss_task': 0.3535003280162811, 'loss_encoder': 0.0}
+train: {'epoch': 191, 'time_epoch': 18.74002, 'eta': 151.61985, 'eta_hours': 0.04212, 'loss': 7.44046431, 'lr': 8.9e-07, 'params': 1823862, 'time_iter': 0.4685, 'mae': 0.35559, 'r2': 0.93545, 'spearmanr': 0.96371, 'mse': 0.261, 'rmse': 0.51088, 'loss_node': 3.3028833770751955, 'loss_edge': 1.7356301162719727, 'loss_graph': 1.6907752304077148, 'loss_task': 0.35558781042098997, 'loss_encoder': 0.0}
+train: {'epoch': 192, 'time_epoch': 18.73103, 'eta': 132.65933, 'eta_hours': 0.03685, 'loss': 7.4225407, 'lr': 7e-07, 'params': 1823862, 'time_iter': 0.46828, 'mae': 0.3554, 'r2': 0.93526, 'spearmanr': 0.96418, 'mse': 0.26175, 'rmse': 0.51162, 'loss_node': 3.2997992568969727, 'loss_edge': 1.7318131950378417, 'loss_graph': 1.6801361806869506, 'loss_task': 0.35539600377082825, 'loss_encoder': 0.0}
+train: {'epoch': 193, 'time_epoch': 18.7409, 'eta': 113.70149, 'eta_hours': 0.03158, 'loss': 7.43937224, 'lr': 5.4e-07, 'params': 1823862, 'time_iter': 0.46852, 'mae': 0.35076, 'r2': 0.93564, 'spearmanr': 0.96513, 'mse': 0.26021, 'rmse': 0.51011, 'loss_node': 3.3014470165252687, 'loss_edge': 1.7396638216018676, 'loss_graph': 1.6967345184326172, 'loss_task': 0.3507634193897247, 'loss_encoder': 0.0}
+train: {'epoch': 194, 'time_epoch': 18.87397, 'eta': 94.74929, 'eta_hours': 0.02632, 'loss': 7.41667595, 'lr': 3.9e-07, 'params': 1823862, 'time_iter': 0.47185, 'mae': 0.3529, 'r2': 0.93616, 'spearmanr': 0.96354, 'mse': 0.25813, 'rmse': 0.50807, 'loss_node': 3.2988267414093015, 'loss_edge': 1.7377172309875488, 'loss_graph': 1.6743269062042236, 'loss_task': 0.35290258169174193, 'loss_encoder': 0.0}
+train: {'epoch': 195, 'time_epoch': 18.72407, 'eta': 75.79482, 'eta_hours': 0.02105, 'loss': 7.41483314, 'lr': 2.7e-07, 'params': 1823862, 'time_iter': 0.4681, 'mae': 0.35033, 'r2': 0.93582, 'spearmanr': 0.96456, 'mse': 0.25952, 'rmse': 0.50943, 'loss_node': 3.3013302627563474, 'loss_edge': 1.7361910274505614, 'loss_graph': 1.6766497268676759, 'loss_task': 0.35033107500076294, 'loss_encoder': 0.0}
+train: {'epoch': 196, 'time_epoch': 18.73849, 'eta': 56.84292, 'eta_hours': 0.01579, 'loss': 7.42636058, 'lr': 1.8e-07, 'params': 1823862, 'time_iter': 0.46846, 'mae': 0.35731, 'r2': 0.9336, 'spearmanr': 0.96293, 'mse': 0.26849, 'rmse': 0.51816, 'loss_node': 3.3030997177124024, 'loss_edge': 1.7392515602111815, 'loss_graph': 1.669381286430359, 'loss_task': 0.35731404900550845, 'loss_encoder': 0.0}
+train: {'epoch': 197, 'time_epoch': 18.76326, 'eta': 37.89341, 'eta_hours': 0.01053, 'loss': 7.44631372, 'lr': 1e-07, 'params': 1823862, 'time_iter': 0.46908, 'mae': 0.35326, 'r2': 0.93472, 'spearmanr': 0.96373, 'mse': 0.26395, 'rmse': 0.51376, 'loss_node': 3.3012634437561035, 'loss_edge': 1.7419929096221924, 'loss_graph': 1.6965396671295165, 'loss_task': 0.35325884370803834, 'loss_encoder': 0.0}
+train: {'epoch': 198, 'time_epoch': 18.73309, 'eta': 18.94563, 'eta_hours': 0.00526, 'loss': 7.43148999, 'lr': 4e-08, 'params': 1823862, 'time_iter': 0.46833, 'mae': 0.3534, 'r2': 0.93437, 'spearmanr': 0.96367, 'mse': 0.26539, 'rmse': 0.51516, 'loss_node': 3.300802668762207, 'loss_edge': 1.7406459285736084, 'loss_graph': 1.683250210762024, 'loss_task': 0.35339554181098937, 'loss_encoder': 0.0}
+train: {'epoch': 199, 'time_epoch': 18.73774, 'eta': 0.0, 'eta_hours': 0.0, 'loss': 7.40109679, 'lr': 1e-08, 'params': 1823862, 'time_iter': 0.46844, 'mae': 0.35544, 'r2': 0.93552, 'spearmanr': 0.96269, 'mse': 0.26071, 'rmse': 0.5106, 'loss_node': 3.29912847366333, 'loss_edge': 1.7337509483337403, 'loss_graph': 1.6573468669891358, 'loss_task': 0.35543528289794923, 'loss_encoder': 0.0}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+val: {'epoch': 199, 'time_epoch': 28.5903, 'loss': 0.37154712, 'lr': 0, 'params': 1823862, 'time_iter': 7.14758, 'mae': 0.37155, 'r2': 0.93999, 'spearmanr': 0.96558, 'mse': 0.23638, 'rmse': 0.48619}
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+Inference: Switched to EMA weights
+Inference: Restored training weights
+test: {'epoch': 199, 'time_epoch': 28.67327, 'loss': 0.3728813, 'lr': 0, 'params': 1823862, 'time_iter': 7.16832, 'mae': 0.37288, 'r2': 0.945, 'spearmanr': 0.96886, 'mse': 0.22377, 'rmse': 0.47304}
+> Epoch 199: took 76.0s (avg 25.0s) | Best so far: epoch 159	train_loss: 7.7920 train_mae: 0.3618	val_loss: 0.3573 val_mae: 0.3574	test_loss: 0.3567 test_mae: 0.3567
+Avg time per epoch: 24.98s
+Total train loop time: 1.39h
+wandb: - 0.123 MB of 0.123 MB uploadedwandb: \ 0.147 MB of 0.147 MB uploadedwandb: | 0.147 MB of 0.147 MB uploadedwandb:                                                                                
+wandb: 
+wandb: Run history:
+wandb:         best/epoch ▁▁▂▂▃▃▄▄▄▄▄▆▆▆▇▇█████
+wandb:     best/test_loss █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:      best/test_mae █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    best/train_loss █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:     best/train_mae █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:      best/val_loss █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:       best/val_mae █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:         test/epoch ▁▁▁▁▁▂▂▃▃▃▃▃▃▃▄▄▄▄▄▄▄▅▅▅▆▆▆▆▆▆▇▇▇▇▇▇████
+wandb:          test/loss ████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:            test/lr ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:           test/mae █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:           test/mse █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:        test/params ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:            test/r2 ▁▁▁█████████████████████████████████████
+wandb:          test/rmse █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:     test/spearmanr ▁▁▆▆▆▆██████████████████████████████████
+wandb:    test/time_epoch ████▃▃▃█████▇▇▇▆▆▆▆▆▃▃▃▃▅▃▃▃▃▃▄▂▂▂▂▁▁▁▁▁
+wandb:     test/time_iter ███▃▃█████▇▆▃▃▃▃▃▃▃▃▃▃▃▃▃▄▄▄▄▄▄▂▂▂▁▂▂▁▁▁
+wandb:        train/epoch ▁▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▅▆▆▆▇▇▇▇▇▇▇███
+wandb:          train/eta █▇▇▇▇▇▆▆▆▆▆▅▅▅▅▅▅▅▄▄▄▄▄▄▄▃▃▃▃▃▂▂▂▂▂▂▁▁▁▁
+wandb:    train/eta_hours █▇▇▇▇▇▇▇▇▆▆▆▆▅▅▅▄▄▄▄▄▄▄▄▃▃▃▃▃▃▃▂▂▂▂▂▂▂▁▁
+wandb:         train/loss █▃▃▃▃▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    train/loss_edge ▇███▇▇▇▇▆▆▆▆▆▆▅▅▄▄▄▄▄▄▄▃▃▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁
+wandb: train/loss_encoder ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:   train/loss_graph ██▆▅▄▃▃▃▂▂▂▂▂▂▂▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    train/loss_node ▇████▇▇▇▇▇▆▆▆▆▆▆▅▅▄▄▄▄▄▄▄▃▃▃▃▃▂▂▂▁▁▁▁▁▁▁
+wandb:    train/loss_task █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:           train/lr ▁▁▂▃▃▆▆▆▆▇██████████▇▇▇▇▅▅▅▅▅▄▄▄▃▃▃▁▁▁▁▁
+wandb:          train/mae █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:          train/mse █▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:       train/params ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:           train/r2 ▁▃▃▃▃▆▇▇▇▇▇▇▇▇▇▇▇███████████████████████
+wandb:         train/rmse █▂▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    train/spearmanr ▁▁▆▅▆▆▇▇▇███████████████████████████████
+wandb:   train/time_epoch █▁▁▁▂▁▁▂▁▁▁▁▁▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    train/time_iter ▂▂▅▂▂▂▄▄▃▃▃▃▃█▃▂▃▂▂▂▂▃▂▂▂▄▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:          val/epoch ▁▁▁▁▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▆▆▇▇▇▇▇▇█████
+wandb:           val/loss █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:             val/lr ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:            val/mae █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:            val/mse ███▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:         val/params ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:             val/r2 ▁▁▁▁▁▁▂▅▅▅▆▆▆▆▇▇▇▇▇▇▇▇▇█████████████████
+wandb:           val/rmse ████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:      val/spearmanr ▁▁▆▆▆▇▇▇▇▇██████████████████████████████
+wandb:     val/time_epoch ██▃▃▃███▇▇▇▆▆▆▃▃▄▄▄▄▃▃▄▄▄▃▃▃▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:      val/time_iter ▃▂▂▂███▇▇▆▆▆▃▃▃▃▃▃▃▃▄▄▄▄▄▃▃▃▃▃▃▁▁▁▁▁▁▁▁▁
+wandb: 
+wandb: Run summary:
+wandb:          best/epoch 159
+wandb:      best/test_loss 0.35666
+wandb:       best/test_mae 0.35666
+wandb:     best/train_loss 7.79205
+wandb:      best/train_mae 0.36183
+wandb:       best/val_loss 0.35735
+wandb:        best/val_mae 0.35735
+wandb:      best_test_perf 0.35666
+wandb:     best_train_perf 0.36183
+wandb:       best_val_perf 0.35735
+wandb: full_epoch_time_avg 24.98229
+wandb: full_epoch_time_sum 4996.45802
+wandb:          test/epoch 199
+wandb:           test/loss 0.37288
+wandb:             test/lr 0
+wandb:            test/mae 0.37288
+wandb:            test/mse 0.22377
+wandb:         test/params 1823862
+wandb:             test/r2 0.945
+wandb:           test/rmse 0.47304
+wandb:      test/spearmanr 0.96886
+wandb:     test/time_epoch 28.67327
+wandb:      test/time_iter 7.16832
+wandb:         train/epoch 199
+wandb:           train/eta 0
+wandb:     train/eta_hours 0
+wandb:          train/loss 7.4011
+wandb:     train/loss_edge 1.73375
+wandb:  train/loss_encoder 0
+wandb:    train/loss_graph 1.65735
+wandb:     train/loss_node 3.29913
+wandb:     train/loss_task 0.35544
+wandb:            train/lr 0.0
+wandb:           train/mae 0.35544
+wandb:           train/mse 0.26071
+wandb:        train/params 1823862
+wandb:            train/r2 0.93552
+wandb:          train/rmse 0.5106
+wandb:     train/spearmanr 0.96269
+wandb:    train/time_epoch 18.73774
+wandb:     train/time_iter 0.46844
+wandb:           val/epoch 199
+wandb:            val/loss 0.37155
+wandb:              val/lr 0
+wandb:             val/mae 0.37155
+wandb:             val/mse 0.23638
+wandb:          val/params 1823862
+wandb:              val/r2 0.93999
+wandb:            val/rmse 0.48619
+wandb:       val/spearmanr 0.96558
+wandb:      val/time_epoch 28.5903
+wandb:       val/time_iter 7.14758
+wandb: 
+wandb: 🚀 View run zinc_flow_zinc_flow_20251103_231513 at: https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow/runs/648mz2dd
+wandb: ⭐️ View project at: https://wandb.ai/shokuno-the-university-of-tokyo/LGFM-ZINC-Flow
+wandb: Synced 5 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20251103_231607-648mz2dd/logs
+Task done, results saved in /workspace/runs/zinc_flow_20251103_231513/zinc-flow_gcfm/0
+159
+{'epoch': 159, 'time_epoch': 18.71624, 'eta': 759.65707, 'eta_hours': 0.21102, 'loss': 7.79204759, 'lr': 1.733e-05, 'params': 1823862, 'time_iter': 0.46791, 'mae': 0.36183, 'r2': 0.9293, 'spearmanr': 0.9606, 'mse': 0.28589, 'rmse': 0.53469, 'loss_node': 3.5317690216064452, 'loss_edge': 1.7739255367279052, 'loss_graph': 1.7626832397460936, 'loss_task': 0.36183478775024414, 'loss_encoder': 0.0}
+{'epoch': 159, 'time_epoch': 28.59066, 'loss': 0.35734598, 'lr': 0, 'params': 1823862, 'time_iter': 7.14766, 'mae': 0.35735, 'r2': 0.93962, 'spearmanr': 0.96325, 'mse': 0.23784, 'rmse': 0.48769}
+{'epoch': 159, 'time_epoch': 28.68046, 'loss': 0.35665928, 'lr': 0, 'params': 1823862, 'time_iter': 7.17012, 'mae': 0.35666, 'r2': 0.94956, 'spearmanr': 0.96903, 'mse': 0.20521, 'rmse': 0.453}
+Results aggregated across runs saved in /workspace/runs/zinc_flow_20251103_231513/zinc-flow_gcfm/agg
+[*] All done: 2025-11-04 00:39:31.333942
+Training finished with exit code: 0
+Checkpoints in out_dir:
+-rw-r----- 1 q25030 gp15 18772914 Nov  4 00:23 /workspace/runs/zinc_flow_20251103_231513/zinc-flow_gcfm/0/ckpt/159.ckpt
+Job completed at: Tue Nov  4 00:39:34 JST 2025
+Results saved in: /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20251103_231513
+-rw-r----- 1 q25030 gp15 18772914 Nov  4 00:23 /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20251103_231513/zinc-flow_gcfm/0/ckpt/159.ckpt
+Moved PJM out to: /work/gp15/q25030/LatentGraphDiffusion/runs/zinc_flow_20251103_231513/lgd_7938304.out

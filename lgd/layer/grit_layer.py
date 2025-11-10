@@ -1,4 +1,6 @@
 import numpy as np
+import warnings
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,11 +10,25 @@ from torch_scatter import scatter, scatter_max, scatter_add
 
 # from grit.utils import negate_edge_index
 from torch_geometric.graphgym.register import *
-import opt_einsum as oe
 
 from yacs.config import CfgNode as CN
 
-import warnings
+try:
+    import opt_einsum as _opt_einsum
+except ModuleNotFoundError:
+    _opt_einsum = None
+    warnings.warn(
+        "opt_einsum is not installed; falling back to torch.einsum. "
+        "Install opt-einsum for optimal GRIT attention performance.",
+        RuntimeWarning,
+    )
+
+
+def _einsum_contract(expr, *operands, backend="torch"):
+    if _opt_einsum is not None:
+        return _opt_einsum.contract(expr, *operands, backend=backend)
+    # Fallback: rely on torch.einsum when opt_einsum is unavailable.
+    return torch.einsum(expr, *operands)
 
 def pyg_softmax(src, index, num_nodes=None):
     r"""Computes a sparsely evaluated softmax.
@@ -102,7 +118,7 @@ class MultiHeadAttentionLayerGritSparse(nn.Module):
             batch.wE = score.flatten(1)
 
         # final attn
-        score = oe.contract("ehd, dhc->ehc", score, self.Aw, backend="torch")
+        score = _einsum_contract("ehd, dhc->ehc", score, self.Aw, backend="torch")
         if self.clamp is not None:
             score = torch.clamp(score, min=-self.clamp, max=self.clamp)
 
@@ -118,7 +134,7 @@ class MultiHeadAttentionLayerGritSparse(nn.Module):
 
         if self.edge_enhance and batch.E is not None:
             rowV = scatter(e_t * score, batch.edge_index[1], dim=0, reduce="add")
-            rowV = oe.contract("nhd, dhc -> nhc", rowV, self.VeRow, backend="torch")
+            rowV = _einsum_contract("nhd, dhc -> nhc", rowV, self.VeRow, backend="torch")
             batch.wV = batch.wV + rowV
 
     def forward(self, batch):

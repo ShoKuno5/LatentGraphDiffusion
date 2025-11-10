@@ -156,6 +156,43 @@ class FlowSampler(nn.Module):
             if hasattr(batch, 'num_graphs') and self.model.use_graph_latent:
                 z0_graph = torch.randn((batch.num_graphs, shape[-1]), device=device) * temperature
             z0 = (z0_nodes, z0_edges, z0_graph) if z0_graph is not None else (z0_nodes, z0_edges)
+
+        if getattr(self.model, 'objective', None) == "gaussian_cfm":
+            dtype = z0[0].dtype if isinstance(z0, tuple) else z0.dtype
+            t0_graph = torch.zeros(batch.num_graphs, device=device, dtype=dtype)
+            node_sigma = self.model.get_alpha_sigma(t0_graph[batch.batch].unsqueeze(-1))[1]
+            edge_batch = batch.batch[batch.edge_index[0]]
+            edge_sigma = self.model.get_alpha_sigma(t0_graph[edge_batch].unsqueeze(-1))[1]
+            graph_sigma = self.model.get_alpha_sigma(t0_graph.unsqueeze(-1))[1]
+
+            if isinstance(z0, tuple):
+                z_nodes, z_edges, *maybe_graph = z0
+                z_nodes = z_nodes * node_sigma
+                z_edges = z_edges * edge_sigma
+                if maybe_graph:
+                    z_graph = maybe_graph[0]
+                    if z_graph is not None:
+                        z_graph = z_graph * graph_sigma
+                    z0 = (z_nodes, z_edges, z_graph)
+                else:
+                    z0 = (z_nodes, z_edges)
+            else:
+                num_nodes = batch.num_nodes
+                num_edges = batch.edge_index.shape[1]
+                z_nodes = z0[:num_nodes] * node_sigma
+                z_edges = z0[num_nodes:num_nodes + num_edges] * edge_sigma
+                if self.model.use_graph_latent:
+                    z_graph_flat = z0[num_nodes + num_edges:]
+                    if z_graph_flat.numel() > 0:
+                        z_graph = z_graph_flat.view(batch.num_graphs, -1) * graph_sigma
+                        z0 = torch.cat(
+                            [z_nodes, z_edges, z_graph.view(-1, z_graph.shape[-1])],
+                            dim=0
+                        )
+                    else:
+                        z0 = torch.cat([z_nodes, z_edges], dim=0)
+                else:
+                    z0 = torch.cat([z_nodes, z_edges], dim=0)
         
         # Force undirected if needed
         if hasattr(self.model, 'force_undirected') and self.model.force_undirected:

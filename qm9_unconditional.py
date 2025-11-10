@@ -86,14 +86,18 @@ def custom_create_loader():
 
     """
     dataset = create_dataset()
+    data_store = getattr(dataset, '_data', None)
+    if data_store is None:
+        data_store = dataset.data
+
     # train loader
     if cfg.dataset.task == 'graph':
-        id = dataset.data['train_graph_index']
+        id = data_store['train_graph_index']
         loaders = [
             get_loader(dataset[id], cfg.train.sampler, cfg.train.batch_size,
                        shuffle=True)
         ]
-        delattr(dataset.data, 'train_graph_index')
+        delattr(data_store, 'train_graph_index')
     else:
         loaders = [
             get_loader(dataset, cfg.train.sampler, cfg.train.batch_size,
@@ -107,11 +111,11 @@ def custom_create_loader():
     for i in range(cfg.share.num_splits - 1):
         if cfg.dataset.task == 'graph':
             split_names = ['val_graph_index', 'test_graph_index']
-            id = dataset.data[split_names[i]]
+            id = data_store[split_names[i]]
             loaders.append(
                 get_loader(dataset[id], cfg.val.sampler, eval_batch_size,
                            shuffle=True))
-            delattr(dataset.data, split_names[i])
+            delattr(data_store, split_names[i])
         else:
             loaders.append(
                 get_loader(dataset, cfg.val.sampler, eval_batch_size,

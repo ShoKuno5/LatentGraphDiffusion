@@ -22,7 +22,7 @@ MODE=${MODE:-flow}              # encoder | diffusion | flow | uncond
 TARGET_PROPERTY=${TARGET_PROPERTY:-mu}  # mu|alpha|e_HOMO|e_LUMO|delta_e|cv
 
 # Optional config path (leave empty to use sensible defaults)
-CONFIG=${CONFIG:-cfg/my_zinc-flow_rf.yaml}
+CONFIG=${CONFIG:-cfg/my_zinc-flow_baseline.yaml}
 
 # Encoder checkpoint (used for diffusion/flow/uncond; ignored for encoder)
 CHECKPOINT=${CHECKPOINT:-runs/zinc_encoder_fast_hpc/zinc-encoder-fast/0/ckpt/399.ckpt}     # auto | /path/to/encoder.ckpt
@@ -41,6 +41,8 @@ WANDB_ENTITY=${WANDB_ENTITY:-}
 # =============================================================
 
 set -euo pipefail
+
+USER_WANDB_PROJECT="${WANDB_PROJECT:-}"
 
 # Remember submission working directory early; PJM may copy scripts to a spool dir
 SUBMIT_DIR="${PJM_SUBMIT_DIR:-$PWD}"
@@ -83,7 +85,7 @@ if [[ -z "${CONFIG}" ]]; then
       case "${MODE}" in
         encoder) CONFIG="cfg/zinc-encoder.yaml" ;;
         diffusion) CONFIG="cfg/zinc-diffusion_ddpm.yaml" ;;
-        flow) CONFIG="cfg/zinc-flow_rf.yaml" ;;
+        flow) CONFIG="cfg/my_zinc-flow_baseline.yaml" ;;
         uncond) CONFIG="cfg/zinc-diffusion_ddpm_unconditional.yaml" ;;
         *) echo "Unsupported MODE for ZINC: ${MODE}"; exit 1;;
       esac
@@ -97,6 +99,17 @@ if [[ -z "${CONFIG}" ]]; then
       ;;
     *)
       echo "Unsupported DATASET: ${DATASET}"; exit 1;;
+  esac
+fi
+
+if [[ ! -f "$CONFIG" ]]; then
+  case "$CONFIG" in
+    cfg/zinc-diffusion_ddpm_unconditional.yaml)
+      if [[ -f "cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" ]]; then
+        echo "Config $CONFIG not found. Falling back to cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" >&2
+        CONFIG="cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml"
+      fi
+      ;;
   esac
 fi
 
@@ -143,12 +156,26 @@ if [ -z "${WANDB_ENTITY:-}" ] && [ -f "$WBR" ]; then
 fi
 if [ -z "${WANDB_PROJECT:-}" ] && [ -f "$WBR" ]; then
   WANDB_PROJECT="$(awk -F' *= *' '/^project/ {print $2}' "$WBR" | head -1 | tr -d '\r\n' )"
-  export WANDB_PROJECT
 fi
 # If we have an API key and WANDB_MODE wasn't explicitly set to offline, go online
 if [ -n "${WANDB_API_KEY:-}" ] && [ "${WANDB_MODE:-}" != "offline" ]; then
   export WANDB_MODE=online
 fi
+
+if [ -n "$USER_WANDB_PROJECT" ]; then
+  WANDB_PROJECT="$USER_WANDB_PROJECT"
+else
+  case "${DATASET}_${MODE}" in
+    qm9_encoder) WANDB_PROJECT="LGD-QM9-Encoder" ;;
+    qm9_diffusion) WANDB_PROJECT="LGD-QM9-Diffusion" ;;
+    zinc_encoder) WANDB_PROJECT="LGD-ZINC-Encoder" ;;
+    zinc_diffusion) WANDB_PROJECT="LGD-ZINC-Diffusion" ;;
+    zinc_uncond) WANDB_PROJECT="LGD-ZINC-Unconditional" ;;
+    zinc_flow) WANDB_PROJECT="LGD-ZINC-Flow" ;;
+    *) WANDB_PROJECT="LGD-Generic" ;;
+  esac
+fi
+export WANDB_PROJECT
 
 # Capture PJM stdout/stderr into run dir in real-time as well
 exec > >(tee -a "$EXP_DIR/pjm.stdout") 2> >(tee -a "$EXP_DIR/pjm.stderr" >&2)

@@ -22,7 +22,7 @@ MODE=${MODE:-uncond}              # encoder | diffusion | flow | uncond
 TARGET_PROPERTY=${TARGET_PROPERTY:-mu}  # mu|alpha|e_HOMO|e_LUMO|delta_e|cv
 
 # Optional config path (leave empty to use sensible defaults)
-CONFIG=${CONFIG:-cfg/my_zinc-diffusion_ddpm_unconditional.yaml}
+CONFIG=${CONFIG:-cfg/zinc-diffusion_ddpm_unconditional.yaml}
 
 # Encoder checkpoint (used for diffusion/flow/uncond; ignored for encoder)
 CHECKPOINT=${CHECKPOINT:-runs/zinc_encoder_fast_hpc/zinc-encoder-fast/0/ckpt/399.ckpt}     # auto | /path/to/encoder.ckpt
@@ -83,7 +83,7 @@ if [[ -z "${CONFIG}" ]]; then
       case "${MODE}" in
         encoder) CONFIG="cfg/zinc-encoder.yaml" ;;
         diffusion) CONFIG="cfg/zinc-diffusion_ddpm.yaml" ;;
-        flow) CONFIG="cfg/zinc-flow_rf.yaml" ;;
+        flow) CONFIG="cfg/my_zinc-flow_baseline.yaml" ;;
         uncond) CONFIG="cfg/zinc-diffusion_ddpm_unconditional.yaml" ;;
         *) echo "Unsupported MODE for ZINC: ${MODE}"; exit 1;;
       esac
@@ -122,6 +122,11 @@ if [[ -z "${MAX_EPOCH}" ]]; then
       esac
       ;;
   esac
+fi
+
+if [[ ! -f "$CONFIG" ]] && [[ -f "cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" ]]; then
+  echo "Config $CONFIG not found. Falling back to cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" >&2
+  CONFIG="cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml"
 fi
 
 # Experiment naming and directories
@@ -305,4 +310,8 @@ if [[ -n "$JOBID" ]]; then
       echo "Moved PJM $ext to: $dest"
     fi
   done
+fi
+if [[ ! -f "$CONFIG" ]] && [[ -f "cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" ]]; then
+  echo "Config $CONFIG not found. Falling back to cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" >&2
+  CONFIG="cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml"
 fi

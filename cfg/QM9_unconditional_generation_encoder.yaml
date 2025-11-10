@@ -31,6 +31,7 @@ dataset:
   subgraph: False
   remove_h: True
 train:
+  auto_resume: True
   mode: pretrain_encoder
   batch_size: 256
   eval_period: 1
@@ -38,6 +39,7 @@ train:
   ckpt_best: False  # WARNING: Checkpoint every epoch a better model is found may increase I/O significantly.
   ckpt_clean: True # Delete old ckpt each time.
   ckpt_period: 10
+  epoch_resume: -1
   ensemble_repeat: 1
   ensemble_mode: none
   pretrain:

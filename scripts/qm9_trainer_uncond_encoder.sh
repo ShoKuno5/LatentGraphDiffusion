@@ -1,25 +1,33 @@
 #!/bin/bash
 #PJM -L rscgrp=regular-a
 #PJM -L node=1
-#PJM -L elapse=12:00:00
+#PJM -L elapse=6:00:00
 #PJM -g gp15
 #PJM -L jobenv=singularity
 #PJM -j
-#PJM -N lgd_encoder
+#PJM -N lgd_qm9_enc
 #PJM -o lgd_%j.out
 #PJM -e lgd_%j.err
 
-# Default overrides (set via pjsub -x VAR=value)
-CONFIG=${CONFIG:-cfg/zinc-encoder.yaml}
-MAX_EPOCH=${MAX_EPOCH:-2000}
+# =============================================================
+# QM9 unconditional encoder pretraining (LatentGraphDiffusion)
+# Override via: pjsub -x VAR=value scripts/qm9_trainer_uncond_encoder.sh
+# =============================================================
+CONFIG=${CONFIG:-cfg/QM9_unconditional_generation_encoder.yaml}
+REPEAT=${REPEAT:-6}
+MAX_EPOCH=${MAX_EPOCH:-500}
 EXP_PREFIX=${EXP_PREFIX:-}
 WANDB_NAME=${WANDB_NAME:-}
 WANDB_PROJECT=${WANDB_PROJECT:-}
 WANDB_ENTITY=${WANDB_ENTITY:-}
+# =============================================================
 
 set -euo pipefail
 
+USER_WANDB_PROJECT="${WANDB_PROJECT:-}"
+
 SUBMIT_DIR="${PJM_SUBMIT_DIR:-$PWD}"
+
 source /etc/profile.d/modules.sh || true
 if command -v module &>/dev/null; then
   module load singularity/3.7.3 || true
@@ -44,13 +52,13 @@ for cand in \
   fi
 done
 if [ -z "$ENV_PATH" ]; then
-  echo "ERROR: Could not locate env preset for Wisteria." >&2
+  echo "ERROR: Could not locate env preset."
   exit 1
 fi
 source "$ENV_PATH"
 
 TS=$(date +%Y%m%d_%H%M%S)
-EXP="${EXP_PREFIX}zinc_encoder_${TS}"
+EXP="${EXP_PREFIX}qm9_uncond_encoder_${TS}"
 EXP_DIR="$RUNS/$EXP"
 mkdir -p "$DATA" "$EXP_DIR"
 
@@ -65,24 +73,34 @@ if [ -z "${WANDB_ENTITY:-}" ] && [ -f "$WBR" ]; then
 fi
 if [ -z "${WANDB_PROJECT:-}" ] && [ -f "$WBR" ]; then
   WANDB_PROJECT="$(awk -F' *= *' '/^project/ {print $2}' "$WBR" | head -1 | tr -d '\r\n')"
-  export WANDB_PROJECT
 fi
 if [ -n "${WANDB_API_KEY:-}" ] && [ "${WANDB_MODE:-}" != "offline" ]; then
   export WANDB_MODE=online
 fi
 
+if [ -n "$USER_WANDB_PROJECT" ]; then
+  WANDB_PROJECT="$USER_WANDB_PROJECT"
+else
+  WANDB_PROJECT="LGD-QM9-Uncond-Encoder"
+fi
+export WANDB_PROJECT
+
 exec > >(tee -a "$EXP_DIR/pjm.stdout") 2> >(tee -a "$EXP_DIR/pjm.stderr" >&2)
+
 JOBID="${PJM_JOBID:-}"
+
 if [[ -z "${WANDB_NAME}" ]]; then
-  WANDB_NAME="${EXP}"
+  WANDB_NAME="qm9_uncond_encoder_${EXP}"
 fi
 export WANDB_NAME
 
-echo "=== LGD Encoder Job ==="
+echo "=== QM9 Unconditional Encoder ==="
 echo "Config      : ${CONFIG}"
+echo "Repeat      : ${REPEAT}"
 echo "Max Epoch   : ${MAX_EPOCH}"
 echo "Experiment  : ${EXP}"
 echo "Out Dir     : ${EXP_DIR}"
+echo "W&B Name    : ${WANDB_NAME}"
 echo "Start time  : $(date)"
 
 RUNNER_BASE="/workspace/scripts/runners"
@@ -102,35 +120,39 @@ singularity exec --nv \
   "${BIND_WANDB_ARGS[@]}" \
   "$IMG" \
   bash -lc "
-    set -e;
-    cd /workspace;
-    export PYTHONPATH=/workspace:\$PYTHONPATH;
-    export PYTHONUNBUFFERED=1;
+    set -e
+    cd /workspace
+    export PYTHONPATH=/workspace:\$PYTHONPATH
+    export PYTHONUNBUFFERED=1
     if [ -f /workspace/.wandbrc ]; then
-      export WANDB_API_KEY=\$(awk -F' *= *' '/^api_key/ {print \$2}' /workspace/.wandbrc | head -1 | tr -d '\\r\\n');
-      export WANDB_ENTITY=\$(awk -F' *= *' '/^entity/ {print \$2}' /workspace/.wandbrc | head -1 | tr -d '\\r\\n');
-      if [ -n "\${WANDB_API_KEY:-}" ] && [ "\${WANDB_MODE:-}" != "offline" ]; then export WANDB_MODE=online; fi;
-      echo \"[wandb] entity='\${WANDB_ENTITY:-unset}', mode='\${WANDB_MODE:-unset}'\";
+      export WANDB_API_KEY=\$(awk -F' *= *' '/^api_key/ {print \$2}' /workspace/.wandbrc | head -1 | tr -d '\\r\\n')
+      export WANDB_ENTITY=\$(awk -F' *= *' '/^entity/ {print \$2}' /workspace/.wandbrc | head -1 | tr -d '\\r\\n')
+      if [ -n \"\${WANDB_API_KEY:-}\" ] && [ \"\${WANDB_MODE:-}\" != \"offline\" ]; then export WANDB_MODE=online; fi
+      echo \"[wandb] entity='\${WANDB_ENTITY:-unset}', mode='\${WANDB_MODE:-unset}'\"
     else
-      echo \"[wandb] .wandbrc not found; using inherited env (WANDB_MODE=\${WANDB_MODE:-unset})\";
-    fi;
-    mkdir -p /workspace/runs/$EXP;
-    $RUNNER_BASE/run_zinc_pretrain_encoder.sh \
-      --config '$CONFIG' \
-      --repeat 1 \
-      --max-epoch '$MAX_EPOCH' \
-      --out-dir '/workspace/runs/$EXP' \
-      --wandb-name '$WANDB_NAME';
+      echo \"[wandb] .wandbrc not found; using inherited env (WANDB_MODE=\${WANDB_MODE:-unset})\"
+    fi
+    mkdir -p /workspace/runs/$EXP
+
+    python pretrain.py \
+      --cfg '$CONFIG' \
+      --repeat '$REPEAT' \
+      wandb.use True \
+      optim.max_epoch '$MAX_EPOCH' \
+      out_dir '/workspace/runs/$EXP' \
+      wandb.name '$WANDB_NAME'
   "
 
 echo "Job completed at: $(date)"
 echo "Results saved in: $EXP_DIR"
 
-cat > "$EXP_DIR/job_completed.txt" <<EOF
-LGD encoder job completed at $(date)
-Config=${CONFIG}
-MaxEpoch=${MAX_EPOCH}
-EOF
+{
+  echo "QM9 encoder job completed at $(date)"
+  echo "Config=${CONFIG}"
+  echo "Repeat=${REPEAT}"
+  echo "MaxEpoch=${MAX_EPOCH}"
+} > "$EXP_DIR/job_completed.txt"
+
 find "$EXP_DIR" -name '*.ckpt' -type f -exec ls -la {} + 2>/dev/null || true
 
 if [[ -n "$JOBID" ]]; then

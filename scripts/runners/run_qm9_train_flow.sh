@@ -1,19 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-# Inside-container runner for ZINC UNCONDITIONAL diffusion training.
+# Inside-container runner for QM9 latent flow matching training.
+# Mirrors run_zinc_train_flow.sh but targets the QM9 unconditional encoder.
 # Usage:
-#   run_zinc_train_diffusion_uncond.sh \
-#       [--checkpoint auto|/path/to/ckpt.ckpt] \
-#       [--config cfg/zinc-diffusion_ddpm_unconditional.yaml] \
-#       [--repeat 5] [--max-epoch 50] \
+#   run_qm9_train_flow.sh \
+#       [--checkpoint auto|/path/to/qm9_encoder.ckpt] \
+#       [--config cfg/QM9_unconditional_generation_flow.yaml] \
+#       [--max-epoch 3000] \
 #       [--out-dir /workspace/runs/<exp>] \
 #       [--wandb-name name]
 
 checkpoint="auto"
-config="cfg/zinc-diffusion_ddpm_unconditional.yaml"
-repeat=5
-max_epoch=50
+config="cfg/QM9_unconditional_generation_flow.yaml"
+max_epoch=3000
 out_dir=""
 wandb_name=""
 
@@ -21,7 +21,6 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --checkpoint) checkpoint="$2"; shift 2;;
     --config) config="$2"; shift 2;;
-    --repeat) repeat="$2"; shift 2;;
     --max-epoch) max_epoch="$2"; shift 2;;
     --out-dir) out_dir="$2"; shift 2;;
     --wandb-name) wandb_name="$2"; shift 2;;
@@ -29,15 +28,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Defaults
-exp_default="${EXP:-zinc_diffusion_uncond_$(date +%Y%m%d_%H%M%S)}"
+exp_default="${EXP:-qm9_flow_$(date +%Y%m%d_%H%M%S)}"
 out_dir=${out_dir:-"/workspace/runs/$exp_default"}
-wandb_name=${wandb_name:-"zinc_uncond_${exp_default}"}
-
-if [[ ! -f "$config" ]] && [[ -f "/workspace/cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" ]]; then
-  echo "Config $config not found. Falling back to cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml" >&2
-  config="cfg/archive/my_zinc-diffusion_ddpm_unconditional.yaml"
-fi
+wandb_name=${wandb_name:-"qm9_flow_${exp_default}"}
 
 mkdir -p "$out_dir"
 
@@ -54,16 +47,14 @@ except Exception as e:
     print(f"PyG import failed: {e}")
 PY
 
-# Determine checkpoint
 if [[ "$checkpoint" == "auto" ]]; then
-  echo "Auto-detecting latest ZINC encoder checkpoint..."
+  echo "Auto-detecting latest QM9 unconditional encoder checkpoint..."
   mapfile -t CANDIDATES < <(find /workspace -type f \
-    \( -path "*/zinc-encoder/*/ckpt/*.ckpt" \
-       -o -path "*/zinc-encoder-fast/*/ckpt/*.ckpt" \
-       -o -path "*/zinc_encoder_*/ckpt/*.ckpt" \
-       -o -path "*/zinc_encoder_*/*.ckpt" \) 2>/dev/null | sort -V)
+    \( -path "*/QM9_unconditional_generation_encoder/*/ckpt/*.ckpt" \
+       -o -path "*/qm9_unconditional_generation_encoder/*/ckpt/*.ckpt" \
+       -o -path "*/QM9_unconditional*/ckpt/*.ckpt" \) 2>/dev/null | sort -V)
   if (( ${#CANDIDATES[@]} == 0 )); then
-    echo "ERROR: No encoder checkpoint found."
+    echo "ERROR: No QM9 encoder checkpoint found."
     find /workspace -name "*.ckpt" | head -20 || true
     exit 1
   fi
@@ -76,21 +67,20 @@ if [[ ! -f "$checkpoint" ]]; then
   exit 1
 fi
 
-echo "Starting ZINC UNCONDITIONAL diffusion training..."
+echo "Starting QM9 flow matching training..."
 echo "Config: $config"
-echo "Repeat: $repeat, Max Epoch: $max_epoch"
+echo "Max Epoch: $max_epoch"
 echo "Out dir: $out_dir"
 
 set +e
 python train_diffusion.py \
   --cfg "$config" \
-  --repeat "$repeat" \
-  wandb.use True \
+  flow.first_stage_config "$checkpoint" \
   optim.max_epoch "$max_epoch" \
-  diffusion.first_stage_config "$checkpoint" \
+  wandb.use True \
   out_dir "$out_dir" \
   wandb.name "$wandb_name" \
-  2>&1 | tee "$out_dir/diffusion_uncond_train.log"
+  2>&1 | tee "$out_dir/flow_train.log"
 code=$?
 set -e
 

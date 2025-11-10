@@ -1,0 +1,192 @@
+[
+  {
+    "run": "zinc_flow_20250930_235822",
+    "epoch": 69,
+    "val_mae": 0.34553,
+    "val_r2": 0.95022,
+    "val_spearman": 0.96351,
+    "test_mae": 0.3391,
+    "test_r2": 0.95549,
+    "test_spearman": 0.97015
+  },
+  {
+    "run": "zinc_flow_20250930_235117",
+    "epoch": 49,
+    "val_mae": 0.32823,
+    "val_r2": 0.95019,
+    "val_spearman": 0.96514,
+    "test_mae": 0.34258,
+    "test_r2": 0.95376,
+    "test_spearman": 0.96736
+  },
+  {
+    "run": "zinc_flow_20250930_213930",
+    "epoch": 119,
+    "val_mae": 0.33838,
+    "val_r2": 0.95378,
+    "val_spearman": 0.96652,
+    "test_mae": 0.34312,
+    "test_r2": 0.9561,
+    "test_spearman": 0.9712
+  },
+  {
+    "run": "zinc_flow_20250930_141103",
+    "epoch": 179,
+    "val_mae": 0.34097,
+    "val_r2": 0.95128,
+    "val_spearman": 0.96249,
+    "test_mae": 0.34975,
+    "test_r2": 0.95179,
+    "test_spearman": 0.96541
+  },
+  {
+    "run": "zinc_flow_20250930_212307",
+    "epoch": 209,
+    "val_mae": 0.35353,
+    "val_r2": 0.92568,
+    "val_spearman": 0.96818,
+    "test_mae": 0.35646,
+    "test_r2": 0.95183,
+    "test_spearman": 0.96934
+  },
+  {
+    "run": "zinc_flow_20250918_164037",
+    "epoch": 49,
+    "val_mae": 0.56544,
+    "val_r2": 0.45666,
+    "val_spearman": 0.90825,
+    "test_mae": 0.51219,
+    "test_r2": 0.8889,
+    "test_spearman": 0.92867
+  },
+  {
+    "run": "zinc_flow_20250918_170325",
+    "epoch": 49,
+    "val_mae": 0.59019,
+    "val_r2": 0.51458,
+    "val_spearman": 0.90724,
+    "test_mae": 0.54701,
+    "test_r2": 0.86882,
+    "test_spearman": 0.92821
+  },
+  {
+    "run": "zinc_flow_20250918_161230",
+    "epoch": 19,
+    "val_mae": 0.92584,
+    "val_r2": 0.11096,
+    "val_spearman": 0.83452,
+    "test_mae": 0.99747,
+    "test_r2": 0.19805,
+    "test_spearman": 0.7921
+  },
+  {
+    "run": "zinc_flow_20250907_210556",
+    "epoch": 9,
+    "val_mae": 1.42856,
+    "val_r2": -0.06226,
+    "val_spearman": 0.15228,
+    "test_mae": 1.51513,
+    "test_r2": -0.04325,
+    "test_spearman": 0.21286
+  },
+  {
+    "run": "zinc_flow_20250907_191743",
+    "epoch": 9,
+    "val_mae": 1.42798,
+    "val_r2": -0.04762,
+    "val_spearman": 0.12998,
+    "test_mae": 1.51648,
+    "test_r2": -0.03034,
+    "test_spearman": 0.19103
+  },
+  {
+    "run": "zinc-flow-rf",
+    "epoch": 0,
+    "val_mae": 1.44911,
+    "val_r2": -0.00941,
+    "val_spearman": NaN,
+    "test_mae": 1.55405,
+    "test_r2": -0.011,
+    "test_spearman": NaN
+  },
+  {
+    "run": "zinc_flow_20250907_185619",
+    "epoch": 3,
+    "val_mae": 1.47691,
+    "val_r2": -0.00147,
+    "val_spearman": 0.03458,
+    "test_mae": 1.59077,
+    "test_r2": -0.02365,
+    "test_spearman": -0.08103
+  },
+  {
+    "run": "zinc_flow_20250907_183303",
+    "epoch": 4,
+    "val_mae": 1.51059,
+    "val_r2": -0.02682,
+    "val_spearman": -0.07337,
+    "test_mae": 1.6041,
+    "test_r2": -0.02128,
+    "test_spearman": -0.07621
+  },
+  {
+    "run": "zinc_flow_20250907_185207",
+    "epoch": 4,
+    "val_mae": 1.52711,
+    "val_r2": -0.03703,
+    "val_spearman": -0.10473,
+    "test_mae": 1.61979,
+    "test_r2": -0.03132,
+    "test_spearman": -0.11194
+  },
+  {
+    "run": "zinc_flow_20250918_012612",
+    "epoch": 49,
+    "val_mae": 1.70732,
+    "val_r2": -0.42213,
+    "val_spearman": 0.07451,
+    "test_mae": 1.79085,
+    "test_r2": -0.42237,
+    "test_spearman": 0.06835
+  },
+  {
+    "run": "zinc_flow_20250929_213642",
+    "epoch": 19,
+    "val_mae": 2.09756,
+    "val_r2": -0.72978,
+    "val_spearman": -0.01606,
+    "test_mae": 2.18455,
+    "test_r2": -0.70319,
+    "test_spearman": 0.00815
+  },
+  {
+    "run": "zinc_flow_20250918_145343",
+    "epoch": 0,
+    "val_mae": 19.95882,
+    "val_r2": -112.43922,
+    "val_spearman": 0.25689,
+    "test_mae": 20.04837,
+    "test_r2": -109.62375,
+    "test_spearman": 0.28216
+  },
+  {
+    "run": "zinc_flow_20250918_150105",
+    "epoch": 0,
+    "val_mae": 19.95882,
+    "val_r2": -112.43922,
+    "val_spearman": 0.25689,
+    "test_mae": 20.04837,
+    "test_r2": -109.62375,
+    "test_spearman": 0.28216
+  },
+  {
+    "run": "zinc_flow_20250918_151610",
+    "epoch": 0,
+    "val_mae": 19.95882,
+    "val_r2": -112.43922,
+    "val_spearman": 0.25689,
+    "test_mae": 20.04837,
+    "test_r2": -109.62375,
+    "test_spearman": 0.28216
+  }
+]

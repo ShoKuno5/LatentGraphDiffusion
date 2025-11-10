@@ -1,0 +1,38 @@
+{
+  "rectified": {
+    "config": "cfg/zinc-flow_baseline.yaml",
+    "log": "lgd_7937234.out",
+    "run_dir": "results/zinc_flow_20251103_170324/zinc-flow_baseline/0",
+    "best_epoch": 109,
+    "val_mae": 0.3809,
+    "val_r2": 0.92565,
+    "val_spearman": 0.96594,
+    "test_mae": 0.37616,
+    "test_r2": 0.94448,
+    "test_spearman": 0.9724
+  },
+  "gaussian_cfm": {
+    "config": "cfg/zinc-flow_gcfm.yaml",
+    "log": "lgd_7937399.out",
+    "run_dir": "results/zinc_flow_20251103_175518/zinc-flow_gcfm/0",
+    "best_epoch": 89,
+    "val_mae": 0.98909,
+    "val_r2": 0.04535,
+    "val_spearman": 0.6541,
+    "test_mae": 0.98919,
+    "test_r2": 0.11423,
+    "test_spearman": 0.69086
+  },
+  "ddpm_baseline": {
+    "config": "cfg/my_zinc-diffusion_ddpm_optimized.yaml",
+    "log": "results/zinc_diffusion_20250930_141105/zinc-diffusion_ddpm/0/test/stats.json",
+    "run_dir": "results/zinc_diffusion_20250930_141105/zinc-diffusion_ddpm/0",
+    "best_epoch": 249,
+    "val_mae": 0.21719,
+    "val_r2": 0.84851,
+    "val_spearman": 0.99158,
+    "test_mae": 0.19239,
+    "test_r2": 0.9594,
+    "test_spearman": 0.98607
+  }
+}
