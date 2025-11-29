@@ -19,8 +19,9 @@ from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.loss import compute_loss
 from lgd.ddpm.ema import LitEma
 from lgd.model.utils import (
-    exists, default, mean_flat, count_params, 
-    num2batch, symmetrize
+    exists, default, mean_flat, count_params,
+    num2batch, symmetrize, build_edge_mask,
+    binary_classification_stats
 )
 from lgd.model.GraphTransformerEncoder import (
     GraphTransformerEncoder,
@@ -29,6 +30,7 @@ from lgd.model.GraphTransformerEncoder import (
 from lgd.model.SyntheticGraphTransformerEncoder import GraphTransformerSyntheticEncoder as SyntheticGraphTransformerEncoder
 from lgd.model.DenoisingTransformer import DenoisingTransformer
 from .sampler import FlowSampler, solve_flow
+from lgd.utils.lightning import OptionalTrainerLightningModule
 
 
 def disabled_train(self, mode=True):
@@ -62,7 +64,7 @@ class VelocityWrapper(nn.Module):
         return output
 
 
-class LatentFlow(pl.LightningModule):
+class LatentFlow(OptionalTrainerLightningModule):
     """
     Latent Flow Matching model for graph generation.
     Implements rectified flow and Gaussian CFM objectives.
@@ -188,6 +190,11 @@ class LatentFlow(pl.LightningModule):
         self.task_decode_method = self.task_decode_method_train
         self.task_decode_ode_steps = self.task_decode_ode_steps_train
         self.task_decode_ode_method = self.task_decode_ode_method_train
+        self.edge_metrics = {}
+        self._edge_mask_kwargs = {
+            'undirected': False,
+            'no_self_loops': False,
+        }
     
     def build_velocity_network(self, config):
         """Build the velocity prediction network."""
@@ -597,6 +604,14 @@ class LatentFlow(pl.LightningModule):
         batch_num_node = getattr(batch, 'num_node_per_graph',
                                  torch.tensor([batch.num_nodes // batch.num_graphs] * batch.num_graphs,
                                             dtype=torch.long, device=batch.x.device))
+        edge_mask, mask_info = build_edge_mask(
+            batch.edge_index,
+            batch.batch,
+            batch_num_node,
+            **self._edge_mask_kwargs
+        )
+        assert edge_mask.shape[0] == batch.edge_index.shape[1], \
+            "Edge mask must align with dense edge tensors"
         # training_step 内
         # エッジが属するグラフIDを source ノード側から作る
         edge_batch = batch.batch[batch.edge_index[0]]  # shape: [num_edges]
@@ -627,6 +642,16 @@ class LatentFlow(pl.LightningModule):
         loss_nodes = F.mse_loss(v_nodes, u_nodes)
         loss_edges = F.mse_loss(v_edges, u_edges)
         loss = self.node_factor * loss_nodes + self.edge_factor * loss_edges
+        self._record_edge_instrumentation(
+            loss_nodes,
+            loss_edges,
+            v_nodes,
+            v_edges,
+            u_edges,
+            edge_mask,
+            mask_info,
+            batch
+        )
         
         loss_graph_val = torch.zeros(1, device=self.device)
         if v_graph is not None and u_graph is not None:
@@ -683,6 +708,57 @@ class LatentFlow(pl.LightningModule):
             pred = []
 
         return loss, loss_task, pred, loss_nodes, loss_edges, loss_graph_val, loss_encoder
+    
+    def _record_edge_instrumentation(self, loss_nodes, loss_edges, v_nodes,
+                                     v_edges, u_edges, edge_mask, mask_info, batch):
+        """Collect logging metrics without changing gradients."""
+        node_grad = torch.autograd.grad(
+            loss_nodes, v_nodes, retain_graph=True, create_graph=False, allow_unused=True
+        )[0]
+        edge_grad = torch.autograd.grad(
+            loss_edges, v_edges, retain_graph=True, create_graph=False, allow_unused=True
+        )[0]
+        node_grad_norm = node_grad.detach().norm() if node_grad is not None else torch.tensor(0.0, device=loss_nodes.device)
+        edge_grad_norm = edge_grad.detach().norm() if edge_grad is not None else torch.tensor(0.0, device=loss_edges.device)
+
+        if edge_mask.any():
+            logits = v_edges[edge_mask].detach().mean(dim=-1)
+            targets = torch.sigmoid(u_edges[edge_mask].detach().mean(dim=-1))
+        else:
+            logits = v_edges.new_zeros(1)
+            targets = logits.clone()
+        stats = binary_classification_stats(logits, targets)
+
+        with torch.no_grad():
+            sym_edges = symmetrize(batch.edge_index, batch.batch, v_edges)
+            symmetry_error = (v_edges - sym_edges).abs().mean()
+
+        metrics = {
+            'edge/pos_rate': stats['pos_rate'],
+            'edge/loss_pos': stats['loss_pos'],
+            'edge/loss_neg': stats['loss_neg'],
+            'edge/auc': stats['auc'],
+            'edge/auprc': stats['auprc'],
+            'edge/f1@0.5': stats['f1@0.5'],
+            'edge/grad_norm': edge_grad_norm,
+            'node/grad_norm': node_grad_norm,
+            'edge/symmetry_error': symmetry_error.detach(),
+            'edge/valid_edges': mask_info['valid_edge_count'].to(torch.float32),
+        }
+        self._update_edge_logs(metrics)
+
+    def _update_edge_logs(self, metrics):
+        log_map = {}
+        for key, value in metrics.items():
+            if torch.is_tensor(value):
+                scalar = value.detach().to(torch.float32).item()
+                tensor_for_log = value.detach()
+            else:
+                scalar = float(value)
+                tensor_for_log = torch.tensor(scalar, device=self.device)
+            log_map[key] = scalar
+            self.log(key, tensor_for_log, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+        self.edge_metrics = log_map
     
     def validation_step(self, batch, batch_idx):
         """Validation step."""
@@ -767,7 +843,8 @@ class LatentFlow(pl.LightningModule):
             self.model_ema(self.model)
 
     @torch.no_grad()
-    def inference(self, batch, ddim_steps=None, ddim_eta=0.0, use_ddpm_steps=False, **kwargs):
+    def inference(self, batch, ddim_steps=None, ddim_eta=0.0, use_ddpm_steps=False,
+                  return_graph_dec=False, **kwargs):
         """
         Evaluation for flow matching with decoding to graph properties.
 
@@ -817,6 +894,9 @@ class LatentFlow(pl.LightningModule):
         loss_graph, _ = compute_loss(graph_dec, true)
 
         graph_list = self._decode_to_molecules(node_dec, edge_dec, graph_dec, batch)
+
+        if return_graph_dec:
+            return loss_graph, graph_list, graph_dec
 
         return loss_graph, graph_list
 

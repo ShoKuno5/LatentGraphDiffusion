@@ -63,6 +63,7 @@ def train_epoch(logger, loader, model, optimizer, scheduler, batch_accumulation)
             
         _true = label.detach().to('cpu', non_blocking=True)
         _pred = pred.detach().to('cpu', non_blocking=True)
+        extra_stats = getattr(model, 'edge_metrics', {})
         logger.update_stats(true=_true,
                             pred=_pred,
                             loss=loss.detach().cpu().item(),
@@ -74,7 +75,8 @@ def train_epoch(logger, loader, model, optimizer, scheduler, batch_accumulation)
                             lr=scheduler.get_last_lr()[0],
                             time_used=time.time() - time_start,
                             params=cfg.params,
-                            dataset_name=cfg.dataset.name)
+                            dataset_name=cfg.dataset.name,
+                            **extra_stats)
         time_start = time.time()
 
 

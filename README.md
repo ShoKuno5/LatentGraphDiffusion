@@ -25,8 +25,8 @@
 3. **Flow Matching**（W&B project: `LGD-QM9-Uncond-Flow`）  
    ```bash
    pjsub -x CONFIG=cfg/QM9_unconditional_generation_flow.yaml \
-         -x CHECKPOINT=results/QM9_unconditional_generation_encoder/5/ckpt/209.ckpt \
-         -x MAX_EPOCH=3000 \
+         -x CHECKPOINT=runs/qm9_uncond_encoder_20251117_090511/QM9_unconditional_generation_encoder/0/ckpt/499.ckpt
+         -x MAX_EPOCH=100 \
          scripts/qm9_trainer_flow.sh
    ```
    Flow も `CHECKPOINT=auto` で自動探索可能。`MAX_EPOCH` や `WANDB_NAME` などは `-x KEY=VALUE` で上書きしてください。

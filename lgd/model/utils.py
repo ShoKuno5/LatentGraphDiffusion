@@ -14,6 +14,7 @@ import math
 import warnings
 from inspect import isfunction
 import importlib
+from typing import Dict, Tuple
 
 
 def pyg_softmax(src, index, num_nodes=None):
@@ -229,3 +230,97 @@ def symmetrize(edge_index, batch, tensor, offset=1, scale=torch.sqrt(torch.tenso
     symmetrized = A[mask]
     assert symmetrized.shape[0] == edge_index.shape[1]
     return symmetrized
+
+
+def build_edge_mask(edge_index: torch.Tensor,
+                    node_batch: torch.Tensor,
+                    num_nodes_per_graph: torch.Tensor,
+                    undirected: bool = False,
+                    no_self_loops: bool = False) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+    """Construct a boolean mask that filters invalid dense edges.
+
+    The helper assumes that ``edge_index`` enumerates a dense layout created by
+    ``num_nodes_per_graph`` (i.e., all ``n_i^2`` slots per graph).  The returned
+    mask can later be restricted to upper-triangular entries or exclude
+    self-loops without touching the core loss implementation.
+    """
+    assert edge_index.dim() == 2 and edge_index.shape[0] == 2, \
+        f"Expected edge_index with shape [2, E], got {tuple(edge_index.shape)}"
+    assert node_batch.dim() == 1, "node_batch must be 1-D"
+    assert num_nodes_per_graph.dim() == 1, "num_nodes_per_graph must be 1-D"
+
+    src, dst = edge_index
+    assert src.shape[0] == dst.shape[0], "edge_index is malformed"
+    graph_ids = node_batch[src]
+    assert torch.equal(graph_ids, node_batch[dst]), \
+        "Dense layout assumes both edge endpoints share the same graph id"
+
+    mask = torch.ones_like(src, dtype=torch.bool)
+    if no_self_loops:
+        mask &= src != dst
+
+    offsets = torch.cumsum(num_nodes_per_graph, dim=0) - num_nodes_per_graph
+    offsets = offsets.to(edge_index.device)
+
+    if undirected:
+        local_src = src - offsets[graph_ids]
+        local_dst = dst - offsets[graph_ids]
+        mask &= local_src <= local_dst
+
+    valid_counts = torch.zeros_like(num_nodes_per_graph)
+    if mask.any():
+        ones = torch.ones_like(graph_ids[mask])
+        valid_counts.scatter_add_(0, graph_ids[mask], ones)
+
+    info: Dict[str, torch.Tensor] = {
+        'graph_ids': graph_ids,
+        'valid_edge_count': mask.sum(),
+        'valid_edges_per_graph': valid_counts,
+    }
+    return mask, info
+
+
+def binary_classification_stats(logits: torch.Tensor,
+                                targets: torch.Tensor,
+                                threshold: float = 0.5) -> Dict[str, torch.Tensor]:
+    """Compute binary classification logging metrics without side effects."""
+    assert logits.shape == targets.shape, "logits and targets must have the same shape"
+    logits = logits.reshape(-1)
+    targets = targets.reshape(-1).clamp(0.0, 1.0)
+    prob = torch.sigmoid(logits)
+    target_bin = (targets >= threshold).to(logits.dtype)
+
+    bce = F.binary_cross_entropy_with_logits(logits, target_bin, reduction='none')
+    pos_mask = target_bin >= 0.5
+    neg_mask = ~pos_mask
+    loss_pos = bce[pos_mask].mean() if pos_mask.any() else logits.new_tensor(0.0)
+    loss_neg = bce[neg_mask].mean() if neg_mask.any() else logits.new_tensor(0.0)
+
+    preds = (prob >= threshold).to(logits.dtype)
+    tp = (preds * target_bin).sum()
+    fp = (preds * (1 - target_bin)).sum()
+    fn = ((1 - preds) * target_bin).sum()
+    f1 = (2 * tp) / (2 * tp + fp + fn + 1e-8)
+
+    sorted_prob, order = torch.sort(prob, descending=True)
+    sorted_target = target_bin[order]
+    tp_cum = torch.cumsum(sorted_target, dim=0)
+    fp_cum = torch.cumsum(1 - sorted_target, dim=0)
+    total_pos = tp_cum[-1].clamp(min=1.0)
+    total_neg = fp_cum[-1].clamp(min=1.0)
+    tpr = tp_cum / total_pos
+    fpr = fp_cum / total_neg
+    auc = torch.trapz(tpr, fpr)
+
+    precision = tp_cum / (tp_cum + fp_cum + 1e-8)
+    recall = tp_cum / total_pos
+    auprc = torch.trapz(precision, recall)
+
+    return {
+        'pos_rate': target_bin.mean(),
+        'loss_pos': loss_pos,
+        'loss_neg': loss_neg,
+        'f1@0.5': f1,
+        'auc': auc,
+        'auprc': auprc,
+    }

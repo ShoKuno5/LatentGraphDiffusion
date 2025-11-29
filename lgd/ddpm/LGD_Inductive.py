@@ -29,6 +29,7 @@ from lgd.model.GraphTransformerEncoder import *
 from lgd.model.DenoisingTransformer import DenoisingTransformer
 from lgd.model.CustomEncoder import *
 from lgd.model.CustomDenoisingNetwork import CustomDenoisingNetwork
+from lgd.utils.lightning import OptionalTrainerLightningModule
 
 
 def disabled_train(self, mode=True):
@@ -41,7 +42,7 @@ def uniform_on_device(r1, r2, shape, device):
     return (r1 - r2) * torch.rand(*shape, device=device) + r2
 
 
-class DDPM(pl.LightningModule):
+class DDPM(OptionalTrainerLightningModule):
     # classic DDPM with Gaussian diffusion, in image space
     def __init__(self,
                  gt_config=None,
@@ -1586,7 +1587,7 @@ class LatentDiffusionInductive(DDPM):
         return x
 
 
-class DiffusionWrapper(pl.LightningModule):
+class DiffusionWrapper(OptionalTrainerLightningModule):
     def __init__(self, diff_model_config, conditioning_key):
         super().__init__()
         # self.diffusion_model = instantiate_from_config(diff_model_config)

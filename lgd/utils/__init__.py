@@ -15,6 +15,7 @@ from torch_scatter import scatter
 from yacs.config import CfgNode
 
 from .wandb_config import setup_wandb_env  # re-export for convenience
+from .lightning import OptionalTrainerLightningModule
 
 __all__ = [
     "negate_edge_index",
@@ -25,6 +26,7 @@ __all__ = [
     "unbatch_edge_index",
     "mlflow_log_cfgdict",
     "setup_wandb_env",
+    "OptionalTrainerLightningModule",
 ]
 
 

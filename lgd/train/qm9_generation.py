@@ -57,6 +57,8 @@ def train_epoch(logger, loader, model, optimizer, scheduler, batch_accumulation,
             if cfg.optim.clip_grad_norm:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
+            if hasattr(model, "on_train_batch_end"):
+                model.on_train_batch_end()
             optimizer.zero_grad()
         # for qm9 unconditional generation, we do not care about MAE
         _true = graph_label.detach().to('cpu', non_blocking=True)
@@ -81,10 +83,12 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
     generated_mol = []
     iter = 0
     num_test_graphs = 0
+    max_num_test = 1000 if cfg.dataset.format == 'PyG-MOSES' else 10000
+    last_loss_graph = None
     for batch in loader:
-        max_num_test = 1000 if cfg.dataset.format == 'PyG-MOSES' else 10000
         if num_test_graphs >= max_num_test:
             break
+        loss_graph = None
         num_test_graphs += batch.num_graphs
         if iter == 0 and evaluate:
             visualize = True
@@ -95,6 +99,7 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
         batch.to(torch.device(cfg.accelerator))
         if cfg.gnn.head == 'inductive_edge':
             pred, true, extra_stats = model(batch)
+            loss_graph = torch.tensor(0.0, device=batch.x.device)
         else:
             if ensemble_mode == 'none':
                 node_label, edge_label, graph_label = batch.x.clone().detach().flatten(), batch.edge_attr.clone().detach().flatten(), batch.y
@@ -104,7 +109,14 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
                 ddim_steps = cfg.diffusion.get('ddim_steps', None)
                 ddim_eta = cfg.diffusion.get('ddim_eta', 0.0)
                 use_ddpm_steps = cfg.diffusion.get('use_ddpm_steps', False)
-                _, graph_pred = model.inference(batch, ddim_steps=ddim_steps, ddim_eta=ddim_eta, use_ddpm_steps=use_ddpm_steps, visualize=visualize)
+                loss_graph, graph_pred, graph_dec = model.inference(
+                    batch,
+                    ddim_steps=ddim_steps,
+                    ddim_eta=ddim_eta,
+                    use_ddpm_steps=use_ddpm_steps,
+                    visualize=visualize,
+                    return_graph_dec=True,
+                )
                 for each in graph_pred:
                     generated_mol.append(each)
             else:
@@ -117,13 +129,18 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
             _pred = pred_score
         else:
             true = batch.y  
-            # loss, pred_score = compute_loss(graph_pred, true)
             _true = true.detach().to('cpu', non_blocking=True)
-            _pred = true.detach().to('cpu', non_blocking=True)
+            if cfg.gnn.head == 'inductive_edge':
+                _pred = pred.detach().to('cpu', non_blocking=True)
+            else:
+                _pred = graph_dec.detach().to('cpu', non_blocking=True)
             # logging.info(_pred)
+        if loss_graph is None:
+            loss_graph = torch.tensor(0.0, device=batch.x.device)
+        last_loss_graph = loss_graph
         logger.update_stats(true=_true,
                             pred=_pred,
-                            loss=_.detach().cpu().item(),
+                            loss=loss_graph.detach().cpu().item(),
                             lr=0, time_used=time.time() - time_start,
                             params=cfg.params,
                             dataset_name=cfg.dataset.name,
@@ -133,6 +150,29 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
         if len(generated_mol) > 10000:
             generated_mol = random.sample(generated_mol, 10000)
         validity_dict, rdkit_metrics, all_smiles, dic, visualize_samples = compute_molecular_metrics(generated_mol, train_smiles, dataset_info, pref)
+        generative_stats = {
+            'Validity': validity_dict.get('Validity', 0.0),
+            'Relaxed Validity': validity_dict.get('Relaxed Validity', 0.0),
+            'Uniqueness': validity_dict.get('Uniqueness', 0.0),
+            'Novelty': validity_dict.get('Novelty', 0.0),
+            'FCD_Test': dic.get('FCD_Test', 0.0),
+            'NSPDK_MMD': dic.get('NSPDK_MMD', 0.0),
+        }
+        # No batches processed (shouldn't happen in normal runs) – default to zero.
+        loss_graph_safe = last_loss_graph
+        if loss_graph_safe is None:
+            loss_graph_safe = torch.tensor(0.0, device=torch.device(cfg.accelerator if torch.cuda.is_available() else 'cpu'))
+        loss_scalar = loss_graph_safe.detach().cpu().item() if torch.is_tensor(loss_graph_safe) else float(loss_graph_safe)
+        true_safe = _true if '_true' in locals() else torch.tensor([])
+        pred_safe = _pred if '_pred' in locals() else torch.tensor([])
+        # Log generative metrics once per eval call.
+        logger.update_stats(true=true_safe,
+                            pred=pred_safe,
+                            loss=loss_scalar,
+                            lr=0, time_used=0.0,
+                            params=cfg.params,
+                            dataset_name=cfg.dataset.name,
+                            **generative_stats)
         # visualize generated molecules
         save_path = os.path.join(cfg.run_dir, 'generated_molecules')
         os.makedirs(save_path, exist_ok=True)
@@ -253,15 +293,11 @@ def custom_train_diffusion(loggers, loaders, model, optimizer, scheduler):
 
         if cur_epoch > cfg.train.start_eval_epoch:
             if is_eval_epoch(cur_epoch):
-                if cur_epoch == 0:
-                    eval_epoch(loggers[1], loaders[1], model,
-                               split=split_names[0], repeat=cfg.train.ensemble_repeat,
-                               ensemble_mode=cfg.train.ensemble_mode,
-                               train_smiles=train_smiles, dataset_info=infos, evaluate=True, pref=pref, current_epoch=cur_epoch)
-                    perf[1].append(loggers[1].write_epoch(cur_epoch))
-                else:
-                    perf[1].append(perf[1][-1])
-
+                eval_epoch(loggers[1], loaders[1], model,
+                           split=split_names[0], repeat=cfg.train.ensemble_repeat,
+                           ensemble_mode=cfg.train.ensemble_mode,
+                           train_smiles=train_smiles, dataset_info=infos, evaluate=True, pref=pref, current_epoch=cur_epoch)
+                perf[1].append(loggers[1].write_epoch(cur_epoch))
                 eval_epoch(loggers[2], loaders[2], model,
                            split=split_names[1], repeat=cfg.train.ensemble_repeat, ensemble_mode=cfg.train.ensemble_mode,
                            train_smiles=train_smiles, dataset_info=infos, evaluate=True, pref=pref, current_epoch=cur_epoch)

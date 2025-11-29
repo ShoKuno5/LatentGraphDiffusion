@@ -2,7 +2,7 @@
 # Derived from cfg/QM9_unconditional_generation_diffusion_simple.yaml but
 # switches the generative model to LatentFlow and introduces a `flow` block.
 out_dir: results
-metric_best: mae
+metric_best: loss
 metric_agg: argmin
 tensorboard_each_run: False
 accelerator: "cuda:0"
@@ -11,8 +11,9 @@ mlflow:
   project: QM9
   name: QM9-unconditional-flow
 wandb:
-  use: False
-  project: QM9
+  use: True
+  entity: shokuno-the-university-of-tokyo
+  project: qm9-unconditional-generation
 dataset:
   format: PyG-QM9
   name: custom
@@ -34,7 +35,7 @@ train:
   mode: qm9_unconditional
   batch_size: 512
   eval_batch_size: 2048
-  eval_period: 50
+  eval_period: 5
   enable_ckpt: True
   ckpt_best: True
   ckpt_clean: True

@@ -1,0 +1,253 @@
+# QM9 unconditional generation with latent flow matching.
+# Derived from cfg/QM9_unconditional_generation_diffusion_simple.yaml but
+# switches the generative model to LatentFlow and introduces a `flow` block.
+out_dir: results
+metric_best: loss
+metric_agg: argmin
+tensorboard_each_run: False
+accelerator: "cuda:0"
+mlflow:
+  use: False
+  project: QM9
+  name: QM9-unconditional-flow
+wandb:
+  use: True
+  entity: shokuno-the-university-of-tokyo
+  project: qm9-unconditional-generation
+dataset:
+  format: PyG-QM9
+  name: custom
+  task: graph
+  task_type: regression
+  transductive: False
+  node_encoder: True
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 4
+  node_encoder_bn: False
+  edge_encoder: True
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_encoder_bn: False
+  add_virtual_node_edge: False
+  subgraph: False
+  remove_h: True
+train:
+  mode: qm9_unconditional
+  batch_size: 512
+  eval_batch_size: 2048
+  eval_period: 5
+  enable_ckpt: True
+  ckpt_best: True
+  ckpt_clean: True
+  ckpt_period: 50
+  ensemble_repeat: 1
+  ensemble_mode: none
+  pretrain:
+    mask_node_prob: 0.0
+    mask_edge_prob: 0.0
+    mask_label_prob: 0.0
+    recon: all
+    original_task: False
+    input_target: False
+    node_factor: 1.0
+    edge_factor: 1.0
+    graph_factor: 0.0
+model:
+  type: LatentFlow
+  loss_fun: l1
+  edge_decoding: dot
+  graph_pooling: add
+posenc_RRWP:
+  enable: True
+  ksteps: 16
+encoder:
+  model_type: GraphTransformerStructureEncoder
+  in_dim: 48
+  prefix_dim: 96
+  posenc_in_dim: 16
+  posenc_in_dim_edge: 16
+  posenc_dim: 48
+  pe_raw_norm: None
+  hid_dim: 96
+  out_dim: 32
+  use_time: False
+  temb_dim: 0
+  num_heads: 4
+  num_layers: 5
+  dropout: 0.2
+  attn_dropout: 0.5
+  attn:
+    clamp: 5.
+    act: 'relu'
+    full_attn: True
+    edge_enhance: True
+    O_e: True
+    norm_e: True
+    fwl: False
+    signed_sqrt: True
+    score_act: True
+    deg_scaler: False
+    attn_product: mul
+    attn_reweight: False
+    edge_reweight: False
+  mpnn:
+    enable: True
+    act: 'relu'
+    dropout: 0.2
+    edge_enhance: True
+    project_edge: True
+  residual: True
+  layer_norm: False
+  batch_norm: True
+  act: 'relu'
+  norm_e: True
+  O_e: True
+  ff_e: True
+  update_e: True
+  force_undirected: True
+  pool: mean
+  pool_edge: True
+  pool_vn: False
+  post_pool: False
+  final_norm: True
+  prefix_type: add_all
+  label_embed_type: add_all
+  num_task: 1
+  task_type: regression
+  node_encoder: True
+  node_encoder_name: TypeDictNode
+  node_encoder_num_types: 4
+  node_encoder_bn: False
+  edge_encoder: True
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_encoder_bn: False
+  add_virtual_node_edge: False
+dt:
+  in_dim: 32
+  hid_dim: 256
+  out_dim: 32
+  use_time: True
+  temb_dim: 128
+  cond_dim: 16
+  num_heads: 16
+  num_layers: 8
+  self_attn: True
+  dropout: 0.05
+  attn_dropout: 0.1
+  residual: True
+  layer_norm: False
+  batch_norm: True
+  act: 'relu'
+  attn:
+    clamp: 5.
+    act: 'relu'
+    full_attn: True
+    edge_enhance: True
+    O_e: True
+    norm_e: True
+    fwl: False
+    signed_sqrt: True
+    score_act: True
+    deg_scaler: False
+    attn_product: mul
+    attn_reweight: False
+    edge_reweight: False
+  norm_e: True
+  O_e: True
+  ff_e: True
+  ff_e_ca: True
+  ff_e_sa: True
+  update_e: True
+  force_undirected: True
+  pool: mean
+  pool_edge: True
+  pool_vn: False
+  post_pool: False
+  final_norm: True
+  condition_list: ['unconditional']
+diffusion:
+  # Not used for LatentFlow, but kept for compatibility with shared tooling.
+  conditioning_key: crossattn
+  hid_dim: 32
+  parameterization: "x0"
+  cond_stage_key: unconditional
+  first_stage_config: results/QM9_unconditional_generation_encoder/5/ckpt/209.ckpt
+  cond_stage_config: '__is_unconditional__'
+  node_factor: 1.0
+  edge_factor: 1.0
+  graph_factor: 0.0
+  recon_factor: 0.0
+  task_factor: 0.0
+  force_undirected: True
+flow:
+  conditioning_key: crossattn
+  hid_dim: 32
+  cond_stage_key: unconditional
+  first_stage_config: results/QM9_unconditional_generation_encoder/5/ckpt/209.ckpt
+  cond_stage_config: '__is_unconditional__'
+  first_stage_trainable: False
+  cond_stage_trainable: False
+  objective: gaussian_cfm
+  solver: heun
+  nfe: 50
+  t_weight: none
+  node_factor: 1.0
+  edge_factor: 1.0
+  graph_factor: 0.0
+  task_factor: 0.0
+  use_graph_latent: False
+  force_undirected: True
+  ema: True
+  alpha_fn: linear
+  sigma_fn: constant
+  sigma_min: 0.01
+  sigma_max: 1.0
+  train_mode: sample
+  task_decode:
+    method: ode
+    method_train: ode
+    method_eval: ode
+    ode_steps: 2
+    ode_steps_train: 2
+    ode_steps_eval: 16
+    ode_method: euler
+    ode_method_train: euler
+    ode_method_eval: heun
+gt:
+  layer_type: GritTransformer
+  layers: 10
+  n_heads: 8
+  dim_hidden: 64
+  dropout: 0.0
+  layer_norm: False
+  batch_norm: True
+  update_e: True
+  attn_dropout: 0.2
+  attn:
+    clamp: 5.
+    act: 'relu'
+    full_attn: True
+    edge_enhance: True
+    O_e: True
+    norm_e: True
+    fwl: False
+gnn:
+  head: san_graph
+  layers_pre_mp: 0
+  layers_post_mp: 3
+  dim_inner: 64
+  batchnorm: True
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: False
+optim:
+  clip_grad_norm: True
+  optimizer: adamW
+  weight_decay: 1e-5
+  base_lr: 1e-4
+  max_epoch: 3000
+  num_warmup_epochs: 15
+  scheduler: cosine_with_warmup
+  min_lr: 1e-6

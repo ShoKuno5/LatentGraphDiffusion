@@ -17,6 +17,7 @@ CONFIG=${CONFIG:-cfg/QM9_unconditional_generation_diffusion_simple.yaml}
 CHECKPOINT=${CHECKPOINT:-auto}  # auto -> latest QM9_unconditional_generation_encoder ckpt
 SEED=${SEED:-0}
 REPEAT=${REPEAT:-1}
+MAX_EPOCH=${MAX_EPOCH:-500}
 EXP_PREFIX=${EXP_PREFIX:-}
 WANDB_NAME=${WANDB_NAME:-}
 WANDB_PROJECT=${WANDB_PROJECT:-}
@@ -158,6 +159,7 @@ singularity exec --nv \
       --repeat '$REPEAT' \
       seed '$SEED' \
       wandb.use True \
+      optim.max_epoch '$MAX_EPOCH' \
       diffusion.first_stage_config '$CHECKPOINT' \
       out_dir '/workspace/runs/$EXP' \
       wandb.name '$WANDB_NAME'

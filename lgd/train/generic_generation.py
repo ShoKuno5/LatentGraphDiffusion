@@ -81,6 +81,7 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
     generated_graph = []
     iter = 0
     for batch in loader:
+        loss_graph = None
         if iter == 0 and evaluate:
             visualize = True
             iter += 1
@@ -90,6 +91,7 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
         batch.to(torch.device(cfg.accelerator))
         if cfg.gnn.head == 'inductive_edge':
             pred, true, extra_stats = model(batch)
+            loss_graph = torch.tensor(0.0, device=batch.x.device)
         else:
             if ensemble_mode == 'none':
                 node_label, edge_label, graph_label = batch.x.clone().detach().flatten(), batch.edge_attr.clone().detach().flatten(), batch.y
@@ -99,7 +101,14 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
                 ddim_steps = cfg.diffusion.get('ddim_steps', None)
                 ddim_eta = cfg.diffusion.get('ddim_eta', 0.0)
                 use_ddpm_steps = cfg.diffusion.get('use_ddpm_steps', False)
-                _, graph_pred = model.inference(batch, ddim_steps=ddim_steps, ddim_eta=ddim_eta, use_ddpm_steps=use_ddpm_steps, visualize=visualize)
+                loss_graph, graph_pred, graph_dec = model.inference(
+                    batch,
+                    ddim_steps=ddim_steps,
+                    ddim_eta=ddim_eta,
+                    use_ddpm_steps=use_ddpm_steps,
+                    visualize=visualize,
+                    return_graph_dec=True,
+                )
                 for each in graph_pred:
                     generated_graph.append(each)
                 # logging.info('graph_pred')
@@ -130,13 +139,17 @@ def eval_epoch(logger, loader, model, split='val', repeat=1, ensemble_mode='none
             _pred = pred_score
         else:
             true = batch.y  # TODO: check this
-            # loss, pred_score = compute_loss(graph_pred, true)
             _true = true.detach().to('cpu', non_blocking=True)
-            _pred = true.detach().to('cpu', non_blocking=True)
+            if cfg.gnn.head == 'inductive_edge':
+                _pred = pred.detach().to('cpu', non_blocking=True)
+            else:
+                _pred = graph_dec.detach().to('cpu', non_blocking=True)
             # logging.info(_pred)
+        if loss_graph is None:
+            loss_graph = torch.tensor(0.0, device=batch.x.device)
         logger.update_stats(true=_true,
                             pred=_pred,
-                            loss=_.detach().cpu().item(),
+                            loss=loss_graph.detach().cpu().item(),
                             lr=0, time_used=time.time() - time_start,
                             params=cfg.params,
                             dataset_name=cfg.dataset.name,
