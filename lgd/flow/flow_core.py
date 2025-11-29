@@ -22,7 +22,10 @@ from lgd.model.utils import (
     exists, default, mean_flat, count_params, 
     num2batch, symmetrize
 )
-from lgd.model.GraphTransformerEncoder import GraphTransformerEncoder
+from lgd.model.GraphTransformerEncoder import (
+    GraphTransformerEncoder,
+    GraphTransformerStructureEncoder,
+)
 from lgd.model.SyntheticGraphTransformerEncoder import GraphTransformerSyntheticEncoder as SyntheticGraphTransformerEncoder
 from lgd.model.DenoisingTransformer import DenoisingTransformer
 from .sampler import FlowSampler, solve_flow
@@ -285,6 +288,30 @@ class LatentFlow(pl.LightningModule):
     def decode_first_stage(self, batch_z):
         """Decode from latent space to graph space."""
         return self.first_stage_model.decode(batch_z)
+
+    def _decode_to_molecules(self, node_dec, edge_dec, graph_dec, batch):
+        """Convert decoded logits into discrete node/edge labels plus graph feature."""
+        generated = []
+        accumulated_node = 0
+        accumulated_edge = 0
+        num_graphs = batch.num_graphs
+        num_nodes_per_graph = batch.num_node_per_graph
+
+        for i in range(num_graphs):
+            n_i = int(num_nodes_per_graph[i].item())
+            node_slice = node_dec[accumulated_node: accumulated_node + n_i]
+            edge_slice = edge_dec[accumulated_edge: accumulated_edge + n_i ** 2]
+
+            node_tokens = torch.argmax(node_slice, dim=1, keepdim=False)
+            edge_tokens = torch.argmax(edge_slice, dim=1, keepdim=False).reshape(n_i, n_i)
+            graph_value = graph_dec[i].unsqueeze(0)
+
+            generated.append((node_tokens, edge_tokens, graph_value))
+
+            accumulated_node += n_i
+            accumulated_edge += n_i ** 2
+
+        return generated
     
     def get_alpha_sigma(self, t):
         """Get alpha_t and sigma_t for Gaussian CFM."""
@@ -399,7 +426,7 @@ class LatentFlow(pl.LightningModule):
         batch.c = cond
 
         batch.x_start = torch.cat([batch_z.x, batch_z.edge_attr], dim=0)
-        if hasattr(batch_z, 'graph_attr') and self.use_graph_latent:
+        if hasattr(batch_z, 'graph_attr'):
             batch.graph_start = batch_z.graph_attr.clone().detach()
 
         batch_num_node = getattr(batch, 'num_node_per_graph',
@@ -528,7 +555,7 @@ class LatentFlow(pl.LightningModule):
 
         return z_curr_nodes, z_curr_edges, z_curr_graph
     
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx=None):
         """Main training step."""
         # Prepare input
         batch = self.get_input(batch)
@@ -538,7 +565,7 @@ class LatentFlow(pl.LightningModule):
         num_nodes = batch.num_nodes
         z1_nodes = z1[:num_nodes]
         z1_edges = z1[num_nodes:]
-        z1_graph = getattr(batch, 'graph_start', None)
+        z1_graph = batch.graph_start.clone() if (self.use_graph_latent and hasattr(batch, 'graph_start')) else None
         
         # Sample noise z0
         z0_nodes = torch.randn_like(z1_nodes)
@@ -640,14 +667,20 @@ class LatentFlow(pl.LightningModule):
             loss_task, _ = compute_loss(graph_dec, batch.y)
             loss = loss + cfg.flow.get('task_factor', 1.0) * loss_task
 
+            graph_pred_list = self._decode_to_molecules(node_dec, edge_dec, graph_dec, batch)
+        else:
+            graph_pred_list = None
         # Return values expected by train_diffusion mode
         # (loss, loss_task, pred, loss_node, loss_edge, loss_graph, loss_encoder)
         # For flow matching, we don't have a separate encoder loss
         loss_encoder = torch.zeros(1, device=self.device)
         
         # For pred, we can return the velocity prediction or a dummy value
-        # Since we're doing unconditional generation, return dummy predictions
-        pred = graph_dec if graph_dec is not None else (torch.zeros_like(batch.y) if hasattr(batch, 'y') else torch.zeros(1, device=self.device))
+        # Since we're doing unconditional generation, return decoded graphs or empty tensor
+        if graph_pred_list is not None:
+            pred = graph_pred_list
+        else:
+            pred = []
 
         return loss, loss_task, pred, loss_nodes, loss_edges, loss_graph_val, loss_encoder
     
@@ -783,7 +816,9 @@ class LatentFlow(pl.LightningModule):
         true = batch.y.clone().detach() if hasattr(batch, 'y') else graph_dec.detach()
         loss_graph, _ = compute_loss(graph_dec, true)
 
-        return loss_graph, graph_dec
+        graph_list = self._decode_to_molecules(node_dec, edge_dec, graph_dec, batch)
+
+        return loss_graph, graph_list
 
 
 class LatentFlowInductive(LatentFlow):
